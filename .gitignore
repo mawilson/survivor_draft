@@ -1,1 +1,5 @@
 .venv/
+*.py[cod]
+__pycache__/
+db.sqlite3
+static_collected/
