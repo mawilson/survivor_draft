@@ -7,9 +7,23 @@ input[name=message] {
     width: 80%;
 }
 
-.message_list th,td {
+.team_list th,
+.team_list td {
     text-align: left;
     padding-right: 15px;
+    border: 1px solid black;
+}
+
+.survivor_list {
+    table-layout: fixed;
+    width: 30%;
+}
+
+.survivor_list th,
+.survivor_list td {
+    text-align: left;
+    padding-right: 15px;
+    border: 1px solid black;
 }
 
 .navbar {

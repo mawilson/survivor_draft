@@ -12,7 +12,7 @@ class Team(models.Model):
 
 class Survivor(models.Model):
     name = models.CharField(max_length=100)
-    status = models.BooleanField
+    status = models.BooleanField(default=False, null=False, verbose_name="Elimination Status")
     team = models.ForeignKey(
         Team,
         on_delete = models.CASCADE, # if a Survivor's Team gets deleted, so too does that Survivor

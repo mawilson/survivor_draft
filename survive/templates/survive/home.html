@@ -3,5 +3,53 @@
     Home
 {% endblock %}
 {% block content %}
-<p>Survivor Draft Landing Page</p>
+    <p>Survivor Draft Landing Page</p>
+    <hr />
+    <h2>Teams</h2>
+
+    {% if team_list %}
+        <table class="team_list">
+            <thead>
+                <tr>
+                    <th>Team Name</th>
+                    <th>Team Captain</th>
+                    <th>Teammates</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for team in team_list %}
+                    <tr>
+                        <td>{{ team.name | upper }}</td>
+                        <td>{{ team.captain | upper }}</td>
+                        {% if team.survivor_set.all %}
+                            <td>
+                                <table class="survivor_list">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for survivor in team.survivor_set.all %}
+                                            <tr>
+                                                <td>{{ survivor.name }}</td>
+                                                <td>
+                                                    {% if survivor.status %}
+                                                        Surviving
+                                                    {% else %}
+                                                        Eliminated
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
 {% endblock %}
