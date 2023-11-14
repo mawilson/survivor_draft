@@ -3,7 +3,7 @@
     Home
 {% endblock %}
 {% block content %}
-    <p>Survivor Draft Landing Page</p>
+    <h1>Survivor Draft Landing Page</h1>
     <hr />
     <h2>Teams</h2>
 
@@ -35,7 +35,9 @@
                                     <tbody>
                                         {% for survivor in team.survivor_set.all %}
                                             <tr {% if survivor.winner %} class="winning_survivor" 
-                                            {% elif not survivor.status %} class="eliminated_survivor" {% endif %}>
+                                            {% elif not survivor.status %} class="eliminated_survivor"
+                                            {% else %} class="surviving_survivor"
+                                            {% endif %}>
                                                 <td>{{ survivor.name }}</td>
                                                 <td>
                                                     {% if survivor.winner %}
