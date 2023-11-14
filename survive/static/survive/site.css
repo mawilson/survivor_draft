@@ -1,3 +1,9 @@
+.jeff {
+    background-image: url("/static/images/jeff.png");
+    background-repeat: repeat;
+    background-size: 250px 250px;
+}
+
 .message {
     font-weight: 600;
     color: blue;
@@ -10,6 +16,9 @@ input[name=message] {
 .team_list {
     table-layout: auto;
     width: 50%;
+    background-color: #67d4e9;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .team_list th,
@@ -67,8 +76,13 @@ input[name=message] {
 }
 
 .eliminated_survivor {
+    color: black;
+    background-color: #67d4e9;     
+}
+
+.surviving_survivor {
     color: white;
-    background-color: grey;    
+    background-color: #439BA6;
 }
 
 .winning_survivor {

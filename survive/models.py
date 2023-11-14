@@ -2,7 +2,25 @@ from django.db import models
 
 # Create your models here.
 
+class Season(models.Model):
+    """Basically just a container for everything Survivor, per season"""
+    name = models.CharField(max_length=300)
+
+    def most_idols(self):
+        """Returns the Survivor with the most idols in this season"""
+        idol_survivor = None
+        for s in self.survivor_set.all():
+            if not idol_survivor or s.idols > idol_survivor.idols:
+                idol_survivor = s
+        return idol_survivor
+
 class Team(models.Model):
+    season = models.ForeignKey(
+        Season,
+        on_delete = models.CASCADE, # If a Season goes, so too goes every Team within it
+        verbose_name="the season a team belongs to",
+        null = True
+    )
     name = models.CharField(max_length = 300)
     captain = models.CharField(max_length = 300)
 
@@ -17,6 +35,12 @@ class Team(models.Model):
         return total
 
 class Rubric(models.Model):
+    season = models.ForeignKey(
+        Season,
+        on_delete = models.CASCADE, # If a Season goes, so too goes every Team within it
+        verbose_name="the season a team belongs to",
+        null = True
+    ) 
     idols = models.IntegerField(default=2, null=False)
     immunities = models.IntegerField(default=2, null=False)
     jury_number = models.IntegerField(default=1, null=False)
@@ -28,6 +52,12 @@ class Rubric(models.Model):
         """Returns a string representation of the scoring rubric."""
         return f"Most idols: {self.idols} pts; Number on jury: {self.jury_number} pts; Fan favorite: {self.fan_favorite} pts; Winner: {self.winner} pts."
 class Survivor(models.Model):
+    season = models.ForeignKey(
+        Season,
+        on_delete = models.CASCADE, # If a Season goes, so too goes every Team within it
+        verbose_name="the season a team belongs to",
+        null = True
+    )
     name = models.CharField(max_length=100)
     status = models.BooleanField(default=False, null=False, verbose_name="Elimination Status")
     team = models.ForeignKey(
@@ -51,7 +81,7 @@ class Survivor(models.Model):
         return f"Contestant name: {self.name}. Team: {self.team}. Status: {_status}"
     
     def points(self) -> (int, str): # turn into a tuple - first the integer, second the descriptor string?
-        """Returns a two-element tuple, first element is total points earned by this Survivor, second element is a string describing that math."""
+        """Returns a two-element tuple, first element is total points earned by this Survivor, second element is a string describing that math"""
         rubric = Rubric.objects.first() # should define a default rubric for None
         total = 0
         description = "POINTS BREAKDOWN\nPoints Earned * Rubric Value = Score\n"
