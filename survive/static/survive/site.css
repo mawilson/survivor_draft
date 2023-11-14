@@ -22,7 +22,8 @@ input[name=message] {
 .survivor_list th,
 .survivor_list td {
     text-align: left;
-    padding-right: 15px;
+    
+    padding: 2px 15px 2px 5px;
     border: 1px solid black;
 }
 
@@ -52,4 +53,22 @@ input[name=message] {
 .body-content {
     padding: 5px;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+}
+
+.tooltip {
+    display: inline;
+    border-bottom: 1px dashed #000;
+    margin-left: 90%;
+}
+
+.eliminated_survivor {
+    color: white;
+    background-color: grey;    
+}
+
+.winning_survivor {
+    color: gold;
+    background-color: purple;
+    font-style: italic;
+    font-weight: bold;
 }
