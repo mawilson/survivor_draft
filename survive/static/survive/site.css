@@ -7,6 +7,11 @@ input[name=message] {
     width: 80%;
 }
 
+.team_list {
+    table-layout: auto;
+    width: 50%;
+}
+
 .team_list th,
 .team_list td {
     text-align: left;
@@ -16,7 +21,7 @@ input[name=message] {
 
 .survivor_list {
     table-layout: fixed;
-    width: 30%;
+    width: 100%;
 }
 
 .survivor_list th,
