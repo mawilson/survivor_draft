@@ -1,18 +1,96 @@
 from django.db import models
+import math
 
 # Create your models here.
+
+class Rubric(models.Model):
+    # following two fields have to do with scoring for the most idols & whether to split points on ties
+    idols = models.IntegerField(default=2, null=False)
+    idols_tie_split = models.BooleanField(default=True, null=False)
+
+    # following two fields have to do with scoring for the most individual immunities & whether to split points on ties
+    immunities = models.IntegerField(default=2, null=False)
+    immunities_tie_split = models.BooleanField(default=True, null=False)
+
+    jury_number = models.IntegerField(default=1, null=False)
+    fan_favorite = models.IntegerField(default=2, null=False)
+    finalist = models.IntegerField(default=2, null=False)
+    winner = models.IntegerField(default=5, null=False)
+
+    @classmethod
+    def get_default_pk(r):
+        """Used to create a default Rubric if one does not exist, for use by a Season"""
+        rubric, created = r.objects.get_or_create(
+            defaults = dict(
+                idols = 2,
+                idols_tie_split = True,
+                immunities = 2,
+                immunities_tie_split = True,
+                jury_number = 1,
+                fan_favorite = 2,
+                finalist = 2,
+                winner = 5
+            )
+        )
+        return rubric.pk
+
+    def __str__(self) -> str:
+        """Returns a string representation of the scoring rubric."""
+        return f"Most idols: {self.idols} pts; Number on jury: {self.jury_number} pts; Fan favorite: {self.fan_favorite} pts; Winner: {self.winner} pts."
 
 class Season(models.Model):
     """Basically just a container for everything Survivor, per season"""
     name = models.CharField(max_length=300)
+    rubric = models.ForeignKey(
+        Rubric,
+        on_delete = models.SET_DEFAULT, # If a Rubric goes, adjust season rubric to the default
+        null = False,
+        default = Rubric.get_default_pk
+    )
 
     def most_idols(self):
-        """Returns the Survivor with the most idols in this season"""
-        idol_survivor = None
+        """Returns the list of Survivors with the most idols in this season"""
+        idol_survivors = []
         for s in self.survivor_set.all():
-            if not idol_survivor or s.idols > idol_survivor.idols:
-                idol_survivor = s
-        return idol_survivor
+            if len(idol_survivors) == 0 or s.idols > idol_survivors[0].idols:
+                idol_survivors = [s]
+            elif s.idols == idol_survivors[0].idols:
+                idol_survivors.append(s)
+
+        idol_survivors_winningest_teams = [] # initial tiebreaker on most idol ties is whose team had the most cumulative idols, filter out survivors with lesser teams here
+        most_team_idols = 0
+        s_team_idols = 0
+        for s in idol_survivors:
+            s_team_idols = s.team.idols() # store in a variable so we don't get from DB repeatedly
+            if s_team_idols > most_team_idols:
+                idol_survivors_winningest_teams = [s]
+                most_team_idols = s_team_idols
+            elif s_team_idols == most_team_idols:
+                idol_survivors_winningest_teams.append(s)
+
+        return idol_survivors_winningest_teams
+    
+    def most_immunities(self):
+        """Returns the Survivors with the most immunities in the season"""
+        imm_survivors = []
+        for s in self.survivor_set.all():
+            if len(imm_survivors) == 0 or s.immunities > imm_survivors[0].immunities:
+                imm_survivors = [s]
+            elif s.immunities == imm_survivors[0].immunities:
+                imm_survivors.append(s)
+
+        imm_survivors_winningest_teams = [] # initial tiebreaker on most immunity ties is whose team had the most immunities, filter out survivors with lesser teams here
+        most_imms = 0
+        s_team_imms = 0
+        for s in imm_survivors:
+            s_team_imms = s.team.immunities() # store in a variable so we don't get from DB repeatedly
+            if s_team_imms > most_imms:
+                imm_survivors_winningest_teams = [s]
+                most_imms = s_team_imms
+            elif s_team_imms == most_imms:
+                imm_survivors_winningest_teams.append(s)
+        
+        return imm_survivors_winningest_teams
 
 class Team(models.Model):
     season = models.ForeignKey(
@@ -29,28 +107,26 @@ class Team(models.Model):
         return f"Team name: {self.name}. Captain: '{self.captain}'"
     
     def points(self) -> int:
+        """Returns the sum of all points earned by Survivors within this team"""
         total = 0
         for s in Survivor.objects.filter(team=self):
             total += s.points()[0]
         return total
+    
+    def idols(self) -> int:
+        """Returns the sum of all idols earned by Survivors within this team"""
+        total = 0
+        for s in Survivor.objects.filter(team=self):
+            total += s.idols
+        return total
 
-class Rubric(models.Model):
-    season = models.ForeignKey(
-        Season,
-        on_delete = models.CASCADE, # If a Season goes, so too goes every Team within it
-        verbose_name="the season a team belongs to",
-        null = True
-    ) 
-    idols = models.IntegerField(default=2, null=False)
-    immunities = models.IntegerField(default=2, null=False)
-    jury_number = models.IntegerField(default=1, null=False)
-    fan_favorite = models.IntegerField(default=2, null=False)
-    finalist = models.IntegerField(default=2, null=False)
-    winner = models.IntegerField(default=5, null=False)
+    def immunities(self) -> int:
+        """Returns the sum of all individual immunities won by Survivors within this team"""
+        total = 0
+        for s in self.survivor_set.all():
+            total += s.immunities
+        return total
 
-    def __str__(self) -> str:
-        """Returns a string representation of the scoring rubric."""
-        return f"Most idols: {self.idols} pts; Number on jury: {self.jury_number} pts; Fan favorite: {self.fan_favorite} pts; Winner: {self.winner} pts."
 class Survivor(models.Model):
     season = models.ForeignKey(
         Season,
@@ -82,15 +158,41 @@ class Survivor(models.Model):
     
     def points(self) -> (int, str): # turn into a tuple - first the integer, second the descriptor string?
         """Returns a two-element tuple, first element is total points earned by this Survivor, second element is a string describing that math"""
-        rubric = Rubric.objects.first() # should define a default rubric for None
+        rubric = self.season.rubric
         total = 0
         description = "POINTS BREAKDOWN\nPoints Earned * Rubric Value = Score\n"
-        total += self.idols * rubric.idols
-        description += f"Most idol points: {self.idols} * {rubric.idols} = {self.idols * rubric.idols}\n"
-        total += self.immunities * rubric.immunities
-        description += f"Most individual immunities: {self.immunities} * {rubric.immunities} = {self.immunities * rubric.immunities}\n"
-        total += self.jury_number * rubric.jury_number
-        description += f"Jury number: {self.jury_number} * {rubric.jury_number} = {self.jury_number * rubric.jury_number} \n"
+        
+        most_idol_winners = self.season.most_idols()
+        most_idols = self in most_idol_winners # if self is one of the Survivors with the most idols
+        if most_idols:
+            if len(most_idol_winners) > 1 and rubric.idols_tie_split: # if there is a tie for most idol winners and the rubric says to split ties
+                total += math.ceil(rubric.idols / len(most_idol_winners))
+                description += f"Most idol points (tie): Ceiling({rubric.idols} / {len(most_idol_winners)}) = {math.ceil(rubric.idols / len(most_idol_winners))}\n"
+            else: # else just give full rubric idols points
+                total += rubric.idols
+                description += f"Most idol points: {rubric.idols} = {rubric.idols}\n"
+
+        most_immunities_winners = self.season.most_immunities()
+        most_immunities = self in most_immunities_winners # if self is one of the Survivors with the most immunities
+        if most_immunities:
+            if len(most_immunities_winners) > 1 and rubric.immunities_tie_split: # if there is a tie for most immunities and the rubric says to split ties
+                total += math.ceil(rubric.immunities / len(most_immunities_winners))
+                description += f"Most immunities points (tie): Ceiling({rubric.immunities} / {len(most_immunities_winners)}) = {math.ceil(rubric.immunities / len(most_immunities_winners))}\n"
+            else: # else just give full rubric immunities points
+                total += rubric.immunities
+                description += f"Most individual immunities: {rubric.immunities} = {rubric.immunities}\n"
+
+        if self.status: # if alive, jury points are dictated by highest-scoring eliminated survivor
+            jury_points = 0
+            for s in self.season.survivor_set.all():
+                if not s.status and s.jury_number > jury_points:
+                    jury_points = s.jury_number
+            total += jury_points * rubric.jury_number
+            description += f"Jury number: {jury_points} * {rubric.jury_number} = {jury_points * rubric.jury_number}\n"
+        else: # if eliminated, jury points are only dictated by own entry
+            total += self.jury_number * rubric.jury_number
+            description += f"Jury number: {self.jury_number} * {rubric.jury_number} = {self.jury_number * rubric.jury_number} \n"
+
         if self.fan_favorite:
             total += rubric.fan_favorite
             description += f"Fan favorite: {self.fan_favorite} * {rubric.fan_favorite} = {rubric.fan_favorite}\n"
