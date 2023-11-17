@@ -4,9 +4,50 @@ import math
 
 # Create your models here.
 
+class Rubric(models.Model):
+    # following two fields have to do with scoring for the most idols & whether to split points on ties
+    idols = models.IntegerField(default=2, null=False)
+    idols_tie_split = models.BooleanField(default=True, null=False)
+
+    # following two fields have to do with scoring for the most individual immunities & whether to split points on ties
+    immunities = models.IntegerField(default=2, null=False)
+    immunities_tie_split = models.BooleanField(default=True, null=False)
+
+    jury_number = models.IntegerField(default=1, null=False)
+    fan_favorite = models.IntegerField(default=2, null=False)
+    finalist = models.IntegerField(default=2, null=False)
+    winner = models.IntegerField(default=5, null=False)
+
+    @classmethod
+    def get_default_pk(r):
+        """Used to create a default Rubric if one does not exist, for use by a Season"""
+        rubric, created = r.objects.get_or_create(
+            defaults = dict(
+                idols = 2,
+                idols_tie_split = True,
+                immunities = 2,
+                immunities_tie_split = True,
+                jury_number = 1,
+                fan_favorite = 2,
+                finalist = 2,
+                winner = 5
+            )
+        )
+        return rubric.pk
+
+    def __str__(self) -> str:
+        """Returns a string representation of the scoring rubric."""
+        return f"Most idols: {self.idols} pts; Number on jury: {self.jury_number} pts; Fan favorite: {self.fan_favorite} pts; Winner: {self.winner} pts."
+
 class Season(models.Model):
     """Basically just a container for everything Survivor, per season"""
     name = models.CharField(max_length=300)
+    rubric = models.ForeignKey(
+        Rubric,
+        on_delete = models.SET_DEFAULT, # If a Rubric goes, adjust season rubric to the default
+        null = False,
+        default = Rubric.get_default_pk
+    )
 
     def most_idols(self):
         """Returns the list of Survivors with the most idols in this season"""
@@ -88,30 +129,6 @@ class Team(models.Model):
             total += s.immunities
         return total
 
-class Rubric(models.Model):
-    season = models.ForeignKey(
-        Season,
-        on_delete = models.CASCADE, # If a Season goes, so too goes every Team within it
-        verbose_name="the season a team belongs to",
-        null = True
-    )
-
-    # following two parameters have to do with scoring for the most idols & whether to split points on ties
-    idols = models.IntegerField(default=2, null=False)
-    idols_tie_split = models.BooleanField(default=True, null=False)
-
-    # following two parameters have to do with scoring for the most individual immunities & whether to split points on ties
-    immunities = models.IntegerField(default=2, null=False)
-    immunities_tie_split = models.BooleanField(default=True, null=False)
-
-    jury_number = models.IntegerField(default=1, null=False)
-    fan_favorite = models.IntegerField(default=2, null=False)
-    finalist = models.IntegerField(default=2, null=False)
-    winner = models.IntegerField(default=5, null=False)
-
-    def __str__(self) -> str:
-        """Returns a string representation of the scoring rubric."""
-        return f"Most idols: {self.idols} pts; Number on jury: {self.jury_number} pts; Fan favorite: {self.fan_favorite} pts; Winner: {self.winner} pts."
 class Survivor(models.Model):
     season = models.ForeignKey(
         Season,
@@ -143,7 +160,7 @@ class Survivor(models.Model):
     
     def points(self) -> (int, str): # turn into a tuple - first the integer, second the descriptor string?
         """Returns a two-element tuple, first element is total points earned by this Survivor, second element is a string describing that math"""
-        rubric = Rubric.objects.first() # should define a default rubric for None
+        rubric = self.season.rubric
         total = 0
         description = "POINTS BREAKDOWN\nPoints Earned * Rubric Value = Score\n"
         
