@@ -1,5 +1,4 @@
 from django.db import models
-import functools
 import math
 
 # Create your models here.
@@ -123,7 +122,6 @@ class Team(models.Model):
 
     def immunities(self) -> int:
         """Returns the sum of all individual immunities won by Survivors within this team"""
-        #return functools.reduce(lambda a, b: a.immunities + b.immunities, self.survivor_set.all())
         total = 0
         for s in self.survivor_set.all():
             total += s.immunities
@@ -184,8 +182,17 @@ class Survivor(models.Model):
                 total += rubric.immunities
                 description += f"Most individual immunities: {rubric.immunities} = {rubric.immunities}\n"
 
-        total += self.jury_number * rubric.jury_number
-        description += f"Jury number: {self.jury_number} * {rubric.jury_number} = {self.jury_number * rubric.jury_number} \n"
+        if self.status: # if alive, jury points are dictated by highest-scoring eliminated survivor
+            jury_points = 0
+            for s in self.season.survivor_set.all():
+                if not s.status and s.jury_number > jury_points:
+                    jury_points = s.jury_number
+            total += jury_points * rubric.jury_number
+            description += f"Jury number: {jury_points} * {rubric.jury_number} = {jury_points * rubric.jury_number}\n"
+        else: # if eliminated, jury points are only dictated by own entry
+            total += self.jury_number * rubric.jury_number
+            description += f"Jury number: {self.jury_number} * {rubric.jury_number} = {self.jury_number * rubric.jury_number} \n"
+
         if self.fan_favorite:
             total += rubric.fan_favorite
             description += f"Fan favorite: {self.fan_favorite} * {rubric.fan_favorite} = {rubric.fan_favorite}\n"
