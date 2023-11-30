@@ -29,7 +29,7 @@ function themeSelectorInitialize() {
     if (navigator.cookieEnabled) { // if cookies are enabled, use them to retrieve the last theme used & set it
         processCookies();
     } else { // if cookies are not enabled, Jeff by default
-        document.getElementById("themeSelector").selectedIndex = 0;
+        document.getElementById("theme_selector").selectedIndex = 0;
     }
 }
 
@@ -42,7 +42,7 @@ function processCookies() {
         let cookie = _cookie.split("=");
         if (cookie.length === 2) { // cookie is only valid for processing if it looks like key=value, split will have != 2 elements otherwise
             if (cookie[0] === "survivorTheme") {
-                let themeSelector = document.getElementById("themeSelector");
+                let themeSelector = document.getElementById("theme_selector");
                 themeChange(cookie[1]);
                 switch (cookie[1]) {
                     case "unjeff":

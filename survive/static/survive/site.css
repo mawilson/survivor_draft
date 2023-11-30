@@ -28,7 +28,25 @@
     background-size: 250px 250px;
 }
 
-.background-readable {
+.theme_selector_div {
+    float: right;
+}
+
+.theme_selector_label {
+    font-size: larger;
+    outline-style: groove;
+    outline-color: #67d4e9;
+}
+
+.theme_selector {
+    outline-color: #67d4e9;
+    outline-style: groove;
+    padding: 5px 0px 5px 15px;
+    font-size: larger;
+    background-color: #67d4e9;
+}
+
+.background_readable {
     background-color:#67d4e9;
     display: inline-block;
     padding: 5px;
@@ -83,17 +101,17 @@ input[name=message] {
     color: inherit;
 }
 
-.navbar-current {
+.navbar_current {
     font-size: 1.2em;
     font-weight: 600;
 }
 
-.navbar-item {
+.navbar_item {
     font-variant: small-caps;
     margin-left: 30px;
 }
 
-.body-content {
+.body_content {
     padding: 5px;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
 }
