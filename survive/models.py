@@ -135,7 +135,7 @@ class Survivor(models.Model):
         null = True
     )
     name = models.CharField(max_length=100)
-    status = models.BooleanField(default=False, null=False, verbose_name="Elimination Status")
+    status = models.BooleanField(default=False, null=False, verbose_name="Elimination Status - False for eliminated, True for surviving")
     team = models.ForeignKey(
         Team,
         on_delete = models.CASCADE, # if a Survivor's Team gets deleted, so too does that Survivor
@@ -162,25 +162,27 @@ class Survivor(models.Model):
         total = 0
         description = "POINTS BREAKDOWN\nPoints Earned * Rubric Value = Score\n"
         
-        most_idol_winners = self.season.most_idols()
-        most_idols = self in most_idol_winners # if self is one of the Survivors with the most idols
-        if most_idols:
-            if len(most_idol_winners) > 1 and rubric.idols_tie_split: # if there is a tie for most idol winners and the rubric says to split ties
-                total += math.ceil(rubric.idols / len(most_idol_winners))
-                description += f"Most idol points (tie): Ceiling({rubric.idols} / {len(most_idol_winners)}) = {math.ceil(rubric.idols / len(most_idol_winners))}\n"
-            else: # else just give full rubric idols points
-                total += rubric.idols
-                description += f"Most idol points: {rubric.idols} = {rubric.idols}\n"
+        if self.idols > 0: # cannot award idol points if at least one idol hasn't been earned
+            most_idol_winners = self.season.most_idols()
+            most_idols = self in most_idol_winners # if self is one of the Survivors with the most idols
+            if most_idols:
+                if len(most_idol_winners) > 1 and rubric.idols_tie_split: # if there is a tie for most idol winners and the rubric says to split ties
+                    total += math.ceil(rubric.idols / len(most_idol_winners))
+                    description += f"Most idol points (tie): Ceiling({rubric.idols} / {len(most_idol_winners)}) = {math.ceil(rubric.idols / len(most_idol_winners))}\n"
+                else: # else just give full rubric idols points
+                    total += rubric.idols
+                    description += f"Most idol points: {rubric.idols} = {rubric.idols}\n"
 
-        most_immunities_winners = self.season.most_immunities()
-        most_immunities = self in most_immunities_winners # if self is one of the Survivors with the most immunities
-        if most_immunities:
-            if len(most_immunities_winners) > 1 and rubric.immunities_tie_split: # if there is a tie for most immunities and the rubric says to split ties
-                total += math.ceil(rubric.immunities / len(most_immunities_winners))
-                description += f"Most immunities points (tie): Ceiling({rubric.immunities} / {len(most_immunities_winners)}) = {math.ceil(rubric.immunities / len(most_immunities_winners))}\n"
-            else: # else just give full rubric immunities points
-                total += rubric.immunities
-                description += f"Most individual immunities: {rubric.immunities} = {rubric.immunities}\n"
+        if self.immunities > 0: # cannot award immunity points if at least one immunity hasn't been earned
+            most_immunities_winners = self.season.most_immunities()
+            most_immunities = self in most_immunities_winners # if self is one of the Survivors with the most immunities
+            if most_immunities:
+                if len(most_immunities_winners) > 1 and rubric.immunities_tie_split: # if there is a tie for most immunities and the rubric says to split ties
+                    total += math.ceil(rubric.immunities / len(most_immunities_winners))
+                    description += f"Most immunities points (tie): Ceiling({rubric.immunities} / {len(most_immunities_winners)}) = {math.ceil(rubric.immunities / len(most_immunities_winners))}\n"
+                else: # else just give full rubric immunities points
+                    total += rubric.immunities
+                    description += f"Most individual immunities: {rubric.immunities} = {rubric.immunities}\n"
 
         if self.status: # if alive, jury points are dictated by highest-scoring eliminated survivor
             jury_points = 0
