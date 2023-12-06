@@ -1,0 +1,53 @@
+{% extends "survive/layout.html" %}
+{% block title %}
+    Survivor Overview
+{% endblock %}
+{% block content %}
+    <button class="background_readable">
+        <a href="{% url 'home' %}">Back</a>
+    </button>
+    <br />
+    {% if survivor %}
+        <div class="background_readable">
+            <div>
+                Survivor: {{survivor.name}}
+                <br />
+                Season: {{survivor.season.name}}
+                <br />
+                Team: {{survivor.team.name}}
+                <br />
+                Team Captain: {{survivor.team.captain}}
+            </div>
+            <div class="background_readable">
+                Accomplishments
+                <br />
+                Status:
+                {% if survivor.winner %}
+                Sole Survivor
+                {% elif survivor.status %}
+                Surviving
+                {% else %}
+                Eliminated
+                {% endif %}
+                <br />
+                Immunities: {{survivor.immunities}}
+                <br />
+                Idols: {{survivor.idols}}
+                <br />
+                {% if survivor.fan_favorite %}
+                    <p class="fan_favorite">¡¡¡Fan Favorite!!!</p>
+                    <br />
+                {% endif %}
+                Confessionals: {{survivor.confessionals}}
+                <br />
+                Jury Number: {{survivor.jury_number}}
+                <br />
+                {% if survivor.status %}
+                    Overall Placement: {{survivor.season.placement}}
+                {% else %}
+                    Overall Placement: {{survivor.placement}}
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

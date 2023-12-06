@@ -11,5 +11,6 @@ home_list_view = views.HomeListView.as_view(
 urlpatterns = [
     # path("", views.home, name="home"),
     path("", home_list_view, name="home"),
-    path("add_team/", views.add_team, name="add_team")
+    # path("add_team/", views.add_team, name="add_team") # deprecated
+    path("survivor/<int:id>/", views.survivor, name="survivor_page")
 ]

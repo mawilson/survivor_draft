@@ -38,7 +38,11 @@
                                             {% elif not survivor.status %} class="eliminated_survivor"
                                             {% else %} class="surviving_survivor"
                                             {% endif %}>
-                                                <td>{{ survivor.name }}</td>
+                                                <td>
+                                                    <a href="survivor/{{survivor.id}}/">
+                                                        {{ survivor.name }}
+                                                    </a>
+                                                </td>
                                                 <td>
                                                     {% if survivor.winner %}
                                                         Sole Survivor

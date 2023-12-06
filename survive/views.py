@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from survive.forms import TeamForm
-from survive.models import Team
+from survive.models import Team, Survivor
 from django.views.generic import ListView
 
 class HomeListView(ListView):
@@ -26,3 +26,7 @@ def add_team(request):
             return redirect("home")
     else:
         return render(request, "survive/add_team.html", {"form": form})
+    
+def survivor(request, id):
+    context = {'survivor': Survivor.objects.get(pk=id)}
+    return render(request, "survive/survivor.html", context)
