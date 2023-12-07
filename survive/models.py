@@ -91,7 +91,15 @@ class Season(models.Model):
                 imm_survivors_winningest_teams.append(s)
         
         return imm_survivors_winningest_teams
-
+    
+    def placement(self):
+        """Returns one less than the lowest placement of all eliminated Survivors"""
+        lowest_placement = len(self.survivor_set.all())
+        for s in self.survivor_set.all():
+            if not s.status and s.placement < lowest_placement:
+                lowest_placement = s.placement
+        return lowest_placement - 1 # for use by other Survivors, placement is always one better than the last eliminated Survivor
+    
 class Team(models.Model):
     season = models.ForeignKey(
         Season,
@@ -146,6 +154,7 @@ class Survivor(models.Model):
     advantages = models.IntegerField(default=0, null=False)
     immunities = models.IntegerField(default=0, null=False)
     jury_number = models.IntegerField(default=0, null=False)
+    placement = models.IntegerField(default = 0, null=False) # place eliminated, where 0 is not yet eliminated, 1 is first, high number is last
     confessionals = models.IntegerField(default=0, null=False)
     fan_favorite = models.BooleanField(default=False, null=False)
     finalist = models.BooleanField(default=False, null=False) # Winner is an upgraded finalist

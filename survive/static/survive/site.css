@@ -162,3 +162,8 @@ input[name=message] {
     font-style: italic;
     font-weight: bold;
 }
+
+.fan_favorite {
+    background: rgb(180,58,140);
+    background: linear-gradient(90deg, rgba(180,58,140,1) 0%, rgba(253,220,29,1) 50%, rgba(69,252,93,1) 100%);
+}
