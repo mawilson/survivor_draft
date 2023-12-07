@@ -35,7 +35,7 @@
                 Idols: {{survivor.idols}}
                 <br />
                 {% if survivor.fan_favorite %}
-                    <p class="fan_favorite">¡¡¡Fan Favorite!!!</p>
+                    <p class="fan_favorite background_readable">¡¡¡Fan Favorite!!!</p>
                     <br />
                 {% endif %}
                 Confessionals: {{survivor.confessionals}}
@@ -47,6 +47,8 @@
                 {% else %}
                     Overall Placement: {{survivor.placement}}
                 {% endif %}
+                <br />
+                Points Total: {{survivor.points.0}}
             </div>
         </div>
     {% endif %}
