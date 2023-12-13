@@ -8,47 +8,56 @@
     </button>
     <br />
     {% if survivor %}
-        <div class="background_readable">
-            <div>
-                Survivor: {{survivor.name}}
-                <br />
-                Season: {{survivor.season.name}}
-                <br />
-                Team: {{survivor.team.name}}
-                <br />
-                Team Captain: {{survivor.team.captain}}
+        {% load static %}
+        {% get_static_prefix as STATIC_PREFIX %}
+        <div class="survivor_card">
+            <h1 class="survivor_card_h1">{{survivor.name}}</h1>
+            <p class="survivor_card_small">Season: {{survivor.season.name}}</p>
+            <div class="survivor_card_lr">
+                <div class="survivor_card_left">
+                    <img src="{{ STATIC_PREFIX }}survive/portraits_big/{{survivor.pic_full.name}}"
+                    {% if survivor.tribe == "red" %}
+                    class="survivor_tribe_red survivor_portrait_big"
+                    {% elif survivor.tribe == "blue" %}
+                    class="survivor_tribe_blue survivor_portrait_big"
+                    {% elif survivor.tribe == "yellow" %}
+                    class="survivor_tribe_yellow survivor_portrait_big"
+                    {% else %}
+                    class="survivor_portrait_big"
+                    {% endif %} />
+                </div>
+                <div class="survivor_card_right survivor_card_medium">
+                    <p>Team: {{survivor.team.name}}</p>
+                    <p>Team Captain: {{survivor.team.captain}}</p>
+                </div>
             </div>
-            <div class="background_readable">
-                Accomplishments
-                <br />
-                Status:
+            <div class="survivor_card_medium">
+                <p>{% if survivor.status %}
+                    Overall Placement: {{survivor.season.placement}}
+                {% else %}
+                    Overall Placement: {{survivor.placement}}
+                {% endif %}</p>
+                <p>Points Total: {{survivor.points.0}}</p>
+                <p>Status:
                 {% if survivor.winner %}
                 Sole Survivor
                 {% elif survivor.status %}
                 Surviving
                 {% else %}
                 Eliminated
-                {% endif %}
-                <br />
-                Immunities: {{survivor.immunities}}
-                <br />
-                Idols: {{survivor.idols}}
-                <br />
+                {% endif %}</p>
+                <p>Immunities: {{survivor.immunities}}</p>
+                <p>Idols: {{survivor.idols}}</p>
                 {% if survivor.fan_favorite %}
-                    <p class="fan_favorite background_readable">¡¡¡Fan Favorite!!!</p>
-                    <br />
+                    <p class="fan_favorite">¡¡¡Fan Favorite!!!</p>
                 {% endif %}
-                Confessionals: {{survivor.confessionals}}
-                <br />
-                Jury Number: {{survivor.jury_number}}
-                <br />
-                {% if survivor.status %}
-                    Overall Placement: {{survivor.season.placement}}
+                <p>Confessionals: {{survivor.confessionals}}</p>
+                <p>Jury Number: {% if survivor.status %}
+                    {{survivor.season.jury_number}}
                 {% else %}
-                    Overall Placement: {{survivor.placement}}
+                    {{survivor.jury_number}}
                 {% endif %}
-                <br />
-                Points Total: {{survivor.points.0}}
+                </p>
             </div>
         </div>
     {% endif %}

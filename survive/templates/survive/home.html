@@ -3,10 +3,6 @@
     Home
 {% endblock %}
 {% block content %}
-    <h1 class="background_readable">Survivor Draft Landing Page</h1>
-    <hr />
-    <h2 class="background_readable">Teams</h2>
-
     {% if team_list %}
         <table class="team_list">
             <thead>
@@ -24,9 +20,12 @@
                         <td>{{ team.captain | upper }}</td>
                         {% if team.survivor_set.all %}
                             <td>
+                                {% load static %}
+                                {% get_static_prefix as STATIC_PREFIX %}
                                 <table class="survivor_list">
                                     <thead>
                                         <tr>
+                                            <th>Portrait</th>
                                             <th>Name</th>
                                             <th>Status</th>
                                             <th>Points</th>
@@ -38,6 +37,16 @@
                                             {% elif not survivor.status %} class="eliminated_survivor"
                                             {% else %} class="surviving_survivor"
                                             {% endif %}>
+                                                <td>
+                                                    <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{survivor.pic.name}}"
+                                                    {% if survivor.tribe == "red" %}
+                                                    class="survivor_tribe_red"
+                                                    {% elif survivor.tribe == "blue" %}
+                                                    class="survivor_tribe_blue"
+                                                    {% elif survivor.tribe == "yellow" %}
+                                                    class="survivor_tribe_yellow"
+                                                    {% endif %} />
+                                                </td>
                                                 <td>
                                                     <a href="survivor/{{survivor.id}}/">
                                                         {{ survivor.name }}
