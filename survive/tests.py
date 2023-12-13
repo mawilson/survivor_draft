@@ -208,7 +208,7 @@ class SurvivorTestCase(TestCase):
             winner = False
         )
 
-        self.assertEqual(6, season.jury_number())
+        self.assertEqual(7, season.jury_number())
 
     def test_season_placement(self):
         """Season placement returns the lowest placement amongst eliminated Survivors, minus one"""

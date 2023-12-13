@@ -93,12 +93,14 @@ class Season(models.Model):
         return imm_survivors_winningest_teams
     
     def jury_number(self):
-        """Returns the highest jury number of all eliminated Survivors"""
+        """Returns one more than the highest jury number of all eliminated Survivors"""
         highest_jury_number = 0
         for s in self.survivor_set.all():
             if not s.status and s.jury_number > highest_jury_number:
                 highest_jury_number = s.jury_number
-        return highest_jury_number
+        max_jury_number = len(s.season.survivor_set.all()) - 3 # so for 18 survivors, max jury number is 15 - last three are the finalists
+        return min(highest_jury_number + 1, max_jury_number) # for use by other Survivors, jury number is always one better than the last eliminated survivor
+        # cannot return higher than max_jury_number
 
     def placement(self):
         """Returns one less than the lowest placement of all eliminated Survivors"""
@@ -106,7 +108,8 @@ class Season(models.Model):
         for s in self.survivor_set.all():
             if not s.status and s.placement < lowest_placement:
                 lowest_placement = s.placement
-        return lowest_placement - 1 # for use by other Survivors, placement is always one better than the last eliminated Survivor
+        return max(lowest_placement - 1, 1) # for use by other Survivors, placement is always one better than the last eliminated Survivor
+        # cannot return lower than 1
     
 class Team(models.Model):
     season = models.ForeignKey(
