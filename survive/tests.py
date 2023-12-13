@@ -159,3 +159,107 @@ class SurvivorTestCase(TestCase):
 
         self.assertEqual(survivor.points()[0], 2)
 
+    def test_season_jury_number(self):
+        """Season jury number returns highest jury number amongst eliminated Survivors."""
+        self.setup()
+        
+        season = Season.objects.filter(pk=1).first()
+        team = Team.objects.filter(pk=1).first()
+        survivor1 = Survivor.objects.create(
+            season = season,
+            team = team,
+            name = "Test Player 2",
+            status = False,
+            idols = 0,
+            advantages = 0,
+            immunities = 0,
+            jury_number = 2,
+            confessionals = 0,
+            fan_favorite = False,
+            finalist = False,
+            winner = False
+        )
+        survivor2 = Survivor.objects.create(
+            season = season,
+            team = team,
+            name = "Test Player 2",
+            status = True,
+            idols = 0,
+            advantages = 0,
+            immunities = 0,
+            jury_number = 0,
+            confessionals = 0,
+            fan_favorite = False,
+            finalist = False,
+            winner = False
+        )
+        survivor3 = Survivor.objects.create(
+            season = season,
+            team = team,
+            name = "Test Player 2",
+            status = False,
+            idols = 0,
+            advantages = 0,
+            immunities = 0,
+            jury_number = 6,
+            confessionals = 0,
+            fan_favorite = False,
+            finalist = False,
+            winner = False
+        )
+
+        self.assertEqual(6, season.jury_number())
+
+    def test_season_placement(self):
+        """Season placement returns the lowest placement amongst eliminated Survivors, minus one"""
+        self.setup()
+        
+        season = Season.objects.filter(pk=1).first()
+        team = Team.objects.filter(pk=1).first()
+        survivor1 = Survivor.objects.create(
+            season = season,
+            team = team,
+            name = "Test Player 2",
+            status = False,
+            idols = 0,
+            advantages = 0,
+            immunities = 0,
+            jury_number = 2,
+            confessionals = 0,
+            fan_favorite = False,
+            finalist = False,
+            winner = False,
+            placement = 3
+        )
+        survivor2 = Survivor.objects.create(
+            season = season,
+            team = team,
+            name = "Test Player 2",
+            status = True,
+            idols = 0,
+            advantages = 0,
+            immunities = 0,
+            jury_number = 0,
+            confessionals = 0,
+            fan_favorite = False,
+            finalist = False,
+            winner = False
+        )
+        survivor3 = Survivor.objects.create(
+            season = season,
+            team = team,
+            name = "Test Player 2",
+            status = False,
+            idols = 0,
+            advantages = 0,
+            immunities = 0,
+            jury_number = 6,
+            confessionals = 0,
+            fan_favorite = False,
+            finalist = False,
+            winner = False,
+            placement = 2
+        )
+
+        self.assertEqual(1, season.placement())
+

@@ -92,6 +92,14 @@ class Season(models.Model):
         
         return imm_survivors_winningest_teams
     
+    def jury_number(self):
+        """Returns the highest jury number of all eliminated Survivors"""
+        highest_jury_number = 0
+        for s in self.survivor_set.all():
+            if not s.status and s.jury_number > highest_jury_number:
+                highest_jury_number = s.jury_number
+        return highest_jury_number
+
     def placement(self):
         """Returns one less than the lowest placement of all eliminated Survivors"""
         lowest_placement = len(self.survivor_set.all())
@@ -160,7 +168,8 @@ class Survivor(models.Model):
     fan_favorite = models.BooleanField(default=False, null=False)
     finalist = models.BooleanField(default=False, null=False) # Winner is an upgraded finalist
     winner = models.BooleanField(default=False, null=False)
-    pic = models.ImageField(default=False, null=True, upload_to="survivor") # a null image will use a default blank image
+    pic = models.ImageField(default=False, null=True) # a null image will use a default blank image
+    pic_full = models.ImageField(default=False, null=True) # larger image used by Survivor page, can also be null
 
     def __str__(self) -> str:
         """Returns a string representation of a Survivor contestant"""
@@ -196,10 +205,7 @@ class Survivor(models.Model):
                     description += f"Most individual immunities: {rubric.immunities} = {rubric.immunities}\n"
 
         if self.status: # if alive, jury points are dictated by highest-scoring eliminated survivor
-            jury_points = 0
-            for s in self.season.survivor_set.all():
-                if not s.status and s.jury_number > jury_points:
-                    jury_points = s.jury_number
+            jury_points = self.season.jury_number()
             total += jury_points * rubric.jury_number
             description += f"Jury number: {jury_points} * {rubric.jury_number} = {jury_points * rubric.jury_number}\n"
         else: # if eliminated, jury points are only dictated by own entry

@@ -100,6 +100,46 @@ input[name=message] {
     border: 2px solid yellow;
 }
 
+.survivor_portrait_big {
+    max-height: 500px;
+    max-width: 500px;
+    height: auto;
+    width: auto;
+}
+
+.survivor_card {
+    background-color:#67d4e9;
+    padding: 5px;
+    width: fit-content;
+}
+
+.survivor_card_lr {
+    display: inline-block;
+}
+
+.survivor_card_h1 {
+    margin: 5px;
+}
+
+.survivor_card_small {
+    font-size: small;
+    margin: 0px;
+}
+
+.survivor_card_medium p {
+    font-size: medium;
+    margin: 3px 0px 6px 0px;
+}
+
+.survivor_card_left {
+    float: left;
+}
+
+.survivor_card_right {
+    float: right;
+    margin: 0px 100px 0px 20px;
+}
+
 .navbar {
     background-color: lightslategray;
     font-size: 1em;
