@@ -150,6 +150,7 @@ class Survivor(models.Model):
         verbose_name = "the team that recruited this survivor",
         null = True # nothing wrong with a Survivor having no Team, theoretically
     )
+    tribe = models.CharField(max_length=10, null=True) # Usually 'Red', 'Yellow', or 'Blue', but no tribe or some other value are valid
     idols = models.IntegerField(default=0, null=False)
     advantages = models.IntegerField(default=0, null=False)
     immunities = models.IntegerField(default=0, null=False)
@@ -159,6 +160,7 @@ class Survivor(models.Model):
     fan_favorite = models.BooleanField(default=False, null=False)
     finalist = models.BooleanField(default=False, null=False) # Winner is an upgraded finalist
     winner = models.BooleanField(default=False, null=False)
+    pic = models.ImageField(default=False, null=True, upload_to="survivor") # a null image will use a default blank image
 
     def __str__(self) -> str:
         """Returns a string representation of a Survivor contestant"""

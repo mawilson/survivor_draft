@@ -88,6 +88,18 @@ input[name=message] {
     border: 1px solid black;
 }
 
+.survivor_tribe_red {
+    border: 2px solid red;
+}
+
+.survivor_tribe_blue {
+    border: 2px solid blue;
+}
+
+.survivor_tribe_yellow {
+    border: 2px solid yellow;
+}
+
 .navbar {
     background-color: lightslategray;
     font-size: 1em;
