@@ -115,6 +115,11 @@ input[name=message] {
     margin-right: auto;
 }
 
+.survivor_card_fan_favorite {
+    background: linear-gradient(35deg, transparent 0% 90%, #de0021 91%, #ff6d27 92%, #ffe243 93%, #04df21 94%, #0bdde3 95%, #0067d8 96%, #ffb8d9 97%, transparent 98% 100%),
+    #67d4e9;
+}
+
 .survivor_card_lr {
     display: inline-block;
 }
@@ -123,9 +128,8 @@ input[name=message] {
     margin: 5px;
 }
 
-.survivor_card_small {
-    font-size: small;
-    margin: 0px;
+.survivor_card_text_right {
+    text-align: right;
 }
 
 .survivor_card_medium p {
