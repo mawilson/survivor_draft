@@ -10,9 +10,8 @@
     {% if survivor %}
         {% load static %}
         {% get_static_prefix as STATIC_PREFIX %}
-        <div class="survivor_card">
+        <div class="survivor_card {% if survivor.fan_favorite %}survivor_card_fan_favorite{% endif %}{% if survivor.status %}survivor_cursor{% else %}survivor_elim_cursor{% endif %}">
             <h1 class="survivor_card_h1">{{survivor.name}}</h1>
-            <p class="survivor_card_small">Season: {{survivor.season.name}}</p>
             <div class="survivor_card_lr">
                 <div class="survivor_card_left">
                     <img src="{{ STATIC_PREFIX }}survive/portraits_big/{{survivor.pic_full.name}}"
@@ -48,17 +47,18 @@
                 {% endif %}</p>
                 <p>Immunities: {{survivor.immunities}}</p>
                 <p>Idols: {{survivor.idols}}</p>
-                {% if survivor.fan_favorite %}
-                    <p class="fan_favorite">¡¡¡Fan Favorite!!!</p>
-                {% endif %}
                 <p>Confessionals: {{survivor.confessionals}}</p>
-                <p>Jury Number: {% if survivor.status %}
-                    {{survivor.season.jury_number}}
-                {% else %}
-                    {{survivor.jury_number}}
-                {% endif %}
-                </p>
+                <div>
+                    <p class="survivor_card_left">Jury Number: {% if survivor.status %}
+                        {{survivor.season.jury_number}}
+                    {% else %}
+                        {{survivor.jury_number}}
+                    {% endif %}
+                    </p>
+                    <p class="survivor_card_text_right">Season: {{survivor.season.name}}</p>
+                </div>
             </div>
+            
         </div>
     {% endif %}
 {% endblock %}
