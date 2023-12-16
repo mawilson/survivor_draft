@@ -204,6 +204,22 @@ input[name=message] {
     margin-left: 90%;
 }
 
+.survivor_cursor {
+    cursor: url("torch.png") 0 0, auto;
+}
+
+.survivor_cursor_help {
+    cursor: url("torch_q.png") 0 0, auto;
+}
+
+.survivor_elim_cursor {
+    cursor: url("torch_extinguished.png") 0 0, auto;
+}
+
+.survivor_elim_cursor_help {
+    cursor: url("torch_q_extinguished.png") 0 0, auto;
+}
+
 .eliminated_survivor {
     color: black;
     background-color: grey;     

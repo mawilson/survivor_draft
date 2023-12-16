@@ -33,10 +33,10 @@
                                     </thead>
                                     <tbody>
                                         {% for survivor in team.survivor_set.all %}
-                                            <tr {% if survivor.winner %} class="winning_survivor" 
-                                            {% elif not survivor.status %} class="eliminated_survivor"
-                                            {% else %} class="surviving_survivor"
-                                            {% endif %}>
+                                            <tr {% if survivor.winner %} class="winning_survivor 
+                                            {% elif not survivor.status %} class="eliminated_survivor
+                                            {% else %} class="surviving_survivor
+                                            {% endif %} {% if survivor.status %} survivor_cursor {% else %} survivor_elim_cursor {% endif %}">
                                                 <td>
                                                     <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{survivor.pic.name}}"
                                                     {% if survivor.tribe == "red" %}
@@ -61,7 +61,7 @@
                                                         Eliminated
                                                     {% endif %}
                                                 </td>
-                                                <td title="{{survivor.points.1}}">
+                                                <td class={% if survivor.status %}"survivor_cursor_help"{% else %}"survivor_elim_cursor_help"{% endif %} title="{{survivor.points.1}}">
                                                     <table class="points_table">
                                                         <tr>
                                                             <td class="points_table_left"></td>
