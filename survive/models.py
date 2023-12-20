@@ -115,11 +115,40 @@ class Team(models.Model):
     season = models.ForeignKey(
         Season,
         on_delete = models.CASCADE, # If a Season goes, so too goes every Team within it
-        verbose_name="the season a team belongs to",
+        verbose_name = "the season a team belongs to",
         null = True
     )
     name = models.CharField(max_length = 300)
     captain = models.CharField(max_length = 300)
+    
+    fan_favorite_first = models.ForeignKey(
+        "Survivor", # trick the compiler into letting us reference a class not yet defined
+        on_delete = models.SET_NULL,
+        verbose_name = "First place fan favorite vote submitted by this team",
+        null = True, # a team can forgo a vote
+        related_name = "+" # no need for backwards relating a fan fave survivor to the team that voted it
+    )
+    fan_favorite_second = models.ForeignKey(
+        "Survivor", # trick the compiler into letting us reference a class not yet defined
+        on_delete = models.SET_NULL,
+        verbose_name = "Second place fan favorite vote submitted by this team",
+        null = True, # a team can forgo a vote
+        related_name = "+" # no need for backwards relating a fan fave survivor to the team that voted it
+    )
+    fan_favorite_third = models.ForeignKey(
+        "Survivor", # trick the compiler into letting us reference a class not yet defined
+        on_delete = models.SET_NULL,
+        verbose_name = "Third place fan favorite vote submitted by this team",
+        null = True, # a team can forgo a vote
+        related_name = "+" # no need for backwards relating a fan fave survivor to the team that voted it
+    )
+    fan_favorite_bad = models.ForeignKey(
+        "Survivor", # trick the compiler into letting us reference a class not yet defined
+        on_delete = models.SET_NULL,
+        verbose_name = "Negative place fan favorite vote submitted by this team",
+        null = True, # a team can forgo a vote
+        related_name = "+" # no need for backwards relating a fan fave survivor to the team that voted it
+    )
 
     def __str__(self) -> str:
         """Returns a string representation of a Survivor Team"""
@@ -226,4 +255,3 @@ class Survivor(models.Model):
                 total += self.finalist * rubric.finalist
                 description += f"Finalist: {self.finalist} * {rubric.finalist} = {self.finalist * rubric.finalist}"
         return total, description.strip() # remove trailing newline if present
-    
