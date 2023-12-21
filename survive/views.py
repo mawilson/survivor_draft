@@ -46,6 +46,7 @@ def fan_favorite(request):
                 #vote = context["form"].save(commit=True)
                 form = FanFavoriteForm(context["form"].cleaned_data, instance = selected_team) # can't change the existing form's instance, but can make a new one with identical data
                 form.save(commit=True)
+                selected_team.season.fan_favorites() # will evaluate all votes & assign Survivors accordingly
                 return redirect("./") # after submitting, redirect to same page to refresh
         return render(request, "survive/fan_favorite_vote.html")
     else:

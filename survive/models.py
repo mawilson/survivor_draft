@@ -13,7 +13,11 @@ class Rubric(models.Model):
     immunities_tie_split = models.BooleanField(default=True, null=False)
 
     jury_number = models.IntegerField(default=1, null=False)
+
     fan_favorite = models.IntegerField(default=2, null=False)
+    fan_favorite_self_votes = models.BooleanField(default=False, null=False)
+    fan_favorite_negative_votes = models.BooleanField(default=True, null=False)
+
     finalist = models.IntegerField(default=2, null=False)
     winner = models.IntegerField(default=5, null=False)
 
@@ -29,7 +33,9 @@ class Rubric(models.Model):
                 jury_number = 1,
                 fan_favorite = 2,
                 finalist = 2,
-                winner = 5
+                winner = 5,
+                fan_favorite_self_votes = False,
+                fan_favorite_negative_votes = True,
             )
         )
         return rubric.pk
@@ -111,6 +117,87 @@ class Season(models.Model):
         return max(lowest_placement - 1, 1) # for use by other Survivors, placement is always one better than the last eliminated Survivor
         # cannot return lower than 1
     
+    def fan_favorites(self):
+        """Returns the list of survivors with the most fan favorite votes, with tiebreakers being most 1st or 2nd place votes"""
+        vote_dict = {}
+        for t in self.team_set.all():
+            if t.fan_favorite_first: # if the vote is defined, add it to the dictionary for that survivor
+                if t.fan_favorite_first.id not in vote_dict:
+                    vote_dict[t.fan_favorite_first.id] = [3] # instantiate the list with a first place vote
+                else:
+                    vote_dict[t.fan_favorite_first.id].append(3) # add a first place vote to the list
+            if t.fan_favorite_second:
+                if t.fan_favorite_second.id not in vote_dict:
+                    vote_dict[t.fan_favorite_second.id] = [2] # instantiate the list with a second place vote
+                else:
+                    vote_dict[t.fan_favorite_second.id].append(2) # add a second place vote to the list
+            if t.fan_favorite_third:
+                if t.fan_favorite_third.id not in vote_dict:
+                    vote_dict[t.fan_favorite_third.id] = [1] # instantiate the list with a third place vote
+                else:
+                    vote_dict[t.fan_favorite_third.id].append(1) # add a third place vote to the list
+            if t.fan_favorite_bad:
+                if t.fan_favorite_bad.id not in vote_dict:
+                    vote_dict[t.fan_favorite_bad.id] = [-1] # instantiate the list with a negative vote
+                else:
+                    vote_dict[t.fan_favorite_bad.id].append(-1) # add a negative place vote to the list
+        
+        # sum the votes up & append them to the end of each dictionary entry's list
+        # also append number of first place votes after that, & second place votes after that
+        for k, v in vote_dict.items():
+            sum = 0
+            num_firsts = 0
+            num_seconds = 0
+            for vote in v:
+                sum += vote
+                if vote == 3:
+                    num_firsts += 1
+                elif vote == 2:
+                    num_seconds += 1
+            v.append(sum)
+            v.append(num_firsts)
+            v.append(num_seconds)
+
+        # iterate thru once more looking for the highest sum, then use num_firsts followed by num_seconds as tiebreaker
+        # can still have multiple fan favorites
+        fan_favorites = []
+        favoritest_sum = 0
+        favoritest_firsts = 0
+        favoritest_seconds = 0
+        for k, v in vote_dict.items():
+            if len(fan_favorites) == 0: # if list is empty, no need for comparisons
+                fan_favorites.append(k)
+                # save these now for comparison later - we could look it up again but the syntax starts to look bonkers
+                favoritest_sum = v[-3] # third last element is the sum
+                favoritest_firsts = v[-2] # second last element is the firsts
+                favoritest_seconds = v[-1] # last element is the seconds
+            elif v[-3] > favoritest_sum: # if this survivor is more favorited, replace the existing favorites list
+                fan_favorites = [k]
+                favoritest_sum = v[-3]
+                favoritest_firsts = v[-2]
+                favoritest_seconds = v[-1]
+            elif v[-3] == favoritest_sum: # this survivor is as favorited, check for tiebreaks
+                if v[-2] > favoritest_firsts:
+                    fan_favorites = [k]
+                    favoritest_sum = v[-3]
+                    favoritest_firsts = v[-2]
+                    favoritest_seconds = v[-1]
+                elif v[-2] == favoritest_firsts:
+                    if v[-1] > favoritest_seconds:
+                        fan_favorites = [k]
+                        favoritest_sum = v[-3]
+                        favoritest_firsts = v[-2]
+                        favoritest_seconds = v[-1]
+                    elif v[-1] == favoritest_seconds:
+                        fan_favorites.append(k)
+    
+        favorite_survivors = self.survivor_set.filter(id__in=fan_favorites)
+        for s in self.survivor_set.all():
+            s.fan_favorite = s in favorite_survivors
+            s.save()
+        return favorite_survivors # return only the survivors whose ID is in the fan_favorites list
+
+
 class Team(models.Model):
     season = models.ForeignKey(
         Season,
@@ -126,28 +213,32 @@ class Team(models.Model):
         on_delete = models.SET_NULL,
         verbose_name = "First place fan favorite vote submitted by this team",
         null = True, # a team can forgo a vote
-        related_name = "+" # no need for backwards relating a fan fave survivor to the team that voted it
+        related_name = "+", # no need for backwards relating a fan fave survivor to the team that voted it
+        blank = True
     )
     fan_favorite_second = models.ForeignKey(
         "Survivor", # trick the compiler into letting us reference a class not yet defined
         on_delete = models.SET_NULL,
         verbose_name = "Second place fan favorite vote submitted by this team",
         null = True, # a team can forgo a vote
-        related_name = "+" # no need for backwards relating a fan fave survivor to the team that voted it
+        related_name = "+", # no need for backwards relating a fan fave survivor to the team that voted it
+        blank = True
     )
     fan_favorite_third = models.ForeignKey(
         "Survivor", # trick the compiler into letting us reference a class not yet defined
         on_delete = models.SET_NULL,
         verbose_name = "Third place fan favorite vote submitted by this team",
         null = True, # a team can forgo a vote
-        related_name = "+" # no need for backwards relating a fan fave survivor to the team that voted it
+        related_name = "+", # no need for backwards relating a fan fave survivor to the team that voted it
+        blank = True
     )
     fan_favorite_bad = models.ForeignKey(
         "Survivor", # trick the compiler into letting us reference a class not yet defined
         on_delete = models.SET_NULL,
         verbose_name = "Negative place fan favorite vote submitted by this team",
         null = True, # a team can forgo a vote
-        related_name = "+" # no need for backwards relating a fan fave survivor to the team that voted it
+        related_name = "+", # no need for backwards relating a fan fave survivor to the team that voted it
+        blank = True
     )
 
     def __str__(self) -> str:
@@ -197,7 +288,7 @@ class Survivor(models.Model):
     jury_number = models.IntegerField(default=0, null=False)
     placement = models.IntegerField(default = 0, null=False) # place eliminated, where 0 is not yet eliminated, 1 is first, high number is last
     confessionals = models.IntegerField(default=0, null=False)
-    fan_favorite = models.BooleanField(default=False, null=False)
+    fan_favorite = models.BooleanField(default=False, null=False) # this is calculated, but we don't want to run the calqs every time, so still saving it when Season.fan_favorites() runs
     finalist = models.BooleanField(default=False, null=False) # Winner is an upgraded finalist
     winner = models.BooleanField(default=False, null=False)
     pic = models.ImageField(default=False, null=True) # a null image will use a default blank image
@@ -206,8 +297,9 @@ class Survivor(models.Model):
     def __str__(self) -> str:
         """Returns a string representation of a Survivor contestant"""
         _status = "Surviving" if self.status else "Eliminated" 
-        return f"Contestant name: {self.name}. Team: {self.team}. Status: {_status}"
-    
+        #return f"Contestant name: {self.name}. Team: {self.team}. Status: {_status}"
+        return self.name
+
     def points(self) -> (int, str): # turn into a tuple - first the integer, second the descriptor string?
         """Returns a two-element tuple, first element is total points earned by this Survivor, second element is a string describing that math"""
         rubric = self.season.rubric

@@ -20,4 +20,14 @@ class Migration(migrations.Migration):
             name='immunities_tie_split',
             field=models.BooleanField(default=True),
         ),
+        migrations.AddField(
+            model_name='rubric',
+            name='fan_favorite_negative_votes',
+            field=models.BooleanField(default=True),
+        ),
+        migrations.AddField(
+            model_name='rubric',
+            name='fan_favorite_self_votes',
+            field=models.BooleanField(default=False),
+        ),
     ]
