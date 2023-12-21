@@ -12,5 +12,6 @@ urlpatterns = [
     # path("", views.home, name="home"),
     path("", home_list_view, name="home"),
     # path("add_team/", views.add_team, name="add_team") # deprecated
-    path("survivor/<int:id>/", views.survivor, name="survivor_page")
+    path("survivor/<int:id>/", views.survivor, name="survivor_page"),
+    path("fan_favorite", views.fan_favorite, name="fan_favorite")
 ]

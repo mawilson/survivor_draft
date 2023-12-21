@@ -208,6 +208,15 @@ class SurvivorTestCase(TestCase):
             winner = False
         )
 
+        survivor4 = Survivor.objects.create(season = season, name = "test")
+        survivor5 = Survivor.objects.create(season = season, name = "test")
+        survivor6 = Survivor.objects.create(season = season, name = "test")
+        survivor7 = Survivor.objects.create(season = season, name = "test")
+        survivor8 = Survivor.objects.create(season = season, name = "test")
+        survivor9 = Survivor.objects.create(season = season, name = "test")
+        survivor10 = Survivor.objects.create(season = season, name = "test")
+        survivor11 = Survivor.objects.create(season = season, name = "test")
+
         self.assertEqual(7, season.jury_number())
 
     def test_season_placement(self):
@@ -262,4 +271,136 @@ class SurvivorTestCase(TestCase):
         )
 
         self.assertEqual(1, season.placement())
+
+    def test_season_fan_favorites(self):
+        """Fan favorites are correctly deduced based on votes cast by teams"""
+        r = Rubric.objects.create()
+        s = Season.objects.create(name = "TestSeason", rubric = r)
+
+        t1 = Team.objects.create(name = "Team1", captain = "Captain1", season = s)
+        t2 = Team.objects.create(name = "Team2", captain = "Captain2", season = s)
+        t3 = Team.objects.create(name = "Team3", captain = "Captain3", season = s)
+
+        s1 = Survivor.objects.create(
+            season = s,
+            team = t1,
+            name = "Test Player Team1",
+            status = False,
+            idols = 0,
+            advantages = 0,
+            immunities = 0,
+            jury_number = 0,
+            confessionals = 0,
+            fan_favorite = False,
+            finalist = False,
+            winner = False
+        )
+        s2 = Survivor.objects.create(
+            season = s,
+            team = t2,
+            name = "Test Player Team2",
+            status = False,
+            idols = 0,
+            advantages = 0,
+            immunities = 0,
+            jury_number = 0,
+            confessionals = 0,
+            fan_favorite = False,
+            finalist = False,
+            winner = False
+        )
+        s3 = Survivor.objects.create(
+            season = s,
+            team = t2,
+            name = "Test Player2 Team2",
+            status = False,
+            idols = 0,
+            advantages = 0,
+            immunities = 0,
+            jury_number = 0,
+            confessionals = 0,
+            fan_favorite = False,
+            finalist = False,
+            winner = False
+        )
+
+        t1.fan_favorite_first = s1
+        t1.fan_favorite_second = s2
+        t1.fan_favorite_third = s3
+        t1.save()
+
+        t2.fan_favorite_first = s2 # s2 has 5 points
+        t2.fan_favorite_second = s3 # s3 has 3 points
+        t2.fan_favorite_third = s1 # s1 has 4 points
+        t2.save()
+
+        fan_favorites = s.fan_favorites() # having cast the fan favorite votes, need to recalq the fan favorites
+        # the s's are stale now, need to get 'em all again
+        survivors = s.survivor_set.all()
+        s1 = survivors[0]
+        s2 = survivors[1]
+        s3 = survivors[2]
+
+        self.assertTrue(s2.fan_favorite)
+        self.assertFalse(s1.fan_favorite)
+        self.assertFalse(s3.fan_favorite)
+
+        t1.fan_favorite_second = None # s2 now has 3 points
+        t1.save()
+
+        fan_favorites = s.fan_favorites()
+        # the s's are stale now, need to get 'em all again
+        survivors = s.survivor_set.all()
+        s1 = survivors[0]
+        s2 = survivors[1]
+        s3 = survivors[2]
+
+        self.assertTrue(s1.fan_favorite)
+        self.assertFalse(s2.fan_favorite)
+        self.assertFalse(s3.fan_favorite)
+
+        t3.fan_favorite_bad = s1 # s1 has 3 points; now all three have 3 points. Both s1 & s2 have a first place vote, no second places, so both have fan favorite
+        t3.save()
+
+        fan_favorites = s.fan_favorites()
+        # the s's are stale now, need to get 'em all again
+        survivors = s.survivor_set.all()
+        s1 = survivors[0]
+        s2 = survivors[1]
+        s3 = survivors[2]
+
+        self.assertTrue(s1.fan_favorite)
+        self.assertTrue(s2.fan_favorite)
+        self.assertFalse(s3.fan_favorite)
+
+        t1.fan_favorite_first = s1
+        t2.fan_favorite_first = s2
+        t3.fan_favorite_first = None
+
+        t1.fan_favorite_second = s2
+        t2.fan_favorite_second = None
+        t3.fan_favorite_second = s3
+
+        t1.fan_favorite_third = s1
+        t2.fan_favorite_third = s1
+        t3.fan_favorite_third = s3
+
+        t3.fan_favorite_bad = None # s1 & s2 have five points, & each has a first place, but s2 has a second place, so only s2 gets fan favorite
+
+        t1.save()
+        t2.save()
+        t3.save()
+
+        fan_favorites = s.fan_favorites()
+        # the s's are stale now, need to get 'em all again
+        survivors = s.survivor_set.all()
+        s1 = survivors[0]
+        s2 = survivors[1]
+        s3 = survivors[2]
+
+        self.assertFalse(s1.fan_favorite)
+        self.assertTrue(s2.fan_favorite)
+        self.assertFalse(s3.fan_favorite)
+
+
 
