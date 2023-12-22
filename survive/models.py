@@ -1,5 +1,7 @@
 from django.db import models
 import math
+from django.db.models import CheckConstraint, Q, F
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 
@@ -101,11 +103,13 @@ class Season(models.Model):
     def jury_number(self):
         """Returns one more than the highest jury number of all eliminated Survivors"""
         highest_jury_number = 0
+        winner = False
         for s in self.survivor_set.all():
             if not s.status and s.jury_number > highest_jury_number:
                 highest_jury_number = s.jury_number
-        max_jury_number = len(s.season.survivor_set.all()) - 3 # so for 18 survivors, max jury number is 15 - last three are the finalists
-        return min(highest_jury_number + 1, max_jury_number) # for use by other Survivors, jury number is always one better than the last eliminated survivor
+            if s.winner:
+                winner = True # if it's over, highest jury number is just the value of the highest eliminated - don't give finalists an extra point
+        return highest_jury_number if winner else highest_jury_number + 1 # for use by other Survivors, jury number is always one better than the last eliminated survivor
         # cannot return higher than max_jury_number
 
     def placement(self):
@@ -240,6 +244,24 @@ class Team(models.Model):
         related_name = "+", # no need for backwards relating a fan fave survivor to the team that voted it
         blank = True
     )
+
+    # def clean(self):
+    #     if self.fan_favorite_first is self.fan_favorite_second:
+    #         raise ValidationError(_("First and second vote cannot be the same"), code="matched12")
+    #     elif self.fan_favorite_first is self.fan_favorite_third:
+    #         raise ValidationError(_("First and third vote cannot be the same"), code="matched13")
+    #     elif self.fan_favorite_first is self.fan_favorite_bad:
+    #         raise ValidationError(_("First and bad vote cannot be the same"), code="matched14")
+    #     else:
+    #         return None
+
+    # class Meta:
+    #     constraints = [
+    #         models.CheckConstraint(
+    #             check = ~Q(fan_favorite_first = F("fan_favorite_second")),
+    #             name = "check_fan_favorite_first"
+    #         )
+    #     ]
 
     def __str__(self) -> str:
         """Returns a string representation of a Survivor Team"""
