@@ -2,6 +2,7 @@ from django.db import models
 import math
 from django.db.models import CheckConstraint, Q, F
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext as _
 
 # Create your models here.
 
@@ -245,23 +246,35 @@ class Team(models.Model):
         blank = True
     )
 
-    # def clean(self):
-    #     if self.fan_favorite_first is self.fan_favorite_second:
-    #         raise ValidationError(_("First and second vote cannot be the same"), code="matched12")
-    #     elif self.fan_favorite_first is self.fan_favorite_third:
-    #         raise ValidationError(_("First and third vote cannot be the same"), code="matched13")
-    #     elif self.fan_favorite_first is self.fan_favorite_bad:
-    #         raise ValidationError(_("First and bad vote cannot be the same"), code="matched14")
-    #     else:
-    #         return None
+    def clean(self):
+        errors = []
 
-    # class Meta:
-    #     constraints = [
-    #         models.CheckConstraint(
-    #             check = ~Q(fan_favorite_first = F("fan_favorite_second")),
-    #             name = "check_fan_favorite_first"
-    #         )
-    #     ]
+        if self.season is not None:
+            if self.fan_favorite_first is not None and self.fan_favorite_first == self.fan_favorite_second:
+                errors.append(ValidationError(_("First and second vote cannot be the same"), code="matched12"))
+            if self.fan_favorite_first is not None and self.fan_favorite_first == self.fan_favorite_third:
+                errors.append(ValidationError(_("First and third vote cannot be the same"), code="matched13"))
+            if self.fan_favorite_first is not None and self.fan_favorite_first == self.fan_favorite_bad:
+                errors.append(ValidationError(_("First and bad vote cannot be the same"), code="matched14"))
+            if self.fan_favorite_second is not None and self.fan_favorite_second == self.fan_favorite_third:
+                errors.append(ValidationError(_("Second and third vote cannot be the same"), code="matched23"))
+            if self.fan_favorite_second is not None and self.fan_favorite_second == self.fan_favorite_bad:
+                errors.append(ValidationError(_("Second and bad vote cannot be the same"), code="matched24"))
+            if self.fan_favorite_third is not None and self.fan_favorite_third == self.fan_favorite_bad:
+                errors.append(ValidationError(_("Third and bad vote cannot be the same"), code="matched34"))
+            
+            if not self.season.rubric.fan_favorite_self_votes: # if self votes are disallowed, validate them
+                if self.fan_favorite_first is not None and self.fan_favorite_first.team == self:
+                    errors.append(ValidationError(_("First vote cannot be for a player on your own team"), code="sameTeam1"))
+                if self.fan_favorite_second is not None and self.fan_favorite_second.team == self:
+                    errors.append(ValidationError(_("Second vote cannot be for a player on your own team"), code="sameTeam2"))
+                if self.fan_favorite_third is not None and self.fan_favorite_third.team == self:
+                    errors.append(ValidationError(_("Third vote cannot be for a player on your own team"), code="sameTeam3"))
+                if self.fan_favorite_bad is not None and self.fan_favorite_bad.team == self:
+                    errors.append(ValidationError(_("Bad vote cannot be for a player on your own team"), code="sameTeam4"))
+
+        if len(errors) > 0:
+            raise ValidationError(errors)
 
     def __str__(self) -> str:
         """Returns a string representation of a Survivor Team"""
