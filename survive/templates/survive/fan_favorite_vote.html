@@ -8,7 +8,7 @@
         <label>I am voting for: </label>
         <select name="team_id">
             {% for team in teams %}
-                <option value="{{ team.id }}">{{team.name}} (Team Captain {{team.captain}})</option>
+                <option value="{{ team.id }}" {% if selected_team is team.id %}selected{% endif %}>{{team.name}} (Team Captain {{team.captain}})</option>
             {% endfor %}
         </select>
         {{ form.as_p }}

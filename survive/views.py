@@ -38,16 +38,14 @@ def fan_favorite(request):
         "teams": Team.objects.all()
     }
 
-    if request.method == "POST":
-        if context["form"].is_valid():
-            selected_team = get_object_or_404(Team, pk = request.POST.get("team_id"))
-            if selected_team:
-                #context["form"].instance = selected_team # doesn't work, saving form after this saves nothing
-                #vote = context["form"].save(commit=True)
-                form = FanFavoriteForm(context["form"].cleaned_data, instance = selected_team) # can't change the existing form's instance, but can make a new one with identical data
-                form.save(commit=True)
-                selected_team.season.fan_favorites() # will evaluate all votes & assign Survivors accordingly
-                return redirect("./") # after submitting, redirect to same page to refresh
-        return render(request, "survive/fan_favorite_vote.html")
+    if request.method == "POST":     
+        selected_team = get_object_or_404(Team, pk = request.POST.get("team_id"))
+        form = FanFavoriteForm(context["form"].data, instance = selected_team) # can't change the existing form's instance, but can make a new one with identical data
+        if form.is_valid():
+            form.save(commit=True)
+            selected_team.season.fan_favorites() # will evaluate all votes & assign Survivors accordingly
+            return redirect("./") # after submitting, redirect to same page to refresh
+        else:
+            return render(request, "survive/fan_favorite_vote.html", {"form": form, "teams": context["teams"], "selected_team": selected_team.id})
     else:
         return render(request, "survive/fan_favorite_vote.html", context)

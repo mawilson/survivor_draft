@@ -36,7 +36,8 @@
                                             <tr {% if survivor.winner %} class="winning_survivor 
                                             {% elif not survivor.status %} class="eliminated_survivor
                                             {% else %} class="surviving_survivor
-                                            {% endif %} {% if survivor.status %} survivor_cursor {% else %} survivor_elim_cursor {% endif %}">
+                                            {% endif %} {% if survivor.status %} survivor_cursor {% else %} survivor_elim_cursor {% endif %}
+                                            {% if survivor.fan_favorite %} survivor_card_fan_favorite {% endif %}">
                                                 <td>
                                                     <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{survivor.pic.name}}"
                                                     {% if survivor.tribe == "red" %}

@@ -1,5 +1,8 @@
 from django.db import models
 import math
+from django.db.models import CheckConstraint, Q, F
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext as _
 
 # Create your models here.
 
@@ -101,11 +104,13 @@ class Season(models.Model):
     def jury_number(self):
         """Returns one more than the highest jury number of all eliminated Survivors"""
         highest_jury_number = 0
+        winner = False
         for s in self.survivor_set.all():
             if not s.status and s.jury_number > highest_jury_number:
                 highest_jury_number = s.jury_number
-        max_jury_number = len(s.season.survivor_set.all()) - 3 # so for 18 survivors, max jury number is 15 - last three are the finalists
-        return min(highest_jury_number + 1, max_jury_number) # for use by other Survivors, jury number is always one better than the last eliminated survivor
+            if s.winner:
+                winner = True # if it's over, highest jury number is just the value of the highest eliminated - don't give finalists an extra point
+        return highest_jury_number if winner else highest_jury_number + 1 # for use by other Survivors, jury number is always one better than the last eliminated survivor
         # cannot return higher than max_jury_number
 
     def placement(self):
@@ -240,6 +245,36 @@ class Team(models.Model):
         related_name = "+", # no need for backwards relating a fan fave survivor to the team that voted it
         blank = True
     )
+
+    def clean(self):
+        errors = []
+
+        if self.season is not None:
+            if self.fan_favorite_first is not None and self.fan_favorite_first == self.fan_favorite_second:
+                errors.append(ValidationError(_("First and second vote cannot be the same"), code="matched12"))
+            if self.fan_favorite_first is not None and self.fan_favorite_first == self.fan_favorite_third:
+                errors.append(ValidationError(_("First and third vote cannot be the same"), code="matched13"))
+            if self.fan_favorite_first is not None and self.fan_favorite_first == self.fan_favorite_bad:
+                errors.append(ValidationError(_("First and bad vote cannot be the same"), code="matched14"))
+            if self.fan_favorite_second is not None and self.fan_favorite_second == self.fan_favorite_third:
+                errors.append(ValidationError(_("Second and third vote cannot be the same"), code="matched23"))
+            if self.fan_favorite_second is not None and self.fan_favorite_second == self.fan_favorite_bad:
+                errors.append(ValidationError(_("Second and bad vote cannot be the same"), code="matched24"))
+            if self.fan_favorite_third is not None and self.fan_favorite_third == self.fan_favorite_bad:
+                errors.append(ValidationError(_("Third and bad vote cannot be the same"), code="matched34"))
+            
+            if not self.season.rubric.fan_favorite_self_votes: # if self votes are disallowed, validate them
+                if self.fan_favorite_first is not None and self.fan_favorite_first.team == self:
+                    errors.append(ValidationError(_("First vote cannot be for a player on your own team"), code="sameTeam1"))
+                if self.fan_favorite_second is not None and self.fan_favorite_second.team == self:
+                    errors.append(ValidationError(_("Second vote cannot be for a player on your own team"), code="sameTeam2"))
+                if self.fan_favorite_third is not None and self.fan_favorite_third.team == self:
+                    errors.append(ValidationError(_("Third vote cannot be for a player on your own team"), code="sameTeam3"))
+                if self.fan_favorite_bad is not None and self.fan_favorite_bad.team == self:
+                    errors.append(ValidationError(_("Bad vote cannot be for a player on your own team"), code="sameTeam4"))
+
+        if len(errors) > 0:
+            raise ValidationError(errors)
 
     def __str__(self) -> str:
         """Returns a string representation of a Survivor Team"""
