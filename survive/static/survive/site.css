@@ -245,3 +245,7 @@ input[name=message] {
 .fan_favorite_form {
     padding: 5px;
 }
+
+.errorlist {
+    color: red;
+}
