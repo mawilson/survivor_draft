@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from survive.forms import TeamForm, FanFavoriteForm
-from survive.models import Team, Survivor
+from survive.models import Team, Survivor, Season
 from django.views.generic import ListView
 from django.shortcuts import get_object_or_404
 
@@ -35,7 +35,8 @@ def survivor(request, id):
 def fan_favorite(request):
     context = {
         "form": FanFavoriteForm(request.POST or None),
-        "teams": Team.objects.all()
+        "teams": Team.objects.all(),
+        "season": Season.objects.all()[0]
     }
 
     if request.method == "POST":     
@@ -46,6 +47,6 @@ def fan_favorite(request):
             selected_team.season.fan_favorites() # will evaluate all votes & assign Survivors accordingly
             return redirect("./") # after submitting, redirect to same page to refresh
         else:
-            return render(request, "survive/fan_favorite_vote.html", {"form": form, "teams": context["teams"], "selected_team": selected_team.id})
+            return render(request, "survive/fan_favorite_vote.html", {"form": form, "teams": context["teams"], "selected_team": selected_team.id, "season": context["season"]})
     else:
         return render(request, "survive/fan_favorite_vote.html", context)

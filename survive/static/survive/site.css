@@ -237,13 +237,29 @@ input[name=message] {
     font-weight: bold;
 }
 
-.fan_favorite {
-    background: rgb(180,58,140);
-    background: linear-gradient(90deg, rgba(180,58,140,1) 0%, rgba(253,220,29,1) 50%, rgba(69,252,93,1) 100%);
-}
-
 .fan_favorite_form {
     padding: 5px;
+}
+
+.fan_favorite_results {
+    padding: 5px;
+    text-align: center;
+    width: 50%;
+    background-color: #67d4e9;
+    margin-left: auto;
+    margin-right: auto;
+    display: inline;
+}
+
+.fan_favorite_results p {
+    background-color: #67d4e9;
+    text-align: center;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding: 5px 0px;
 }
 
 .errorlist {

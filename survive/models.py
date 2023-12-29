@@ -1,8 +1,8 @@
 from django.db import models
 import math
-from django.db.models import CheckConstraint, Q, F
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
+from datetime import date
 
 # Create your models here.
 
@@ -56,6 +56,7 @@ class Season(models.Model):
         null = False,
         default = Rubric.get_default_pk
     )
+    season_close = models.DateField(null = True) # used to close the fan favorite & 'finalize' a season
 
     def most_idols(self):
         """Returns the list of Survivors with the most idols in this season"""
@@ -123,7 +124,9 @@ class Season(models.Model):
         # cannot return lower than 1
     
     def fan_favorites(self):
-        """Returns the list of survivors with the most fan favorite votes, with tiebreakers being most 1st or 2nd place votes"""
+        """Returns a two element tuple - first the list of survivors with the most fan favorite votes, with tiebreakers being most 1st or 2nd place votes,
+        & second the dictionary of survivors who received votes, & what those votes were
+        Also assigns the Survivor.fan_favorite Boolean attribute for each survivor in the season"""
         vote_dict = {}
         for t in self.team_set.all():
             if t.fan_favorite_first: # if the vote is defined, add it to the dictionary for that survivor
@@ -148,20 +151,31 @@ class Season(models.Model):
                     vote_dict[t.fan_favorite_bad.id].append(-1) # add a negative place vote to the list
         
         # sum the votes up & append them to the end of each dictionary entry's list
-        # also append number of first place votes after that, & second place votes after that
+        # also append number of first, second, third, & bad votes after that
         for k, v in vote_dict.items():
             sum = 0
             num_firsts = 0
             num_seconds = 0
+            num_thirds = 0
+            num_bads = 0
             for vote in v:
-                sum += vote
-                if vote == 3:
-                    num_firsts += 1
-                elif vote == 2:
-                    num_seconds += 1
-            v.append(sum)
-            v.append(num_firsts)
-            v.append(num_seconds)
+                if vote == -1:
+                    if self.rubric.fan_favorite_negative_votes: # even if present, negative votes don't count if rubric disallows them
+                        sum += vote
+                        num_bads += 1
+                else:
+                    sum += vote
+                    if vote == 3:
+                        num_firsts += 1
+                    elif vote == 2:
+                        num_seconds += 1
+                    elif vote == 1:
+                        num_thirds += 1
+            v.append(sum) # sum at -5
+            v.append(num_firsts) # num_firsts at -4
+            v.append(num_seconds) # num_seconds at -3
+            v.append(num_thirds) # num_thirds at -2
+            v.append(num_bads) # num_bads at -1
 
         # iterate thru once more looking for the highest sum, then use num_firsts followed by num_seconds as tiebreaker
         # can still have multiple fan favorites
@@ -173,26 +187,26 @@ class Season(models.Model):
             if len(fan_favorites) == 0: # if list is empty, no need for comparisons
                 fan_favorites.append(k)
                 # save these now for comparison later - we could look it up again but the syntax starts to look bonkers
-                favoritest_sum = v[-3] # third last element is the sum
-                favoritest_firsts = v[-2] # second last element is the firsts
-                favoritest_seconds = v[-1] # last element is the seconds
+                favoritest_sum = v[-5] # fifth last element is the sum
+                favoritest_firsts = v[-4] # fourth last element is the firsts
+                favoritest_seconds = v[-3] # third last element is the seconds
             elif v[-3] > favoritest_sum: # if this survivor is more favorited, replace the existing favorites list
                 fan_favorites = [k]
-                favoritest_sum = v[-3]
-                favoritest_firsts = v[-2]
-                favoritest_seconds = v[-1]
+                favoritest_sum = v[-5]
+                favoritest_firsts = v[-4]
+                favoritest_seconds = v[-3]
             elif v[-3] == favoritest_sum: # this survivor is as favorited, check for tiebreaks
                 if v[-2] > favoritest_firsts:
                     fan_favorites = [k]
-                    favoritest_sum = v[-3]
-                    favoritest_firsts = v[-2]
-                    favoritest_seconds = v[-1]
+                    favoritest_sum = v[-5]
+                    favoritest_firsts = v[-4]
+                    favoritest_seconds = v[-3]
                 elif v[-2] == favoritest_firsts:
                     if v[-1] > favoritest_seconds:
                         fan_favorites = [k]
-                        favoritest_sum = v[-3]
-                        favoritest_firsts = v[-2]
-                        favoritest_seconds = v[-1]
+                        favoritest_sum = v[-5]
+                        favoritest_firsts = v[-4]
+                        favoritest_seconds = v[-3]
                     elif v[-1] == favoritest_seconds:
                         fan_favorites.append(k)
     
@@ -200,7 +214,34 @@ class Season(models.Model):
         for s in self.survivor_set.all():
             s.fan_favorite = s in favorite_survivors
             s.save()
-        return favorite_survivors # return only the survivors whose ID is in the fan_favorites list
+
+        for key, value in vote_dict.items(): # add survivor names to the dict for display purposes by fan_favorite_vote results
+            value.append(self.survivor_set.filter(id=key)[0].name)
+
+        return (favorite_survivors, vote_dict) # return only the survivors whose ID is in the fan_favorites list
+    
+    def fan_favorites_display(self):
+        """"Helper function for displaying the results of the fan_favorites function. Returns a list of formatted strings describing the votes each survivor received."""
+        description = ["Points totals:"]
+        vote_dict = self.fan_favorites()[1]
+        vote_dict_sorted_by_sum = sorted(vote_dict.items(), key=lambda item: item[1][-6], reverse = True) # sorts vote_dict.items by their values (1) & then the sixth-last item in that value (sum)
+        # after appending name to end of list, sum is at -6, firsts at -5, seconds at -4, thirds at -3, bads at -2, & name at -1
+        for key, value in vote_dict_sorted_by_sum:
+            if self.rubric.fan_favorite_negative_votes:
+                if value[-6] == 1:
+                    description.append(f"{value[-1]}: {value[-6]} point ({value[-5]} 1st, {value[-4]} 2nd, {value[-3]} 3rd, {value[-2]} bad votes)")
+                else:
+                    description.append(f"{value[-1]}: {value[-6]} points ({value[-5]} 1st, {value[-4]} 2nd, {value[-3]} 3rd, {value[-2]} bad votes)")
+            else:
+                if value[-6] == 1:
+                    description.append(f"{value[-1]}: {value[-6]} point ({value[-5]} 1st, {value[-4]} 2nd, {value[-3]} 3rd votes)")
+                else:
+                    description.append(f"{value[-1]}: {value[-6]} points ({value[-5]} 1st, {value[-4]} 2nd, {value[-3]} 3rd votes)")
+        return description
+    
+    def is_season_open(self):
+        """Returns True if today's date is on or before the season closing date (or closing date is null), else False."""
+        return self.season_close is None or (date.today() < self.season_close)
 
 
 class Team(models.Model):

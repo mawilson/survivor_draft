@@ -3,15 +3,105 @@
     Fan Favorite Vote Page
 {% endblock %}
 {% block content %}
-    <form class="team_list fan_favorite_form" method="POST">
-        {% csrf_token %}
-        <label>I am voting for: </label>
-        <select name="team_id">
-            {% for team in teams %}
-                <option value="{{ team.id }}" {% if selected_team is team.id %}selected{% endif %}>{{team.name}} (Team Captain {{team.captain}})</option>
+    <button class="background_readable">
+        <a href="{% url 'home' %}">Back</a>
+    </button>
+    <br />
+    {% if season.is_season_open %}
+        <form class="team_list fan_favorite_form" method="POST">
+            {% csrf_token %}
+            <label>I am voting for: </label>
+            <select name="team_id">
+                {% for team in teams %}
+                    <option value="{{ team.id }}" {% if selected_team is team.id %}selected{% endif %}>{{team.name}} (Team Captain {{team.captain}})</option>
+                {% endfor %}
+            </select>
+            {{ form.as_p }}
+            <button type="submit">Vote!</button>
+        </form>
+    {% else %}
+        <div class="fan_favorite_results">
+            <p>This season closed on {{season.season_close}}. Here are the fan favorite voting results!</p>
+
+            <table class="team_list">
+                <thead>
+                    <tr>
+                        <th>Team</th>
+                        <th>First</th>
+                        <th>Second</th>
+                        <th>Third</th>
+                        {% if season.rubric.fan_favorite_negative_votes %}
+                        <th>Bad</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% load static %}
+                    {% get_static_prefix as STATIC_PREFIX %}
+                    {% for team in season.team_set.all %}
+                        <tr>
+                            <td>
+                                {{team.name}}
+                                <br />
+                                (Team Captain {{team.captain}})
+                            </td>
+                            <td>
+                                {% if team.fan_favorite_first %}
+                                    <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_first.pic.name}}"
+                                        {% if team.fan_favorite_first.tribe == "red" %}
+                                        class="survivor_tribe_red"
+                                        {% elif team.fan_favorite_first.tribe == "blue" %}
+                                        class="survivor_tribe_blue"
+                                        {% elif team.fan_favorite_first.tribe == "yellow" %}
+                                        class="survivor_tribe_yellow"
+                                        {% endif %} />
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if team.fan_favorite_second %}
+                                    <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_second.pic.name}}"
+                                        {% if team.fan_favorite_second.tribe == "red" %}
+                                        class="survivor_tribe_red"
+                                        {% elif team.fan_favorite_second.tribe == "blue" %}
+                                        class="survivor_tribe_blue"
+                                        {% elif team.fan_favorite_second.tribe == "yellow" %}
+                                        class="survivor_tribe_yellow"
+                                        {% endif %} />
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if team.fan_favorite_third %}
+                                    <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_third.pic.name}}"
+                                        {% if team.fan_favorite_third.tribe == "red" %}
+                                        class="survivor_tribe_red"
+                                        {% elif team.fan_favorite_third.tribe == "blue" %}
+                                        class="survivor_tribe_blue"
+                                        {% elif team.fan_favorite_third.tribe == "yellow" %}
+                                        class="survivor_tribe_yellow"
+                                        {% endif %} />
+                                {% endif %}
+                            </td>
+                            {% if season.rubric.fan_favorite_negative_votes %}
+                            <td>
+                                {% if team.fan_favorite_bad %}
+                                    <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_bad.pic.name}}"
+                                        {% if team.fan_favorite_bad.tribe == "red" %}
+                                        class="survivor_tribe_red"
+                                        {% elif team.fan_favorite_bad.tribe == "blue" %}
+                                        class="survivor_tribe_blue"
+                                        {% elif team.fan_favorite_bad.tribe == "yellow" %}
+                                        class="survivor_tribe_yellow"
+                                        {% endif %} />
+                                {% endif %}
+                            </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% for line in season.fan_favorites_display %}
+                <p>{{ line }}</p>
             {% endfor %}
-        </select>
-        {{ form.as_p }}
-        <button type="submit">Vote!</button>
-    </form>
+        </div>
+    {% endif %}
 {% endblock %}
