@@ -159,15 +159,18 @@ class Season(models.Model):
             num_thirds = 0
             num_bads = 0
             for vote in v:
-                sum += vote
-                if vote == 3:
-                    num_firsts += 1
-                elif vote == 2:
-                    num_seconds += 1
-                elif vote == 1:
-                    num_thirds += 1
-                elif vote == -1:
-                    num_bads += 1
+                if vote == -1:
+                    if self.rubric.fan_favorite_negative_votes: # even if present, negative votes don't count if rubric disallows them
+                        sum += vote
+                        num_bads += 1
+                else:
+                    sum += vote
+                    if vote == 3:
+                        num_firsts += 1
+                    elif vote == 2:
+                        num_seconds += 1
+                    elif vote == 1:
+                        num_thirds += 1
             v.append(sum) # sum at -5
             v.append(num_firsts) # num_firsts at -4
             v.append(num_seconds) # num_seconds at -3
@@ -218,16 +221,22 @@ class Season(models.Model):
         return (favorite_survivors, vote_dict) # return only the survivors whose ID is in the fan_favorites list
     
     def fan_favorites_display(self):
-        """"Helper function for displaying the results of the fan_favorites function"""
-        description = "Points totals:\n"
+        """"Helper function for displaying the results of the fan_favorites function. Returns a list of formatted strings describing the votes each survivor received."""
+        description = ["Points totals:"]
         vote_dict = self.fan_favorites()[1]
         vote_dict_sorted_by_sum = sorted(vote_dict.items(), key=lambda item: item[1][-6], reverse = True) # sorts vote_dict.items by their values (1) & then the sixth-last item in that value (sum)
         # after appending name to end of list, sum is at -6, firsts at -5, seconds at -4, thirds at -3, bads at -2, & name at -1
         for key, value in vote_dict_sorted_by_sum:
-            if value[-6] == 1:
-                description += f"{value[-1]}: {value[-6]} point ({value[-5]} 1st, {value[-4]} 2nd, {value[-3]} 3rd, {value[-2]} bad votes)\n"
+            if self.rubric.fan_favorite_negative_votes:
+                if value[-6] == 1:
+                    description.append(f"{value[-1]}: {value[-6]} point ({value[-5]} 1st, {value[-4]} 2nd, {value[-3]} 3rd, {value[-2]} bad votes)")
+                else:
+                    description.append(f"{value[-1]}: {value[-6]} points ({value[-5]} 1st, {value[-4]} 2nd, {value[-3]} 3rd, {value[-2]} bad votes)")
             else:
-                description += f"{value[-1]}: {value[-6]} points ({value[-5]} 1st, {value[-4]} 2nd, {value[-3]} 3rd, {value[-2]} bad votes)\n"
+                if value[-6] == 1:
+                    description.append(f"{value[-1]}: {value[-6]} point ({value[-5]} 1st, {value[-4]} 2nd, {value[-3]} 3rd votes)")
+                else:
+                    description.append(f"{value[-1]}: {value[-6]} points ({value[-5]} 1st, {value[-4]} 2nd, {value[-3]} 3rd votes)")
         return description
     
     def is_season_open(self):

@@ -257,6 +257,8 @@ input[name=message] {
     width: 50%;
     margin-left: auto;
     margin-right: auto;
+    margin-top: 0px;
+    margin-bottom: 0px;
     padding: 5px 0px;
 }
 
