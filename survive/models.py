@@ -123,10 +123,11 @@ class Season(models.Model):
         return max(lowest_placement - 1, 1) # for use by other Survivors, placement is always one better than the last eliminated Survivor
         # cannot return lower than 1
     
-    def fan_favorites(self):
+    def fan_favorites(self, save=False):
         """Returns a two element tuple - first the list of survivors with the most fan favorite votes, with tiebreakers being most 1st or 2nd place votes,
         & second the dictionary of survivors who received votes, & what those votes were
-        Also assigns the Survivor.fan_favorite Boolean attribute for each survivor in the season"""
+        Also assigns the Survivor.fan_favorite Boolean attribute for each survivor in the season
+        Accepts optional save parameter which, if True, saves the fan_favorite attribute on each Survivor within this season based upon the voting"""
         vote_dict = {}
         for t in self.team_set.all():
             if t.fan_favorite_first: # if the vote is defined, add it to the dictionary for that survivor
@@ -190,30 +191,31 @@ class Season(models.Model):
                 favoritest_sum = v[-5] # fifth last element is the sum
                 favoritest_firsts = v[-4] # fourth last element is the firsts
                 favoritest_seconds = v[-3] # third last element is the seconds
-            elif v[-3] > favoritest_sum: # if this survivor is more favorited, replace the existing favorites list
+            elif v[-5] > favoritest_sum: # if this survivor is more favorited, replace the existing favorites list
                 fan_favorites = [k]
                 favoritest_sum = v[-5]
                 favoritest_firsts = v[-4]
                 favoritest_seconds = v[-3]
-            elif v[-3] == favoritest_sum: # this survivor is as favorited, check for tiebreaks
-                if v[-2] > favoritest_firsts:
+            elif v[-5] == favoritest_sum: # this survivor is as favorited, check for tiebreaks
+                if v[-4] > favoritest_firsts:
                     fan_favorites = [k]
                     favoritest_sum = v[-5]
                     favoritest_firsts = v[-4]
                     favoritest_seconds = v[-3]
-                elif v[-2] == favoritest_firsts:
-                    if v[-1] > favoritest_seconds:
+                elif v[-4] == favoritest_firsts:
+                    if v[-3] > favoritest_seconds:
                         fan_favorites = [k]
                         favoritest_sum = v[-5]
                         favoritest_firsts = v[-4]
                         favoritest_seconds = v[-3]
-                    elif v[-1] == favoritest_seconds:
+                    elif v[-3] == favoritest_seconds:
                         fan_favorites.append(k)
     
         favorite_survivors = self.survivor_set.filter(id__in=fan_favorites)
-        for s in self.survivor_set.all():
-            s.fan_favorite = s in favorite_survivors
-            s.save()
+        if save:
+            for s in self.survivor_set.all():
+                s.fan_favorite = s in favorite_survivors
+                s.save()
 
         for key, value in vote_dict.items(): # add survivor names to the dict for display purposes by fan_favorite_vote results
             value.append(self.survivor_set.filter(id=key)[0].name)
@@ -238,7 +240,17 @@ class Season(models.Model):
                 else:
                     description.append(f"{value[-1]}: {value[-6]} points ({value[-5]} 1st, {value[-4]} 2nd, {value[-3]} 3rd votes)")
         return description
-    
+
+    def fan_favorites_no_vote(self):
+        """Returns a string representation of survivors whose fan_favorite attribute is True"""
+        favorites = self.survivor_set.filter(fan_favorite=True)
+        if len(favorites) > 1:
+            return ", ".join(favorites)
+        elif len(favorites) == 0:
+            return "nobody"
+        else:
+            return favorites.first()
+
     def is_season_open(self):
         """Returns True if today's date is on or before the season closing date (or closing date is null), else False."""
         return self.season_close is None or (date.today() < self.season_close)

@@ -3,7 +3,15 @@
     Home
 {% endblock %}
 {% block content %}
-    {% if team_list %}
+    <form>
+        <label class="theme_selector_label background_readable">Season: </label>
+        <select class="theme_selector" name="season_id" onchange="this.form.submit()">
+            {% for s in seasons %}
+                <option value="{{ s.id }}" {% if season.id is s.id %}selected{% endif %}>{{s.name}}</option>
+            {% endfor %}
+        </select>
+    </form>
+    {% if season %}
         <table class="team_list">
             <thead>
                 <tr>
@@ -14,7 +22,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for team in team_list %}
+                {% for team in season.team_set.all %}
                     <tr>
                         <td>{{ team.name | upper }}</td>
                         <td>{{ team.captain | upper }}</td>
@@ -39,7 +47,7 @@
                                             {% endif %} {% if survivor.status %} survivor_cursor {% else %} survivor_elim_cursor {% endif %}
                                             {% if survivor.fan_favorite %} survivor_card_fan_favorite {% endif %}">
                                                 <td>
-                                                    <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{survivor.pic.name}}"
+                                                    <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{survivor.pic.name}}"
                                                     {% if survivor.tribe == "red" %}
                                                     class="survivor_tribe_red"
                                                     {% elif survivor.tribe == "blue" %}
