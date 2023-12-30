@@ -7,12 +7,20 @@
         <a href="{% url 'home' %}">Back</a>
     </button>
     <br />
+    <form>
+        <label class="theme_selector_label background_readable">Season: </label>
+        <select class="theme_selector" name="season_id" onchange="this.form.submit()">
+            {% for s in seasons %}
+                <option value="{{ s.id }}" {% if season.id is s.id %}selected{% endif %}>{{s.name}}</option>
+            {% endfor %}
+        </select>
+    </form>
     {% if season.is_season_open %}
         <form class="team_list fan_favorite_form" method="POST">
             {% csrf_token %}
             <label>I am voting for: </label>
             <select name="team_id">
-                {% for team in teams %}
+                {% for team in season.team_set.all %}
                     <option value="{{ team.id }}" {% if selected_team is team.id %}selected{% endif %}>{{team.name}} (Team Captain {{team.captain}})</option>
                 {% endfor %}
             </select>

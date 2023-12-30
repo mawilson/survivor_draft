@@ -3,7 +3,15 @@
     Home
 {% endblock %}
 {% block content %}
-    {% if team_list %}
+    <form>
+        <label class="theme_selector_label background_readable">Season: </label>
+        <select class="theme_selector" name="season_id" onchange="this.form.submit()">
+            {% for s in seasons %}
+                <option value="{{ s.id }}" {% if season.id is s.id %}selected{% endif %}>{{s.name}}</option>
+            {% endfor %}
+        </select>
+    </form>
+    {% if season %}
         <table class="team_list">
             <thead>
                 <tr>
@@ -14,7 +22,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for team in team_list %}
+                {% for team in season.team_set.all %}
                     <tr>
                         <td>{{ team.name | upper }}</td>
                         <td>{{ team.captain | upper }}</td>
