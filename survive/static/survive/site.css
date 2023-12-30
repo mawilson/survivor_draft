@@ -265,3 +265,7 @@ input[name=message] {
 .errorlist {
     color: red;
 }
+
+.text_align_center {
+    text-align: center;
+}
