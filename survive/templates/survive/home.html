@@ -2,15 +2,8 @@
 {% block title %}
     Home
 {% endblock %}
+{% block back_to_home %}{% endblock %}
 {% block content %}
-    <form>
-        <label class="theme_selector_label background_readable">Season: </label>
-        <select class="theme_selector" name="season_id" onchange="this.form.submit()">
-            {% for s in seasons %}
-                <option value="{{ s.id }}" {% if season.id is s.id %}selected{% endif %}>{{s.name}}</option>
-            {% endfor %}
-        </select>
-    </form>
     {% if season %}
         <table class="team_list">
             <thead>

@@ -2,11 +2,8 @@
 {% block title %}
     Survivor Overview
 {% endblock %}
+{% block season_selector %}{% endblock %}
 {% block content %}
-    <button class="background_readable">
-        <a href="{% url 'home' %}">Back</a>
-    </button>
-    <br />
     {% if survivor %}
         {% load static %}
         {% get_static_prefix as STATIC_PREFIX %}
