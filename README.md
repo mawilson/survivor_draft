@@ -1,4 +1,4 @@
-# hello_django
+# Survivor Draft
 
 A web application written in Django for visualizing & interacting with survivor drafts.
 
