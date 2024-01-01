@@ -10,21 +10,22 @@
 
     <body class="theme_jeff">
         <script src="{% static 'survive/site.js' %}"></script>
-        <div class="navbar">
-            <a href="{% url 'home' %}" class="navbar_current">Home</a>
-            <a href="{% url 'fan_favorite' %}" class="navbar_item">Fan Favorite</a>
-        </div>
-
-        <div class="theme_selector_div">
-            <label class="theme_selector_label background_readable">Theme Selector</label>
-            <select id="theme_selector" onchange="themeChange(this.value)" class="theme_selector">
-                <option value="jeff">Original Jeff Theme</option>
-                <option value="unjeff">Jeffless Void</option>
-                <option value="jeff_grey">Jeff but Grey</option>
-                <option value="bg_blue">Survivor Blue</option>
-                <option value="bg_grey">Survivor Grey</option>    
-            </select>
-        </div>
+        {% block navbar %}
+            <div class="navbar">
+                {% block navbar_home %}<a href="{% url 'home' %}" class="navbar_item">Home</a>{% endblock %}
+                {% block navbar_ff %}<a href="{% url 'fan_favorite' %}" class="navbar_item">Fan Favorite</a>{% endblock %}
+                <div class="theme_selector_div">
+                    <label>Theme:</label>
+                    <select id="theme_selector" onchange="themeChange(this.value)" class="theme_selector">
+                        <option value="jeff">Original Jeff Theme</option>
+                        <option value="unjeff">Jeffless Void</option>
+                        <option value="jeff_grey">Jeff but Grey</option>
+                        <option value="bg_blue">Survivor Blue</option>
+                        <option value="bg_grey">Survivor Grey</option>    
+                    </select>
+                </div>
+            </div>
+        {% endblock %}
 
         <div class="body_content survivor_cursor">
             {% block back_to_home %}
@@ -35,7 +36,7 @@
             {% endblock %}
             {% block season_selector %}
                 <form>
-                    <label class="theme_selector_label background_readable">Season: </label>
+                    <label class="background_readable">Season:</label>
                     <select class="theme_selector" name="season_id" onchange="this.form.submit()">
                         {% for s in seasons %}
                             <option value="{{ s.id }}" {% if season.id is s.id %}selected{% endif %}>{{s.name}}</option>

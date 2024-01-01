@@ -2,6 +2,7 @@
 {% block title %}
     Home
 {% endblock %}
+{% block navbar_home %}<a href="{% url 'home' %}" class="navbar_current">Home</a>{% endblock %}
 {% block back_to_home %}{% endblock %}
 {% block content %}
     {% if season %}
