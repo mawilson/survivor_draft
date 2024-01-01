@@ -255,7 +255,6 @@ class Season(models.Model):
         """Returns True if today's date is on or before the season closing date (or closing date is null), else False."""
         return self.season_close is None or (date.today() < self.season_close)
 
-
 class Team(models.Model):
     season = models.ForeignKey(
         Season,
@@ -265,6 +264,7 @@ class Team(models.Model):
     )
     name = models.CharField(max_length = 300)
     captain = models.CharField(max_length = 300)
+    winner = models.BooleanField(default=False, null=False)
     
     fan_favorite_first = models.ForeignKey(
         "Survivor", # trick the compiler into letting us reference a class not yet defined
@@ -353,6 +353,20 @@ class Team(models.Model):
         for s in self.survivor_set.all():
             total += s.immunities
         return total
+    
+    def lost(self) -> bool:
+        """If season is over, returns True if this team won, else False"""
+        """Returns True if all survivors on this team have been eliminated, & this team's points total (plus fan favorite value) is lower than some other team's"""
+        if not self.season.is_season_open():
+            return not self.winner
+        elif all(not s.status for s in self.survivor_set.all()):
+            my_theoretical_points = self.points() + self.season.rubric.fan_favorite # fan favorite points are the only thing we could theoretically still earn
+            for t in self.season.team_set.all():
+                if t is self:
+                    continue
+                elif t.points() > my_theoretical_points: # if any other team has more points than myself, & all my survivors are out, I have officially lost, return True
+                    return True
+        return False
 
 class Survivor(models.Model):
     season = models.ForeignKey(

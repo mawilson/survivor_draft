@@ -67,6 +67,14 @@ input[name=message] {
     border: 1px solid black;
 }
 
+.team_winner {
+    background-color: gold;
+}
+
+.team_loser {
+    background-color: grey;
+}
+
 .survivor_list {
     table-layout: fixed;
     width: 100%;
