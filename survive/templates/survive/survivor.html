@@ -28,7 +28,7 @@
                 </div>
             </div>
             <div class="survivor_card_medium">
-                <p>{% if survivor.status %}
+                <p>{% if survivor.placement == 0 %}
                     Overall Placement: {{survivor.season.placement}}
                 {% else %}
                     Overall Placement: {{survivor.placement}}
