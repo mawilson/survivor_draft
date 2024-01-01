@@ -18,7 +18,7 @@ class HomeListView(ListView):
 def home(request):
     season_id = request.COOKIES.get("season_id") # if season id has been set before, get it & use it for context
     context = {
-        "seasons": Season.objects.all()
+        "seasons": Season.objects.all().order_by("name")
     }
     if season_id:
         context["season"] = Season.objects.get(id=season_id)
@@ -35,18 +35,6 @@ def home(request):
     if new_season_id:
         response.set_cookie("season_id", new_season_id)
     return response
-        
-
-
-def add_team(request):
-    form = TeamForm(request.POST or None)
-
-    if request.method == "POST":
-        if form.is_valid():
-            team = form.save(commit=True)
-            return redirect("home")
-    else:
-        return render(request, "survive/add_team.html", {"form": form})
     
 def survivor(request, id):
     context = {'survivor': Survivor.objects.get(pk=id)}
@@ -55,7 +43,7 @@ def survivor(request, id):
 def fan_favorite(request):
     season_id = request.COOKIES.get("season_id") # if season id has been set before, get it & use it for context
     context = {
-        "seasons": Season.objects.all()
+        "seasons": Season.objects.all().order_by("name")
     }
     if season_id:
         context["season"] = Season.objects.get(id=season_id)

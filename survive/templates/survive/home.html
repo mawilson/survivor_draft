@@ -2,15 +2,9 @@
 {% block title %}
     Home
 {% endblock %}
+{% block navbar_home %}<a href="{% url 'home' %}" class="navbar_current">Home</a>{% endblock %}
+{% block back_to_home %}{% endblock %}
 {% block content %}
-    <form>
-        <label class="theme_selector_label background_readable">Season: </label>
-        <select class="theme_selector" name="season_id" onchange="this.form.submit()">
-            {% for s in seasons %}
-                <option value="{{ s.id }}" {% if season.id is s.id %}selected{% endif %}>{{s.name}}</option>
-            {% endfor %}
-        </select>
-    </form>
     {% if season %}
         <table class="team_list">
             <thead>
@@ -36,6 +30,11 @@
                                             <th>Portrait</th>
                                             <th>Name</th>
                                             <th>Status</th>
+                                            <th>
+                                                Idols / <br />
+                                                Immunities / <br />
+                                                Confessionals
+                                            </th>
                                             <th>Points</th>
                                         </tr>
                                     </thead>
@@ -69,6 +68,9 @@
                                                     {% else %}
                                                         Eliminated
                                                     {% endif %}
+                                                </td>
+                                                <td>
+                                                    {{ survivor.idols }} / {{ survivor.immunities }} / {{ survivor.confessionals }}
                                                 </td>
                                                 <td class={% if survivor.status %}"survivor_cursor_help"{% else %}"survivor_elim_cursor_help"{% endif %} title="{{survivor.points.1}}">
                                                     <table class="points_table">

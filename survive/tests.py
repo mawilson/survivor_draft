@@ -334,7 +334,7 @@ class SurvivorTestCase(TestCase):
         t2.fan_favorite_third = s1 # s1 has 4 points
         t2.save()
 
-        fan_favorites = s.fan_favorites() # having cast the fan favorite votes, need to recalq the fan favorites
+        fan_favorites = s.fan_favorites(save=True) # having cast the fan favorite votes, need to recalq the fan favorites
         # the s's are stale now, need to get 'em all again
         survivors = s.survivor_set.all()
         s1 = survivors[0]
@@ -348,7 +348,7 @@ class SurvivorTestCase(TestCase):
         t1.fan_favorite_second = None # s2 now has 3 points
         t1.save()
 
-        fan_favorites = s.fan_favorites()
+        fan_favorites = s.fan_favorites(save=True)
         # the s's are stale now, need to get 'em all again
         survivors = s.survivor_set.all()
         s1 = survivors[0]
@@ -362,7 +362,7 @@ class SurvivorTestCase(TestCase):
         t3.fan_favorite_bad = s1 # s1 has 3 points; now all three have 3 points. Both s1 & s2 have a first place vote, no second places, so both have fan favorite
         t3.save()
 
-        fan_favorites = s.fan_favorites()
+        fan_favorites = s.fan_favorites(save=True)
         # the s's are stale now, need to get 'em all again
         survivors = s.survivor_set.all()
         s1 = survivors[0]
@@ -391,7 +391,7 @@ class SurvivorTestCase(TestCase):
         t2.save()
         t3.save()
 
-        fan_favorites = s.fan_favorites()
+        fan_favorites = s.fan_favorites(save=True)
         # the s's are stale now, need to get 'em all again
         survivors = s.survivor_set.all()
         s1 = survivors[0]

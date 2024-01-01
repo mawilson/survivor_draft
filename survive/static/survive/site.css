@@ -32,16 +32,7 @@
     float: right;
 }
 
-.theme_selector_label {
-    font-size: larger;
-    outline-style: groove;
-    outline-color: #67d4e9;
-}
-
 .theme_selector {
-    outline-color: #67d4e9;
-    outline-style: groove;
-    padding: 5px 0px 5px 15px;
     font-size: larger;
     background-color: #67d4e9;
 }
@@ -160,13 +151,20 @@ input[name=message] {
 }
 
 .navbar_current {
+    padding-left: 5px;
     font-size: 1.2em;
     font-weight: 600;
+    margin-right: 30px;
 }
 
 .navbar_item {
+    padding-left: 5px;
     font-variant: small-caps;
-    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.navbar_right {
+    float: right;
 }
 
 .body_content {
