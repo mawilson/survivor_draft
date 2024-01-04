@@ -57,6 +57,7 @@ class Season(models.Model):
         default = Rubric.get_default_pk
     )
     season_close = models.DateField(null = True) # used to close the fan favorite & 'finalize' a season
+    season_open = models.DateField(null = True) # used to close the predictions
 
     def most_idols(self):
         """Returns the list of Survivors with the most idols in this season"""
@@ -251,9 +252,36 @@ class Season(models.Model):
         else:
             return favorites.first()
 
+    def predictions_display(self):
+        """Returns a list of strings representing how each survivor with a prediction associated with them ended up placing."""
+        survivor_dict = {}
+        for t in self.team_set.all():
+            if t.prediction_first:
+                if t.prediction_first.id not in survivor_dict:
+                    survivor_dict[t.prediction_first.id] = t.prediction_first
+            if t.prediction_second:
+                if t.prediction_second.id not in survivor_dict:
+                    survivor_dict[t.prediction_second.id] = t.prediction_second
+            if t.prediction_third:
+                if t.prediction_third.id not in survivor_dict:
+                    survivor_dict[t.prediction_third.id] = t.prediction_third
+        
+        results = []
+        for key, value in survivor_dict.items():
+            results.append(f"{value.name} ended up placing {value.placement}.")
+
+        return results
+
+    def is_season_closed(self):
+        """Returns True if today's date is on or after the season closing date, else False."""
+        if self.season_close is None:
+            return False # season cannot close without a closing date
+        else:
+            return date.today() >= self.season_close
+    
     def is_season_open(self):
-        """Returns True if today's date is on or before the season closing date (or closing date is null), else False."""
-        return self.season_close is None or (date.today() < self.season_close)
+        """Returns True if today's date is on or after the season opening date (or the opening date is null), else False."""
+        return self.season_open is None or (date.today() >= self.season_open)
 
 class Team(models.Model):
     season = models.ForeignKey(
@@ -299,6 +327,31 @@ class Team(models.Model):
         blank = True
     )
 
+    prediction_first = models.ForeignKey(
+        "Survivor", # trick the compiler into letting us reference a class not yet defined
+        on_delete = models.SET_NULL,
+        verbose_name = "First place prediction for this season",
+        null = True, # a team can forgo a vote
+        related_name = "+", # no need for backwards relating a prediction to the team that voted it
+        blank = True
+    )
+    prediction_second = models.ForeignKey(
+        "Survivor", # trick the compiler into letting us reference a class not yet defined
+        on_delete = models.SET_NULL,
+        verbose_name = "Second place prediction for this season",
+        null = True, # a team can forgo a vote
+        related_name = "+", # no need for backwards relating a prediction to the team that voted it
+        blank = True
+    )
+    prediction_third = models.ForeignKey(
+        "Survivor", # trick the compiler into letting us reference a class not yet defined
+        on_delete = models.SET_NULL,
+        verbose_name = "Third place prediction for this season",
+        null = True, # a team can forgo a vote
+        related_name = "+", # no need for backwards relating a prediction to the team that voted it
+        blank = True
+    )
+
     def clean(self):
         errors = []
 
@@ -325,6 +378,13 @@ class Team(models.Model):
                     errors.append(ValidationError(_("Third vote cannot be for a player on your own team"), code="sameTeam3"))
                 if self.fan_favorite_bad is not None and self.fan_favorite_bad.team == self:
                     errors.append(ValidationError(_("Bad vote cannot be for a player on your own team"), code="sameTeam4"))
+
+            if self.prediction_first is not None and self.prediction_first == self.prediction_second:
+                errors.append(ValidationError(_("First and second prediction cannot be the same"), code="predictionMatched12"))
+            if self.prediction_first is not None and self.prediction_first == self.prediction_third:
+                errors.append(ValidationError(_("First and third prediction cannot be the same"), code="predictionMatched13"))
+            if self.prediction_second is not None and self.prediction_second == self.prediction_third:
+                errors.append(ValidationError(_("Second and third prediction cannot be the same"), code="predictionMatched23"))
 
         if len(errors) > 0:
             raise ValidationError(errors)
@@ -357,7 +417,7 @@ class Team(models.Model):
     def lost(self) -> bool:
         """If season is over, returns True if this team won, else False"""
         """Returns True if all survivors on this team have been eliminated, & this team's points total (plus fan favorite value) is lower than some other team's"""
-        if not self.season.is_season_open():
+        if self.season.is_season_closed():
             return not self.winner
         elif all(not s.status for s in self.survivor_set.all()):
             my_theoretical_points = self.points() + self.season.rubric.fan_favorite # fan favorite points are the only thing we could theoretically still earn

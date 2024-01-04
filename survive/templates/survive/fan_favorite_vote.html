@@ -5,7 +5,7 @@
 {% block navbar_ff %}<a href="{% url 'fan_favorite' %}" class="navbar_current">Fan Favorite</a>{% endblock %}
 {% block back_to_home %}{% endblock %}
 {% block content %}
-    {% if season.is_season_open %}
+    {% if not season.is_season_closed %}
         {% if season.team_set.first %}
             <form class="team_list fan_favorite_form" method="POST">
                 {% csrf_token %}
@@ -51,7 +51,7 @@
                                     </td>
                                     <td>
                                         {% if team.fan_favorite_first %}
-                                            <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_first.pic.name}}"
+                                            <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{team.fan_favorite_first.pic.name}}"
                                                 {% if team.fan_favorite_first.tribe == "red" %}
                                                 class="survivor_tribe_red"
                                                 {% elif team.fan_favorite_first.tribe == "blue" %}
@@ -63,7 +63,7 @@
                                     </td>
                                     <td>
                                         {% if team.fan_favorite_second %}
-                                            <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_second.pic.name}}"
+                                            <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{team.fan_favorite_second.pic.name}}"
                                                 {% if team.fan_favorite_second.tribe == "red" %}
                                                 class="survivor_tribe_red"
                                                 {% elif team.fan_favorite_second.tribe == "blue" %}
@@ -75,7 +75,7 @@
                                     </td>
                                     <td>
                                         {% if team.fan_favorite_third %}
-                                            <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_third.pic.name}}"
+                                            <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{team.fan_favorite_third.pic.name}}"
                                                 {% if team.fan_favorite_third.tribe == "red" %}
                                                 class="survivor_tribe_red"
                                                 {% elif team.fan_favorite_third.tribe == "blue" %}
@@ -88,7 +88,7 @@
                                     {% if season.rubric.fan_favorite_negative_votes %}
                                     <td>
                                         {% if team.fan_favorite_bad %}
-                                            <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_bad.pic.name}}"
+                                            <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{team.fan_favorite_bad.pic.name}}"
                                                 {% if team.fan_favorite_bad.tribe == "red" %}
                                                 class="survivor_tribe_red"
                                                 {% elif team.fan_favorite_bad.tribe == "blue" %}
