@@ -18,8 +18,8 @@
             <tbody>
                 {% for team in season.team_set.all %}
                     <tr {% if team.winner %}class="team_winner"{% elif team.lost %}class="team_loser"{% endif %}>
-                        <td>{{ team.name | upper }}</td>
-                        <td>{{ team.captain | upper }}</td>
+                        <td>{{ team.name }}</td>
+                        <td>{{ team.captain }}</td>
                         {% if team.survivor_set.all %}
                             <td>
                                 {% load static %}

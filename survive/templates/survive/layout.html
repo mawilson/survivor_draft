@@ -14,6 +14,7 @@
             <div class="navbar">
                 {% block navbar_home %}<a href="{% url 'home' %}" class="navbar_item">Home</a>{% endblock %}
                 {% block navbar_ff %}<a href="{% url 'fan_favorite' %}" class="navbar_item">Fan Favorite</a>{% endblock %}
+                {% block navbar_predictions %}<a href="{% url 'predictions' %}" class="navbar_item">Predictions</a>{% endblock %}
                 <div class="theme_selector_div">
                     <label>Theme:</label>
                     <select id="theme_selector" onchange="themeChange(this.value)" class="theme_selector">

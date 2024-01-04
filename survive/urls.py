@@ -13,5 +13,6 @@ urlpatterns = [
     #path("", home_list_view, name="home"),
     # path("add_team/", views.add_team, name="add_team") # deprecated
     path("survivor/<int:id>/", views.survivor, name="survivor_page"),
-    path("fan_favorite", views.fan_favorite, name="fan_favorite")
+    path("fan_favorite", views.fan_favorite, name="fan_favorite"),
+    path("predictions", views.predictions, name="predictions")
 ]
