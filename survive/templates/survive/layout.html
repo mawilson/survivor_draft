@@ -11,20 +11,31 @@
     <body class="theme_jeff">
         <script src="{% static 'survive/site.js' %}"></script>
         {% block navbar %}
-            <div class="navbar">
-                {% block navbar_home %}<a href="{% url 'home' %}" class="navbar_item">Home</a>{% endblock %}
-                {% block navbar_ff %}<a href="{% url 'fan_favorite' %}" class="navbar_item">Fan Favorite</a>{% endblock %}
-                {% block navbar_predictions %}<a href="{% url 'predictions' %}" class="navbar_item">Predictions</a>{% endblock %}
-                <div class="theme_selector_div">
-                    <label>Theme:</label>
-                    <select id="theme_selector" onchange="themeChange(this.value)" class="theme_selector">
-                        <option value="jeff">Original Jeff Theme</option>
-                        <option value="unjeff">Jeffless Void</option>
-                        <option value="jeff_grey">Jeff but Grey</option>
-                        <option value="bg_blue">Survivor Blue</option>
-                        <option value="bg_grey">Survivor Grey</option>    
-                    </select>
-                </div>
+            <table class="navbar">
+                <tr>
+                    <td class="navbar_left">
+                        {% block navbar_home %}<a href="{% url 'home' %}" class="navbar_item">Home</a>{% endblock %}
+                    </td>
+                    <td class="navbar_left">
+                        {% block navbar_ff %}<a href="{% url 'fan_favorite' %}" class="navbar_item">Fan Favorite</a>{% endblock %}
+                    </td>
+                    <td class="navbar_left">
+                        {% block navbar_predictions %}<a href="{% url 'predictions' %}" class="navbar_item">Predictions</a>{% endblock %}
+                    </td>
+                    <td class="navbar_right">
+                        <a href="{% url 'login' %}">Login</a>
+                    </td>
+                </tr>
+            </table>
+            <div class="navbar_right">
+                <label class="background_readable">Theme:</label>
+                <select id="theme_selector" onchange="themeChange(this.value)" class="theme_selector">
+                    <option value="jeff">Original Jeff Theme</option>
+                    <option value="unjeff">Jeffless Void</option>
+                    <option value="jeff_grey">Jeff but Grey</option>
+                    <option value="bg_blue">Survivor Blue</option>
+                    <option value="bg_grey">Survivor Grey</option>    
+                </select>
             </div>
         {% endblock %}
 
