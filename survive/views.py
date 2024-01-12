@@ -51,6 +51,12 @@ def survivor(request, id):
     context = {'survivor': Survivor.objects.get(pk=id)}
     return render(request, "survive/survivor.html", context)
 
+def profile(request):
+    if request.user.is_authenticated:
+        return render(request, "survive/profile.html")
+    else:
+        return home(request) # if not currently logged in, just go back to home page
+
 def fan_favorite(request):
     context, new_season_id = season_selector_request(request)
 

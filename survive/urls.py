@@ -11,6 +11,7 @@ home_list_view = views.HomeListView.as_view(
 
 urlpatterns = [
     path("", views.home, name="home"),
+    path("profile", views.profile, name="profile"),
     #path("", home_list_view, name="home"),
     # path("add_team/", views.add_team, name="add_team") # deprecated
     path("survivor/<int:id>/", views.survivor, name="survivor_page"),
@@ -19,6 +20,7 @@ urlpatterns = [
 
     # account/auth paths
     path("accounts/login/", auth_views.LoginView.as_view(template_name="survive/login.html"), name="login"),
+    path("accounts/logout/", auth_views.LogoutView.as_view(next_page="/"), name="logout"),
     #path("accounts/password_change/", auth_views.PasswordChangeView.as_view(template_name="survive/password_change.html"), name="password_change"),
     path("accounts/password_change/", auth_views.PasswordChangeView.as_view(), name="password_change"),
     path("accounts/password_reset/", auth_views.PasswordResetView.as_view(), name="password_reset"),
