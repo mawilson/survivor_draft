@@ -23,7 +23,7 @@
                         {% block navbar_predictions %}<a href="{% url 'predictions' %}" class="navbar_item">Predictions</a>{% endblock %}
                     </td>
                     <td class="navbar_right">
-                        <a href="{% url 'login' %}">Login</a>
+                        {% block navbar_login %}<a href="{% url 'login' %}" class="navbar_item">Login</a>{% endblock %}
                     </td>
                 </tr>
             </table>
