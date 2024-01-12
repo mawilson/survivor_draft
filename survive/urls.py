@@ -16,6 +16,12 @@ urlpatterns = [
     path("survivor/<int:id>/", views.survivor, name="survivor_page"),
     path("fan_favorite", views.fan_favorite, name="fan_favorite"),
     path("predictions", views.predictions, name="predictions"),
+
+    # account/auth paths
     path("accounts/login/", auth_views.LoginView.as_view(template_name="survive/login.html"), name="login"),
-    path("accounts/password_change/", auth_views.PasswordChangeView.as_view(template_name="survive/password_change.html"), name="password_change"),
+    #path("accounts/password_change/", auth_views.PasswordChangeView.as_view(template_name="survive/password_change.html"), name="password_change"),
+    path("accounts/password_change/", auth_views.PasswordChangeView.as_view(), name="password_change"),
+    path("accounts/password_reset/", auth_views.PasswordResetView.as_view(), name="password_reset"),
+    path("accounts/password_reset_confirm/", auth_views.PasswordResetConfirmView.as_view(), name="password_reset_confirm"),
+    path("accounts/password_reset_done", auth_views.PasswordResetDoneView.as_view(), name="password_reset_done"),
 ]
