@@ -3,6 +3,7 @@ import math
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 from datetime import date
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -293,6 +294,13 @@ class Team(models.Model):
     name = models.CharField(max_length = 300)
     captain = models.CharField(max_length = 300)
     winner = models.BooleanField(default=False, null=False)
+
+    user = models.ForeignKey(
+        User,
+        on_delete = models.SET_NULL, # if the user a Team belongs to goes, just set its owner back to null
+        verbose_name = "the user a team belongs to",
+        null = True
+    )
     
     fan_favorite_first = models.ForeignKey(
         "Survivor", # trick the compiler into letting us reference a class not yet defined

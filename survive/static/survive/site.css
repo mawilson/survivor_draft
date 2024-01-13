@@ -43,25 +43,15 @@
     padding: 5px;
 }
 
-.message {
-    font-weight: 600;
-    color: blue;
-}
-
-input[name=message] {
-    width: 80%;
-}
-
-.team_list {
+.table_center {
     table-layout: auto;
-    width: 50%;
     background-color: #67d4e9;
     margin-left: auto;
     margin-right: auto;
 }
 
-.team_list th,
-.team_list td {
+.table_center th,
+.table_center td {
     text-align: center;
     padding-right: 2px;
     border: 1px solid black;
@@ -172,17 +162,24 @@ input[name=message] {
     margin-right: 30px;
 }
 
-.navbar_left {
+.float_left {
     float: left;
 }
 
-.navbar_right {
+.float_right {
     float: right;
 }
 
 .body_content {
     padding: 5px;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    margin-left: auto;
+    margin-right: auto;
+    display: table;
+    text-align: center;
+    background-color: #67d4e9;
+    width: 50%;
 }
 
 .points_table {
@@ -255,17 +252,14 @@ input[name=message] {
 .fan_favorite_results {
     padding: 5px;
     text-align: center;
-    width: 50%;
     background-color: #67d4e9;
     margin-left: auto;
     margin-right: auto;
-    display: inline;
 }
 
 .fan_favorite_results p {
     background-color: #67d4e9;
     text-align: center;
-    width: 50%;
     margin-left: auto;
     margin-right: auto;
     margin-top: 0px;
@@ -277,6 +271,6 @@ input[name=message] {
     color: red;
 }
 
-.text_align_center {
-    text-align: center;
+.max_width {
+    width: 100%;
 }

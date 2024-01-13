@@ -7,7 +7,7 @@
 {% block season_selector %}{% endblock %}
 {% block content %}
     {% if request.user.is_authenticated %}
-        <table class="team_list">
+        <table class="table_center">
             <thead>
                 <tr>
                     <th>Username</th>
@@ -21,6 +21,26 @@
                 <td>{{ request.user.last_name }}</td>
             </tr>
         </table>
+        <br />
+        {% with teams=request.user.team_set.all %}
+            {% if teams %}
+                <h2>Associated Teams</h2>
+                <table class="table_center">
+                    <tr>
+                        <th>Team Name</th>
+                        <th>Captain Name</th>
+                        <th>Season</th>
+                    </tr>
+                    {% for team in teams %}
+                        <tr>
+                            <td>{{team.name}}</td>
+                            <td>{{team.captain}}</td>
+                            <td>{{team.season.name}}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endif %}
+        {% endwith %}
     {% else %}
         No profile for an inauthenticated user.
     {% endif %}

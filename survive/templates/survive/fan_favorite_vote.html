@@ -7,7 +7,7 @@
 {% block content %}
     {% if not season.is_season_closed %}
         {% if season.team_set.first %}
-            <form class="team_list fan_favorite_form" method="POST">
+            <form class="table_center fan_favorite_form" method="POST">
                 {% csrf_token %}
                 <label>My team is: </label>
                 <select name="team_id">
@@ -19,7 +19,7 @@
                 <button type="submit">Vote!</button>
             </form>
         {% else %}
-            <p class="team_list text_align_center fan_favorite_form">No teams were found in this season. Can't have a vote without a team to associate it with!</p>
+            <p class="table_center fan_favorite_form">No teams were found in this season. Can't have a vote without a team to associate it with!</p>
         {% endif %}
     {% else %}
         {% with results=season.fan_favorites_display %}
@@ -27,7 +27,7 @@
                 <div class="fan_favorite_results">
                     <p>This season closed on {{season.season_close}}. Here are the fan favorite voting results!</p>
 
-                    <table class="team_list">
+                    <table class="table_center max_width">
                         <thead>
                             <tr>
                                 <th>Team</th>
@@ -108,7 +108,7 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <p class="team_list text_align_center fan_favorite_form">No votes were cast this season. The fan favorite was {{season.fan_favorites_no_vote}}.</p>
+                <p>No votes were cast this season. The fan favorite was {{season.fan_favorites_no_vote}}.</p>
             {% endif %}
         {% endwith %}
     {% endif %}
