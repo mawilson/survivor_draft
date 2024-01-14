@@ -6,7 +6,7 @@
 {% block back_to_home %}{% endblock %}
 {% block content %}
     {% if season %}
-        <table class="table_center">
+        <table class="table_center table_bordered">
             <thead>
                 <tr>
                     <th>Team Name</th>
@@ -24,7 +24,7 @@
                             <td>
                                 {% load static %}
                                 {% get_static_prefix as STATIC_PREFIX %}
-                                <table class="survivor_list">
+                                <table class="survivor_list table_bordered">
                                     <thead>
                                         <tr>
                                             <th>Portrait</th>

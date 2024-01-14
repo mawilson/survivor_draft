@@ -7,7 +7,7 @@
 {% block content %}
     {% if not season.is_season_closed %}
         {% if season.team_set.first %}
-            <form class="table_center fan_favorite_form" method="POST">
+            <form class="table_center fan_favorite_form table_bordered" method="POST">
                 {% csrf_token %}
                 <label>My team is: </label>
                 <select name="team_id">
@@ -27,7 +27,7 @@
                 <div class="fan_favorite_results">
                     <p>This season closed on {{season.season_close}}. Here are the fan favorite voting results!</p>
 
-                    <table class="table_center max_width">
+                    <table class="table_center table_bordered max_width">
                         <thead>
                             <tr>
                                 <th>Team</th>

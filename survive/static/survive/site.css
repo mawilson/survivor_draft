@@ -50,11 +50,15 @@
     margin-right: auto;
 }
 
+.table_bordered th,
+.table_bordered td {
+    border: 1px solid black;
+}
+
 .table_center th,
 .table_center td {
     text-align: center;
     padding-right: 2px;
-    border: 1px solid black;
 }
 
 .team_winner {
@@ -98,10 +102,9 @@
 
 .survivor_card {
     background-color:#67d4e9;
-    padding: 5px 10px 5px 10px;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
+    text-align: left;
+    margin-left: 5px;
 }
 
 .survivor_card_fan_favorite {
@@ -119,6 +122,10 @@
 
 .survivor_card_text_right {
     text-align: right;
+}
+
+.survivor_card_medium {
+    margin-right: 5px;
 }
 
 .survivor_card_medium p {
