@@ -6,10 +6,10 @@
 {% block back_to_home %}{% endblock %}
 {% block content %}
     {% if not season.season_open %}
-        <p class="team_list text_align_center fan_favorite_form">This season does not have an opening date, so I can't tell if predictions are still valid.</p>
+        <p class="table_center fan_favorite_form">This season does not have an opening date, so I can't tell if predictions are still valid.</p>
     {% elif not season.is_season_open %}
         {% if season.team_set.first %}
-            <form class="team_list fan_favorite_form" method="POST">
+            <form class="table_center fan_favorite_form" method="POST">
                 {% csrf_token %}
                 <label>My team is: </label>
                 <select name="team_id">
@@ -21,7 +21,7 @@
                 <button type="submit">Vote!</button>
             </form>
         {% else %}
-            <p class="team_list text_align_center fan_favorite_form">No teams were found in this season. Can't have a prediction without a team to associate it with!</p>
+            <p class="table_center fan_favorite_form">No teams were found in this season. Can't have a prediction without a team to associate it with!</p>
         {% endif %}
     {% else %}
         {% with results=season.predictions_display %}
@@ -29,7 +29,7 @@
                 <div class="fan_favorite_results">
                     <p>This season opened on {{season.season_open}}. Here are the predictions!</p>
 
-                    <table class="team_list">
+                    <table class="table_center table_bordered max_width">
                         <thead>
                             <tr>
                                 <th>Team</th>
@@ -93,7 +93,7 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <p class="team_list text_align_center fan_favorite_form">No predictions were made this season.</p>
+                <p>No predictions were made this season.</p>
             {% endif %}
         {% endwith %}
     {% endif %}

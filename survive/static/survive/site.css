@@ -43,28 +43,22 @@
     padding: 5px;
 }
 
-.message {
-    font-weight: 600;
-    color: blue;
-}
-
-input[name=message] {
-    width: 80%;
-}
-
-.team_list {
+.table_center {
     table-layout: auto;
-    width: 50%;
     background-color: #67d4e9;
     margin-left: auto;
     margin-right: auto;
 }
 
-.team_list th,
-.team_list td {
+.table_bordered th,
+.table_bordered td {
+    border: 1px solid black;
+}
+
+.table_center th,
+.table_center td {
     text-align: center;
     padding-right: 2px;
-    border: 1px solid black;
 }
 
 .team_winner {
@@ -108,10 +102,9 @@ input[name=message] {
 
 .survivor_card {
     background-color:#67d4e9;
-    padding: 5px 10px 5px 10px;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
+    text-align: left;
+    margin-left: 5px;
 }
 
 .survivor_card_fan_favorite {
@@ -129,6 +122,10 @@ input[name=message] {
 
 .survivor_card_text_right {
     text-align: right;
+}
+
+.survivor_card_medium {
+    margin-right: 5px;
 }
 
 .survivor_card_medium p {
@@ -151,6 +148,7 @@ input[name=message] {
     font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     color: white;
     padding: 8px 5px 8px 5px;
+    width: 100%;
 }
 
 .navbar a {
@@ -171,13 +169,24 @@ input[name=message] {
     margin-right: 30px;
 }
 
-.navbar_right {
+.float_left {
+    float: left;
+}
+
+.float_right {
     float: right;
 }
 
 .body_content {
     padding: 5px;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    margin-left: auto;
+    margin-right: auto;
+    display: table;
+    text-align: center;
+    background-color: #67d4e9;
+    width: 50%;
 }
 
 .points_table {
@@ -250,17 +259,14 @@ input[name=message] {
 .fan_favorite_results {
     padding: 5px;
     text-align: center;
-    width: 50%;
     background-color: #67d4e9;
     margin-left: auto;
     margin-right: auto;
-    display: inline;
 }
 
 .fan_favorite_results p {
     background-color: #67d4e9;
     text-align: center;
-    width: 50%;
     margin-left: auto;
     margin-right: auto;
     margin-top: 0px;
@@ -272,6 +278,6 @@ input[name=message] {
     color: red;
 }
 
-.text_align_center {
-    text-align: center;
+.max_width {
+    width: 100%;
 }

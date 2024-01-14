@@ -1,0 +1,41 @@
+{% extends "survive/layout.html" %}
+{% block title %}
+    Login Page
+{% endblock %}
+{% block navbar_login %}<a href="{% url 'login' %}" class="navbar_current">Login</a>{% endblock %}
+{% block back_to_home %}{% endblock %}
+{% block season_selector %}{% endblock %}
+{% block content %}
+    {% if form.errors %}
+        <p class="background_readable">Your username and password didn't match. Please try again.</p>
+    {% endif %}
+
+    {% if next %}
+        {% if user.is_authenticated %}
+        <p class="background_readable">Your account doesn't have access to this page. To proceed,
+        please login with an account that has access.</p>
+        {% else %}
+        <p class="background_readable">Please login to see this page.</p>
+        {% endif %}
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <table class="table_center">
+            <tr>
+                <td class="background_readable">{{ form.username.label_tag }}</td>
+                <td>{{ form.username }}</td>
+            </tr>
+            <tr>
+                <td class="background_readable">{{ form.password.label_tag }}</td>
+                <td>{{ form.password }}</td>
+            </tr>
+        </table>
+
+        <input type="submit" value="login">
+        <input type="hidden" name="next" value="{{ next }}">
+    </form>
+
+    <p class="background_readable"><a href="{% url 'password_change' %}">Lost password?</a></p>
+
+{% endblock %}

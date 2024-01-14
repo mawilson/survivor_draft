@@ -11,43 +11,65 @@
     <body class="theme_jeff">
         <script src="{% static 'survive/site.js' %}"></script>
         {% block navbar %}
-            <div class="navbar">
-                {% block navbar_home %}<a href="{% url 'home' %}" class="navbar_item">Home</a>{% endblock %}
-                {% block navbar_ff %}<a href="{% url 'fan_favorite' %}" class="navbar_item">Fan Favorite</a>{% endblock %}
-                {% block navbar_predictions %}<a href="{% url 'predictions' %}" class="navbar_item">Predictions</a>{% endblock %}
-                <div class="theme_selector_div">
-                    <label>Theme:</label>
-                    <select id="theme_selector" onchange="themeChange(this.value)" class="theme_selector">
-                        <option value="jeff">Original Jeff Theme</option>
-                        <option value="unjeff">Jeffless Void</option>
-                        <option value="jeff_grey">Jeff but Grey</option>
-                        <option value="bg_blue">Survivor Blue</option>
-                        <option value="bg_grey">Survivor Grey</option>    
-                    </select>
-                </div>
+            <table class="navbar">
+                <tr>
+                    <td class="float_left">
+                        {% block navbar_home %}<a href="{% url 'home' %}" class="navbar_item">Home</a>{% endblock %}
+                    </td>
+                    <td class="float_left">
+                        {% block navbar_ff %}<a href="{% url 'fan_favorite' %}" class="navbar_item">Fan Favorite</a>{% endblock %}
+                    </td>
+                    <td class="float_left">
+                        {% block navbar_predictions %}<a href="{% url 'predictions' %}" class="navbar_item">Predictions</a>{% endblock %}
+                    </td>
+                    <td class="float_right">
+                        {% block navbar_login %}
+                            {% if request.user.is_authenticated %}
+                                <a href="{% url 'logout' %}" class="navbar_item">Logout</a>
+                            {% else %}
+                                <a href="{% url 'login' %}" class="navbar_item">Login</a>
+                            {% endif %}
+                        {% endblock %}
+                    </td>
+                    {% if request.user.is_authenticated %}
+                        <td class="float_right">
+                            {% block navbar_profile %}<a href="{% url 'profile' %}" class="navbar_item">Profile</a>{% endblock %}
+                        </td>
+                    {% endif %}
+                </tr>
+            </table>
+            <div class="float_right">
+                <label class="background_readable">Theme:</label>
+                <select id="theme_selector" onchange="themeChange(this.value)" class="theme_selector">
+                    <option value="jeff">Original Jeff Theme</option>
+                    <option value="unjeff">Jeffless Void</option>
+                    <option value="jeff_grey">Jeff but Grey</option>
+                    <option value="bg_blue">Survivor Blue</option>
+                    <option value="bg_grey">Survivor Grey</option>    
+                </select>
             </div>
         {% endblock %}
-
+        {% block back_to_home %}
+            <button class="background_readable">
+                <a href="{% url 'home' %}">Back</a>
+            </button>
+            <br />
+        {% endblock %}
+        {% block season_selector %}
+            <form class="float_left">
+                <label class="background_readable">Season:</label>
+                <select class="theme_selector" name="season_id" onchange="this.form.submit()">
+                    {% for s in seasons %}
+                        <option value="{{ s.id }}" {% if season.id is s.id %}selected{% endif %}>{{s.name}}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        {% endblock %}
         <div class="body_content survivor_cursor">
-            {% block back_to_home %}
-                <button class="background_readable">
-                    <a href="{% url 'home' %}">Back</a>
-                </button>
-                <br />
-            {% endblock %}
-            {% block season_selector %}
-                <form>
-                    <label class="background_readable">Season:</label>
-                    <select class="theme_selector" name="season_id" onchange="this.form.submit()">
-                        {% for s in seasons %}
-                            <option value="{{ s.id }}" {% if season.id is s.id %}selected{% endif %}>{{s.name}}</option>
-                        {% endfor %}
-                    </select>
-                </form>
-            {% endblock %}
             {% block content %}{% endblock %}
+            <hr class="max_width"/>
             <footer>
-                <p class="background_readable">Mt Wlsn 2023</p>
+                <p>Mt Wlsn 2023</p>
             </footer>
         </div>
     </body>
