@@ -31,11 +31,9 @@
                             {% endif %}
                         {% endblock %}
                     </td>
-                    {% if request.user.is_authenticated %}
-                        <td class="float_right">
-                            {% block navbar_profile %}<a href="{% url 'profile' %}" class="navbar_item">Profile</a>{% endblock %}
-                        </td>
-                    {% endif %}
+                    <td class="float_right">
+                        {% block navbar_profile %}<a href="{% url 'profile' %}" class="navbar_item">Profile</a>{% endblock %}
+                    </td>
                 </tr>
             </table>
             <div class="float_right background_readable">
