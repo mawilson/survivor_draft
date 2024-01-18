@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from survive.forms import FanFavoriteForm, PredictionForm
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate, login
 from survive.models import Team, Survivor, Season
 from django.views.generic import ListView
 from django.shortcuts import get_object_or_404
@@ -55,7 +57,7 @@ def profile(request):
     if request.user.is_authenticated:
         return render(request, "survive/profile.html")
     else:
-        return home(request) # if not currently logged in, just go back to home page
+        return redirect("/") # if not currently logged in, just go back to home page
 
 def fan_favorite(request):
     context, new_season_id = season_selector_request(request)
@@ -68,9 +70,9 @@ def fan_favorite(request):
         selected_team = get_object_or_404(Team, pk = request.POST.get("team_id"))
         form = FanFavoriteForm(context["form"].data, instance = selected_team) # can't change the existing form's instance, but can make a new one with identical data
         if form.is_valid():
-            form.save(commit=True)
-            selected_team.season.fan_favorites(save=True) # will evaluate all votes & assign Survivors accordingly
-            return redirect("./") # after submitting, redirect to home page to refresh
+            form.save(commit = True)
+            selected_team.season.fan_favorites(save = True) # will evaluate all votes & assign Survivors accordingly
+            return redirect("/") # after submitting, redirect to home page to refresh
         else:
             new_context = {
                 "form": form,
@@ -95,8 +97,8 @@ def predictions(request):
         selected_team = get_object_or_404(Team, pk = request.POST.get("team_id"))
         form = PredictionForm(context["form"].data, instance = selected_team) # can't change the existing form's instance, but can make a new one with identical data
         if form.is_valid():
-            form.save(commit=True)
-            return redirect("./") # after submitting, redirect to home page to refresh
+            form.save(commit = True)
+            return redirect("/") # after submitting, redirect to home page to refresh
         else:
             new_context = {
                 "form": form,
@@ -109,3 +111,21 @@ def predictions(request):
         response = render(request, "survive/predictions.html", context)
         season_selector_response(response, new_season_id)
         return response
+    
+def register(request):
+    form = UserCreationForm(request.POST or None)
+    context = {"form": form }
+    
+    if request.user.is_authenticated:
+        return redirect("/") # if already logged in, navigate to profile page instead
+    elif request.method == "POST":  
+        if form.is_valid():
+            # should log them in, then take them to profile
+            new_user = form.save(commit = True)
+            new_user = authenticate(username = form.cleaned_data["username"], password = form.cleaned_data["password1"])
+            login(request, new_user)
+            return render(request, "survive/profile.html")
+        else:
+            return render(request, "survive/register.html", context)
+    else:
+        return render(request, "survive/register.html", context)

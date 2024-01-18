@@ -5,6 +5,7 @@
 {% block navbar_predictions %}<a href="{% url 'predictions' %}" class="navbar_current">Predictions</a>{% endblock %}
 {% block back_to_home %}{% endblock %}
 {% block content %}
+    <h1>Predictions</h1>
     {% if not season.season_open %}
         <p class="table_center fan_favorite_form">This season does not have an opening date, so I can't tell if predictions are still valid.</p>
     {% elif not season.is_season_open %}

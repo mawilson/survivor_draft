@@ -5,6 +5,7 @@
 {% block navbar_ff %}<a href="{% url 'fan_favorite' %}" class="navbar_current">Fan Favorite</a>{% endblock %}
 {% block back_to_home %}{% endblock %}
 {% block content %}
+    <h1>Fan Favorites</h1>
     {% if not season.is_season_closed %}
         {% if season.team_set.first %}
             <form class="table_center fan_favorite_form table_bordered" method="POST">

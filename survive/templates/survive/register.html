@@ -1,0 +1,15 @@
+{% extends "survive/layout.html" %}
+{% block title %}
+    Register Page
+{% endblock %}
+{% block navbar_login %}<a href="{% url 'login' %}" class="navbar_current">Login</a>{% endblock %}
+{% block back_to_home %}{% endblock %}
+{% block season_selector %}{% endblock %}
+{% block content %}
+    <h1>Register</h1>
+    <form class="text_align_left fan_favorite_form" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Register</button>
+    </form>
+{% endblock %}
