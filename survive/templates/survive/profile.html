@@ -1,11 +1,12 @@
 {% extends "survive/layout.html" %}
 {% block title %}
-    Survivor Overview
+    Profile
 {% endblock %}
 {% block navbar_profile %}<a href="{% url 'profile' %}" class="navbar_current">Profile</a>{% endblock %}
 {% block back_to_home %}{% endblock %}
 {% block season_selector %}{% endblock %}
 {% block content %}
+    <h1>Profile</h1>
     {% if request.user.is_authenticated %}
         <table class="table_center">
             <thead>
