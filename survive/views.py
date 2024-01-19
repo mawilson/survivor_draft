@@ -63,9 +63,16 @@ def profile(request):
 def fan_favorite(request):
     context, new_season_id = season_selector_request(request)
 
-    team = context["season"].team_set.first()
+    if (request.user.is_authenticated): # if logged in, allow user to choose from teams that the User is associated with in that season
+        teams = context["season"].team_set.filter(user_id=request.user.id)
+        team = teams.first()
+    else: # if not logged in, allow user the choose from the teams that do not have Users associated with them
+        teams = context["season"].team_set.filter(user_id=None)
+        team = teams.first()
+
     initial_data = {"fan_favorite_first": None, "fan_favorite_second": None, "fan_favorite_third": None, "fan_favorite_bad": None}
     context["form"] = FanFavoriteForm(request.POST or None, instance = team, initial = initial_data)
+    context["teams"] = teams
 
     if request.method == "POST":     
         selected_team = get_object_or_404(Team, pk = request.POST.get("team_id"))
@@ -75,13 +82,14 @@ def fan_favorite(request):
             selected_team.season.fan_favorites(save = True) # will evaluate all votes & assign Survivors accordingly
             return redirect("/") # after submitting, redirect to home page to refresh
         else:
-            new_context = {
+            context.update({
                 "form": form,
                 "selected_team": selected_team.id,
                 "season": context["season"],
-                "seasons": context["seasons"]
-            }
-            return render(request, "survive/fan_favorite_vote.html", new_context)
+                "seasons": context["seasons"],
+                "teams": teams
+            })
+            return render(request, "survive/fan_favorite_vote.html", context)
     else:
         response = render(request, "survive/fan_favorite_vote.html", context)
         season_selector_response(response, new_season_id)
@@ -89,10 +97,17 @@ def fan_favorite(request):
     
 def predictions(request):
     context, new_season_id = season_selector_request(request)
+
+    if (request.user.is_authenticated): # if logged in, allow user to choose from teams that the User is associated with in that season
+        teams = context["season"].team_set.filter(user_id=request.user.id)
+        team = teams.first()
+    else: # if not logged in, allow user the choose from the teams that do not have Users associated with them
+        teams = context["season"].team_set.filter(user_id=None)
+        team = teams.first()
     
-    team = context["season"].team_set.first()
     initial_data = {"prediction_first": None, "prediction_second": None, "prediction_third": None}
     context["form"] = PredictionForm(request.POST or None, instance = team, initial = initial_data)
+    context["teams"] = teams
 
     if request.method == "POST":     
         selected_team = get_object_or_404(Team, pk = request.POST.get("team_id"))
@@ -101,13 +116,14 @@ def predictions(request):
             form.save(commit = True)
             return redirect("/") # after submitting, redirect to home page to refresh
         else:
-            new_context = {
+            context.update({
                 "form": form,
                 "selected_team": selected_team.id,
                 "season": context["season"],
-                "seasons": context["seasons"]
-            }
-            return render(request, "survive/predictions.html", new_context)
+                "seasons": context["seasons"],
+                "teams": teams
+            })
+            return render(request, "survive/predictions.html", context)
     else:
         response = render(request, "survive/predictions.html", context)
         season_selector_response(response, new_season_id)
