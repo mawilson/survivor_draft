@@ -1,5 +1,6 @@
 from django import forms
 from survive.models import Team, Season, Survivor
+from django.contrib.auth.forms import UserCreationForm, password_validation
 
 class TeamForm(forms.ModelForm):
     class Meta:
@@ -37,3 +38,10 @@ class SeasonForm(forms.ModelForm):
     class Meta:
         model = Season
         fields = ("name",)
+
+class RegisterUserForm(UserCreationForm):
+    def __init__(self, *args, **kwargs):
+        super(RegisterUserForm, self).__init__(*args, **kwargs)
+
+        self.fields["username"].help_text = "Username must be 150 characters or fewer. Letters, digits and @/./+/-/_ only."
+        self.fields["password1"].help_text = password_validation.password_validators_help_texts # had to dig this out to stop wrapping the items in <ul><li> tags

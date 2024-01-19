@@ -4,6 +4,7 @@ from survive.forms import FanFavoriteForm, PredictionForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
 from survive.models import Team, Survivor, Season
+from survive.forms import RegisterUserForm
 from django.views.generic import ListView
 from django.shortcuts import get_object_or_404
 
@@ -113,7 +114,7 @@ def predictions(request):
         return response
     
 def register(request):
-    form = UserCreationForm(request.POST or None)
+    form = RegisterUserForm(request.POST or None)
     context = {"form": form }
     
     if request.user.is_authenticated:
