@@ -8,7 +8,7 @@
 {% block content %}
     <h1>Profile</h1>
     {% if request.user.is_authenticated %}
-        <table class="table_center">
+        <table class="table_center table_bordered">
             <thead>
                 <tr>
                     <th>Username</th>
@@ -26,7 +26,7 @@
         {% with teams=request.user.team_set.all %}
             {% if teams %}
                 <h2>Associated Teams</h2>
-                <table class="table_center">
+                <table class="table_center table_bordered">
                     <tr>
                         <th>Team Name</th>
                         <th>Captain Name</th>
@@ -42,6 +42,9 @@
                 </table>
             {% endif %}
         {% endwith %}
+
+        <br /><br />
+        <a href="{% url 'password_change' %}">Change Password</a>
     {% else %}
         No profile for an inauthenticated user.
     {% endif %}
