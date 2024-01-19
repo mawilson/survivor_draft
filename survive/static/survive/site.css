@@ -285,3 +285,7 @@
 .text_align_left {
     text-align: left;
 }
+
+.list_style_position_inside {
+    list-style-position: inside;
+}
