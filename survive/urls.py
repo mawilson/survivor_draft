@@ -12,7 +12,8 @@ urlpatterns = [
     # account/auth paths
     path("accounts/login/", auth_views.LoginView.as_view(template_name="survive/login.html", redirect_authenticated_user=True), name="login"),
     path("accounts/logout/", auth_views.LogoutView.as_view(next_page="/"), name="logout"),
-    path("accounts/password_change/", auth_views.PasswordChangeView.as_view(), name="password_change"),
+    path("accounts/password_change/", auth_views.PasswordChangeView.as_view(template_name="survive/password_change.html"), name="password_change"),
+    path("accounts/password_change_done/", auth_views.PasswordChangeDoneView.as_view(template_name="survive/password_change_done.html"), name="password_change_done"),
     path("accounts/password_reset/", auth_views.PasswordResetView.as_view(), name="password_reset"),
     path("accounts/password_reset_confirm/", auth_views.PasswordResetConfirmView.as_view(), name="password_reset_confirm"),
     path("accounts/password_reset_done/", auth_views.PasswordResetDoneView.as_view(), name="password_reset_done"),
