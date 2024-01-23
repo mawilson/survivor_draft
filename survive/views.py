@@ -66,7 +66,13 @@ def survivor(request, id):
 
 def profile(request):
     if request.user.is_authenticated:
-        return render(request, "survive/profile.html")
+        if request.method == "POST":
+            team = get_object_or_404(Team, pk = request.POST.get("team_id"))
+            team.user = None
+            team.save()
+            return redirect("./") # after submitting, redirect to profile page to refresh
+        else:
+            return render(request, "survive/profile.html")
     else:
         return redirect("login") # if not currently logged in, go to the login page
 

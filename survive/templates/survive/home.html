@@ -25,7 +25,7 @@
                                 <form method="POST" class="margin_top">
                                     {% csrf_token %}
                                     <button type="submit">Claim this team</button>
-                                    <input type="hidden" name="team_id" value="{{ team.id }}">
+                                    <input type="hidden" name="team_id" value="{{ team.id }}" />
                                 </form>
                             {% endif %}
                         </td>

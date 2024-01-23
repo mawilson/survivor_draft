@@ -32,12 +32,20 @@
                         <th>Team Name</th>
                         <th>Captain Name</th>
                         <th>Season</th>
+                        <th>Release Team</th>
                     </tr>
                     {% for team in teams %}
                         <tr>
                             <td>{{team.name}}</td>
                             <td>{{team.captain}}</td>
                             <td>{{team.season.name}}</td>
+                            <td>
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit">Release</button>
+                                    <input type="hidden" name="team_id" value="{{ team.id }}" />
+                                </form>
+                            </td>
                         </tr>
                     {% endfor %}
                 </table>
