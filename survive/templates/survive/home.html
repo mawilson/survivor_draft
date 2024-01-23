@@ -19,7 +19,16 @@
             <tbody>
                 {% for team in season.team_set.all %}
                     <tr {% if team.winner %}class="team_winner"{% elif team.lost %}class="team_loser"{% endif %}>
-                        <td>{{ team.name }}</td>
+                        <td>
+                            {{ team.name }}
+                            {% if not team.user and team_associable %}
+                                <form method="POST" class="margin_top">
+                                    {% csrf_token %}
+                                    <button type="submit">Claim this team</button>
+                                    <input type="hidden" name="team_id" value="{{ team.id }}">
+                                </form>
+                            {% endif %}
+                        </td>
                         <td>{{ team.captain }}</td>
                         {% if team.survivor_set.all %}
                             <td>

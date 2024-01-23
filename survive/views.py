@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from survive.forms import FanFavoriteForm, PredictionForm
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
 from survive.models import Team, Survivor, Season
 from survive.forms import RegisterUserForm
@@ -45,6 +44,17 @@ def season_selector_response(response, new_season_id):
 
 def home(request):
     context, new_season_id = season_selector_request(request)
+
+    if (request.user.is_authenticated):
+        context["team_associable"] = len(request.user.team_set.filter(season_id = context["season"].id)) == 0
+    else:
+        context["team_associable"] = False
+
+    if request.method == "POST": # associating a team with the user
+        team = get_object_or_404(Team, pk = request.POST.get("team_id"))
+        team.user = request.user
+        team.save()
+        return redirect("/") # after submitting, redirect to home page to refresh
 
     response = render(request, "survive/home.html", context)
     season_selector_response(response, new_season_id)

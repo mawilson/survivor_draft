@@ -2,8 +2,9 @@
 {% block title %}
     Profile
 {% endblock %}
-{% block navbar_profile %}<a href="{% url 'profile' %}" class="navbar_current">Profile</a>{% endblock %}
-{% block back_to_home %}{% endblock %}
+{% block navbar_profile %}<a href="{% url 'profile' %}" class="navbar_current">
+    {% if request.user.is_authenticated %}{{ user.username }}{% else %}Profile{% endif %}
+</a>{% endblock %}{% block back_to_home %}{% endblock %}
 {% block season_selector %}{% endblock %}
 {% block content %}
     <h1>Profile</h1>
