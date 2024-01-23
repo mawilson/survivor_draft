@@ -69,6 +69,10 @@
     background-color: grey;
 }
 
+.team_self td {
+    border: 3px solid black;
+}
+
 .survivor_list {
     table-layout: fixed;
     width: 100%;
