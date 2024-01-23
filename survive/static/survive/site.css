@@ -69,6 +69,10 @@
     background-color: grey;
 }
 
+.team_self td {
+    border: 3px solid black;
+}
+
 .survivor_list {
     table-layout: fixed;
     width: 100%;
@@ -284,4 +288,8 @@
 
 .list_style_position_inside {
     list-style-position: inside;
+}
+
+.margin_top {
+    margin-top: 10px;
 }

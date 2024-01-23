@@ -9,12 +9,12 @@
     {% if not season.season_open %}
         <p class="table_center fan_favorite_form">This season does not have an opening date, so I can't tell if predictions are still valid.</p>
     {% elif not season.is_season_open %}
-        {% if season.team_set.first %}
+        {% if teams %}
             <form class="table_center fan_favorite_form" method="POST">
                 {% csrf_token %}
                 <label>My team is: </label>
                 <select name="team_id">
-                    {% for team in season.team_set.all %}
+                    {% for team in teams %}
                         <option value="{{ team.id }}" {% if selected_team is team.id %}selected{% endif %}>{{team.name}} (Team Captain {{team.captain}})</option>
                     {% endfor %}
                 </select>
@@ -22,7 +22,13 @@
                 <button type="submit">Vote!</button>
             </form>
         {% else %}
-            <p class="table_center fan_favorite_form">No teams were found in this season. Can't have a prediction without a team to associate it with!</p>
+            {% if not season.team_set.all %}
+                <p class="table_center fan_favorite_form">No teams were found in this season. Can't have a prediction without a team to associate it with!</p>
+            {% elif request.user.is_authenticated %}
+                <p class="table_center fan_favorite_form">No teams associated with your user were found in this season. Try claiming a team from this season first!</p>
+            {% else %}
+                <p class="table_center fan_favorite_form">No unclaimed teams were found in this season. Logged out users can only vote for teams not claimed by a user.</p>
+            {% endif %}
         {% endif %}
     {% else %}
         {% with results=season.predictions_display %}

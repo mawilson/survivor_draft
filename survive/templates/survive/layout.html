@@ -32,7 +32,9 @@
                         {% endblock %}
                     </td>
                     <td class="float_right">
-                        {% block navbar_profile %}<a href="{% url 'profile' %}" class="navbar_item">Profile</a>{% endblock %}
+                        {% block navbar_profile %}<a href="{% url 'profile' %}" class="navbar_item">
+                            {% if request.user.is_authenticated %}{{ user.username }}{% else %}Profile{% endif %}
+                        </a>{% endblock %}
                     </td>
                 </tr>
             </table>

@@ -2,8 +2,9 @@
 {% block title %}
     Profile
 {% endblock %}
-{% block navbar_profile %}<a href="{% url 'profile' %}" class="navbar_current">Profile</a>{% endblock %}
-{% block back_to_home %}{% endblock %}
+{% block navbar_profile %}<a href="{% url 'profile' %}" class="navbar_current">
+    {% if request.user.is_authenticated %}{{ user.username }}{% else %}Profile{% endif %}
+</a>{% endblock %}{% block back_to_home %}{% endblock %}
 {% block season_selector %}{% endblock %}
 {% block content %}
     <h1>Profile</h1>
@@ -31,12 +32,20 @@
                         <th>Team Name</th>
                         <th>Captain Name</th>
                         <th>Season</th>
+                        <th>Release Team</th>
                     </tr>
                     {% for team in teams %}
                         <tr>
                             <td>{{team.name}}</td>
                             <td>{{team.captain}}</td>
                             <td>{{team.season.name}}</td>
+                            <td>
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit">Release</button>
+                                    <input type="hidden" name="team_id" value="{{ team.id }}" />
+                                </form>
+                            </td>
                         </tr>
                     {% endfor %}
                 </table>
