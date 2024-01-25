@@ -283,6 +283,10 @@ class Season(models.Model):
     def is_season_open(self):
         """Returns True if today's date is on or after the season opening date (or the opening date is null), else False."""
         return self.season_open is None or (date.today() >= self.season_open)
+    
+    def is_season_active(self):
+        """Returns True if the season is currently running (past its opening date, before its closing date)"""
+        return self.is_season_open() and not self.is_season_closed()
 
 class Team(models.Model):
     season = models.ForeignKey(
@@ -291,8 +295,16 @@ class Team(models.Model):
         verbose_name = "the season a team belongs to",
         null = True
     )
-    name = models.CharField(max_length = 300)
-    captain = models.CharField(max_length = 300)
+    name = models.CharField(
+        max_length = 300,
+        verbose_name = "Team name",
+        blank = False
+    )
+    captain = models.CharField(
+        max_length = 300,
+        verbose_name = "Captain name",
+        blank = True # if unprovided, will default to User Name, followed by User Username
+    )
     winner = models.BooleanField(default=False, null=False)
 
     user = models.ForeignKey(

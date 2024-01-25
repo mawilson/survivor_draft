@@ -7,6 +7,19 @@
 {% block content %}
     <h1>Season Overview</h1>
     {% if season %}
+
+        {% if team_associable and season.is_season_active %}
+            <fieldset>
+                <legend class="auto_horizontal_margins">Create new team</legend>
+                <p>You are not associated with a team this season. Would you like to create a new one?</p>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ team_form.as_p }}
+                    <button type="submit">Add new team</button>
+                </form>
+            </fieldset>
+        {% endif %}
+
         <table class="table_center table_bordered">
             <thead>
                 <tr>

@@ -3,7 +3,7 @@ from django.shortcuts import redirect
 from survive.forms import FanFavoriteForm, PredictionForm
 from django.contrib.auth import authenticate, login
 from survive.models import Team, Survivor, Season
-from survive.forms import RegisterUserForm
+from survive.forms import RegisterUserForm, TeamCreationForm
 from django.views.generic import ListView
 from django.shortcuts import get_object_or_404
 
@@ -44,17 +44,33 @@ def season_selector_response(response, new_season_id):
 
 def home(request):
     context, new_season_id = season_selector_request(request)
+    team_creation_form = TeamCreationForm(request.POST or None, instance = Team(season = context["season"]))
 
     if (request.user.is_authenticated):
         context["team_associable"] = len(request.user.team_set.filter(season_id = context["season"].id)) == 0
+        context["team_form"] = team_creation_form
     else:
         context["team_associable"] = False
 
-    if request.method == "POST": # associating a team with the user
-        team = get_object_or_404(Team, pk = request.POST.get("team_id"))
-        team.user = request.user
-        team.save()
-        return redirect("/") # after submitting, redirect to home page to refresh
+    if request.method == "POST":
+        team_id = request.POST.get("team_id") # used to distinguish between team creation & team association POSTs
+        if team_id is None: # if POST did not include a team_id variable, it is a POST to create a team
+            if team_creation_form.is_valid():
+                team_creation_form.instance.user = request.user
+                if not team_creation_form.instance.captain: # if Captain was unprovided, fill one in
+                    if not request.user.first_name:
+                        team_creation_form.instance.captain = request.user.username
+                    else:
+                        team_creation_form.instance.captain = request.user.first_name
+                team_creation_form.save()
+                return redirect("/") # after submitting, redirect to home page to refresh
+            else:
+                return render(request, "survive/home.html", context)
+        else: # if POST did include a team_id variable, it is a POST to associate a team with the user
+            team = get_object_or_404(Team, pk = request.POST.get("team_id"))
+            team.user = request.user
+            team.save()
+            return redirect("/") # after submitting, redirect to home page to refresh
 
     response = render(request, "survive/home.html", context)
     season_selector_response(response, new_season_id)

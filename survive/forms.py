@@ -45,3 +45,8 @@ class RegisterUserForm(UserCreationForm):
 
         self.fields["username"].help_text = "Username must be 150 characters or fewer. Letters, digits and @/./+/-/_ only."
         self.fields["password1"].help_text = password_validation.password_validators_help_texts # had to dig this out to stop wrapping the items in <ul><li> tags
+
+class TeamCreationForm(forms.ModelForm):
+    class Meta:
+        model = Team
+        fields = ("name", "captain")
