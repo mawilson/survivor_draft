@@ -59,6 +59,7 @@ class Season(models.Model):
     )
     season_close = models.DateField(null = True) # used to close the fan favorite & 'finalize' a season
     season_open = models.DateField(null = True) # used to close the predictions
+    survivor_drafting = models.BooleanField(default = False, null = False) # used to allow drafting of survivors
 
     def most_idols(self):
         """Returns the list of Survivors with the most idols in this season"""
