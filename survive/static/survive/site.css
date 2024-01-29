@@ -293,3 +293,7 @@
 .margin_top {
     margin-top: 10px;
 }
+
+.auto_horizontal_margins {
+    margin: 0 auto;
+}

@@ -3,7 +3,7 @@ from django.shortcuts import redirect
 from survive.forms import FanFavoriteForm, PredictionForm
 from django.contrib.auth import authenticate, login
 from survive.models import Team, Survivor, Season
-from survive.forms import RegisterUserForm
+from survive.forms import RegisterUserForm, TeamCreationForm
 from django.views.generic import ListView
 from django.shortcuts import get_object_or_404
 
@@ -44,17 +44,53 @@ def season_selector_response(response, new_season_id):
 
 def home(request):
     context, new_season_id = season_selector_request(request)
+    team_creation_form = TeamCreationForm(request.POST or None, instance = Team(season = context["season"]))
 
     if (request.user.is_authenticated):
         context["team_associable"] = len(request.user.team_set.filter(season_id = context["season"].id)) == 0
+        context["team_form"] = team_creation_form
     else:
         context["team_associable"] = False
 
-    if request.method == "POST": # associating a team with the user
-        team = get_object_or_404(Team, pk = request.POST.get("team_id"))
-        team.user = request.user
-        team.save()
-        return redirect("/") # after submitting, redirect to home page to refresh
+    context["undrafted_survivors"] = context["season"].survivor_set.filter(team_id=None)
+
+    if request.method == "POST": # there are a variety of types of POSTs that can come in to this view
+        # use named hidden inputs submitted with the form to distinguish between them
+        # the team_id variable is used to associate a user with a team, & also to select a team to draft a survivor to
+        # survivor_id_draft is used to associate a survivor with a team, and survivor_id_undraft is used to disassociate a survivor with a team
+        # if all of these are None, we are creating a team
+        team_id = request.POST.get("team_id")
+        survivor_id_draft = request.POST.get("survivor_id_draft")
+        survivor_id_undraft = request.POST.get("survivor_id_undraft")
+        if team_id is not None: # survivor drafting, undrafting, & team association all require the team_id field present
+            if survivor_id_draft is not None:
+                team = get_object_or_404(Team, pk = team_id)
+                survivor = get_object_or_404(Survivor, pk = survivor_id_draft)
+                survivor.team = team
+                survivor.save()
+                return redirect("/")
+            elif survivor_id_undraft is not None:
+                survivor = get_object_or_404(Survivor, pk = survivor_id_undraft)
+                survivor.team = None
+                survivor.save()
+                return redirect("/")
+            else:
+                team = get_object_or_404(Team, pk = request.POST.get("team_id"))
+                team.user = request.user
+                team.save()
+                return redirect("/")
+        else: # team_id is None: # if POST did not include a team_id, it is a POST to create a team
+            if team_creation_form.is_valid():
+                team_creation_form.instance.user = request.user
+                if not team_creation_form.instance.captain: # if Captain was unprovided, fill one in
+                    if not request.user.first_name:
+                        team_creation_form.instance.captain = request.user.username
+                    else:
+                        team_creation_form.instance.captain = request.user.first_name
+                team_creation_form.save()
+                return redirect("/") # after submitting, redirect to home page to refresh
+            else:
+                return render(request, "survive/home.html", context)
 
     response = render(request, "survive/home.html", context)
     season_selector_response(response, new_season_id)
