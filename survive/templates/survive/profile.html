@@ -26,7 +26,10 @@
                 </thead> 
                     <tr>
                         {% if edit %}
-                            <td>{{ request.user.username }}</td>
+                                <td>
+                                    {{ form.username }}
+                                    {{ form.username.errors }}
+                                </td>
                                 <td>{{ form.first_name }}</td>
                                 <td>{{ form.last_name }}</td>
                                 <td>
