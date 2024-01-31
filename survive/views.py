@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
-from survive.forms import FanFavoriteForm, PredictionForm
+from survive.forms import FanFavoriteForm, PredictionForm, UserProfileForm
 from django.contrib.auth import authenticate, login
 from survive.models import Team, Survivor, Season
 from survive.forms import RegisterUserForm, TeamCreationForm
@@ -101,14 +101,30 @@ def survivor(request, id):
     return render(request, "survive/survivor.html", context)
 
 def profile(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated: # process a POST to disassociate the profile from a team
+        user_profile_form = UserProfileForm(request.POST or None, instance = request.user)
+        context = {"form": user_profile_form}
+        
         if request.method == "POST":
-            team = get_object_or_404(Team, pk = request.POST.get("team_id"))
-            team.user = None
-            team.save()
-            return redirect("./") # after submitting, redirect to profile page to refresh
+            team_id = request.POST.get("team_id")
+            if team_id is None: # team_id was not provided, therefore this is a profile field modification
+                if user_profile_form.is_valid():
+                    request.user.save() # if done editing the profile, save changes to the user
+                    return redirect("./")
+                else:
+                    context["edit"] = True # rerender page in edit mode
+                    return render(request, "survive/profile.html", context)
+            else: # team_id was provided, therefore this is a team disassociation action
+                team = get_object_or_404(Team, pk = team_id)
+                team.user = None
+                team.save()
+                return redirect("./") # after submitting, redirect to profile page to refresh   
         else:
-            return render(request, "survive/profile.html")
+            if request.GET.get("edit") == "True": # if Edit was specified, render the page in edit mode
+                context["edit"] = True
+            else: # else, render it as normal
+                context["edit"] = False
+            return render(request, "survive/profile.html", context)
     else:
         return redirect("login") # if not currently logged in, go to the login page
 

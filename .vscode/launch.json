@@ -14,7 +14,7 @@
                 "5000"
             ],
             "django": true,
-            "justMyCode": false
+            "justMyCode": true
         },
         {
             "name": "Python: Django Test",

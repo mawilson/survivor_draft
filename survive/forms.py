@@ -1,5 +1,5 @@
 from django import forms
-from survive.models import Team, Season, Survivor
+from survive.models import Team, Season, Survivor, User
 from django.contrib.auth.forms import UserCreationForm, password_validation
 
 class TeamForm(forms.ModelForm):
@@ -50,3 +50,8 @@ class TeamCreationForm(forms.ModelForm):
     class Meta:
         model = Team
         fields = ("name", "captain")
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ("first_name", "last_name", "email",)

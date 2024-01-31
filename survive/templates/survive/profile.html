@@ -9,21 +9,51 @@
 {% block content %}
     <h1>Profile</h1>
     {% if request.user.is_authenticated %}
-        <table class="table_center table_bordered">
-            <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                </tr>
-            </thead>
-            <tr>
-                <td>{{ request.user.username }}</td>
-                <td>{{ request.user.first_name }}</td>
-                <td>{{ request.user.last_name }}</td>
-            </tr>
-        </table>
-        <br />
+        {% if edit %}
+            <form method="POST">
+            {% csrf_token %}
+        {% else %}
+            <form method="GET" class="margin_top">
+        {% endif %}
+            <table class="table_center table_bordered">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                    </tr>
+                </thead> 
+                    <tr>
+                        {% if edit %}
+                            <td>{{ request.user.username }}</td>
+                                <td>{{ form.first_name }}</td>
+                                <td>{{ form.last_name }}</td>
+                                <td>
+                                    {{ form.email }}
+                                    {{ form.email.errors }}
+                                </td>
+                        {% else %}
+                            <td>{{ request.user.username }}</td>
+                            <td>{{ request.user.first_name }}</td>
+                            <td>{{ request.user.last_name }}</td>
+                            <td>{{ request.user.email }}</td>
+                        {% endif %}
+                    </tr>
+            </table>
+            {% if edit %}
+                <button type="submit">Save profile &#128190</button>
+                <input type="hidden" name="edit" value="False"/>
+            {% else  %}
+                <button type="submit">Edit profile &#9998</button>
+                <input type="hidden" name="edit" value="True"/>
+            {% endif %}
+        </form>
+        {% if edit %}
+            <button>
+                <a href="./">Cancel</a>
+            </button>
+        {% endif %}
         {% with teams=request.user.team_set.all %}
             {% if teams %}
                 <h2>Associated Teams</h2>
@@ -51,7 +81,6 @@
                 </table>
             {% endif %}
         {% endwith %}
-
         <br /><br />
         <a href="{% url 'password_change' %}">Change Password</a>
     {% else %}
