@@ -106,16 +106,23 @@ class Season(models.Model):
         return imm_survivors_winningest_teams
     
     def jury_number(self):
-        """Returns one more than the highest jury number of all eliminated Survivors"""
+        """Returns one more than the highest jury number of all eliminated Survivors. 0 if no Survivors eliminated yet."""
         highest_jury_number = 0
         winner = False
+        fresh_season = True # true if no survivors have been eliminated yet, in which case, jury number should be 0
         for s in self.survivor_set.all():
+            if fresh_season and not s.status:
+                fresh_season = False
             if not s.status and s.jury_number > highest_jury_number:
                 highest_jury_number = s.jury_number
             if s.winner:
                 winner = True # if it's over, highest jury number is just the value of the highest eliminated - don't give finalists an extra point
-        return highest_jury_number if winner else highest_jury_number + 1 # for use by other Survivors, jury number is always one better than the last eliminated survivor
-        # cannot return higher than max_jury_number
+        if fresh_season:
+            return 0
+        elif winner:
+            return highest_jury_number
+        else:
+            return highest_jury_number + 1 # for use by other Survivors, jury number is always one better than the last eliminated survivor
 
     def placement(self):
         """Returns one less than the lowest placement of all eliminated Survivors"""
