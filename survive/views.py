@@ -66,18 +66,22 @@ def home(request):
             if survivor_id_draft is not None:
                 team = get_object_or_404(Team, pk = team_id)
                 survivor = get_object_or_404(Survivor, pk = survivor_id_draft)
-                survivor.team = team
-                survivor.save()
+                if survivor.team is None: # a Survivor should only be draftable by a Team if it currently does not have a Team
+                    survivor.team = team
+                    survivor.save()
                 return redirect("/")
             elif survivor_id_undraft is not None:
+                team = get_object_or_404(Team, pk = team_id) # still need to get to ensure only the owning Team can unclaim a Survivor
                 survivor = get_object_or_404(Survivor, pk = survivor_id_undraft)
-                survivor.team = None
-                survivor.save()
+                if survivor.team.id == team.id: # a Survivor should only be undraftable by a Team if it is currently claimed by it
+                    survivor.team = None
+                    survivor.save()
                 return redirect("/")
             else:
                 team = get_object_or_404(Team, pk = request.POST.get("team_id"))
-                team.user = request.user
-                team.save()
+                if team.user is None: # a Team should only be associable to a User if it does not already have one
+                    team.user = request.user
+                    team.save()
                 return redirect("/")
         else: # team_id is None: # if POST did not include a team_id, it is a POST to create a team
             if team_creation_form.is_valid():
