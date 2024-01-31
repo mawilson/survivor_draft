@@ -69,6 +69,64 @@ class SurvivorTestCase(TestCase):
 
         self.assertEqual(survivor.points()[0], 7)
 
+    def test_points_zero_start(self):
+        """Survivor points sum to zero when nothing has been accomplished."""
+
+        self.setup()
+
+        season = Season.objects.get(name = "TestSeason")
+        team = Team.objects.get(id = 1)
+        survivor = Survivor.objects.create( # this is a 'base' Survivor, fresh off the boat, no points earned
+            season = season,
+            team = team,
+            name = "Test Player",
+            status = True,
+            idols = 0,
+            advantages = 0,
+            immunities = 0,
+            jury_number = 0,
+            confessionals = 0,
+            fan_favorite = False,
+            finalist = False,
+            winner = False
+        )
+
+        self.assertEqual(survivor.points()[0], 0)
+
+        survivor2 = Survivor.objects.create( # this is a 'base' Survivor, fresh off the boat, no points earned
+            season = season,
+            team = team,
+            name = "Test Player2",
+            status = True,
+            idols = 0,
+            advantages = 0,
+            immunities = 0,
+            jury_number = 0,
+            confessionals = 0,
+            fan_favorite = False,
+            finalist = False,
+            winner = False
+        )
+
+        self.assertEqual(survivor.points()[0], 0)
+
+        survivor3 = Survivor.objects.create( # this is a 'base' Survivor, fresh off the boat, no points earned
+            season = season,
+            team = team,
+            name = "Test Player3",
+            status = False, # this survivor has been eliminated
+            idols = 0,
+            advantages = 0,
+            immunities = 0,
+            jury_number = 0,
+            confessionals = 0,
+            fan_favorite = False,
+            finalist = False,
+            winner = False
+        )
+
+        self.assertEqual(survivor.points()[0], 1) # now that a survivor has been eliminated, jury_number should be 1, so should have 1 point
+
     def test_points_sum_comparisons_no_ties(self):
         """Survivor points sum correctly. This tests whether points calq correctly when determining 'most of' awards. No ties here"""
         self.setup_other_survivor()
