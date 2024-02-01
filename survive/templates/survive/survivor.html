@@ -11,7 +11,11 @@
             <h1 class="survivor_card_h1">{{survivor.name}}</h1>
             <div class="survivor_card_lr">
                 <div class="survivor_card_left">
-                    <img src="{{ STATIC_PREFIX }}survive/{{survivor.season.id}}/portraits_big/{{survivor.pic_full.name}}"
+                    {% if survivor.pic.name %}
+                        <img src="{{ STATIC_PREFIX }}survive/{{survivor.season.id}}/portraits_big/{{survivor.pic_full.name}}"
+                    {% else %}
+                        <img src="{{ STATIC_PREFIX }}survive/silhouette_large.webp"
+                    {% endif %}
                     {% if survivor.tribe == "red" %}
                     class="survivor_tribe_red survivor_portrait_big"
                     {% elif survivor.tribe == "blue" %}
