@@ -109,9 +109,9 @@ class Season(models.Model):
         """Returns one more than the highest jury number of all eliminated Survivors. 0 if no Survivors eliminated yet."""
         highest_jury_number = 0
         winner = False
-        fresh_season = True # true if no survivors have been eliminated yet, in which case, jury number should be 0
+        fresh_season = True # until a Survivor has been eliminated with a non-zero jury number, we don't begin incrementing the jury number
         for s in self.survivor_set.all():
-            if fresh_season and not s.status:
+            if fresh_season and not s.status and s.jury_number > 0:
                 fresh_season = False
             if not s.status and s.jury_number > highest_jury_number:
                 highest_jury_number = s.jury_number
