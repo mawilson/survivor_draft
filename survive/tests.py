@@ -125,7 +125,25 @@ class SurvivorTestCase(TestCase):
             winner = False
         )
 
-        self.assertEqual(survivor.points()[0], 1) # now that a survivor has been eliminated, jury_number should be 1, so should have 1 point
+        self.assertEqual(survivor.points()[0], 0) # survivor3 has been eliminated, but their jury number was 0, so jury_number points should still be 0
+
+        survivor4 = Survivor.objects.create( # this is a 'base' Survivor, fresh off the boat, no points earned
+            season = season,
+            team = team,
+            name = "Test Player4",
+            status = False, # this survivor has been eliminated
+            idols = 0,
+            advantages = 0,
+            immunities = 0,
+            jury_number = 1,
+            confessionals = 0,
+            fan_favorite = False,
+            finalist = False,
+            winner = False
+        )
+
+        self.assertEqual(survivor.points()[0], 2) # survivor4 has been eliminated, & their jury number was 1 (nonzero), so jury_number points should be 2
+
 
     def test_points_sum_comparisons_no_ties(self):
         """Survivor points sum correctly. This tests whether points calq correctly when determining 'most of' awards. No ties here"""
