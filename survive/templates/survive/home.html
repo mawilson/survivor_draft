@@ -7,6 +7,8 @@
 {% block content %}
     <h1>Season Overview</h1>
     {% if season %}
+        {% load static %}
+        {% get_static_prefix as STATIC_PREFIX %}
         {% if team_associable and season.is_season_active %}
             <fieldset>
                 <legend class="auto_horizontal_margins">Create new team</legend>
@@ -44,8 +46,7 @@
                         <td>{{ team.captain }}</td>
                         {% if team.survivor_set.all %}
                             <td>
-                                {% load static %}
-                                {% get_static_prefix as STATIC_PREFIX %}
+                                
                                 <table class="survivor_list table_bordered">
                                     <thead>
                                         <tr>
@@ -71,7 +72,11 @@
                                             {% endif %} {% if survivor.status %} survivor_cursor {% else %} survivor_elim_cursor {% endif %}
                                             {% if survivor.fan_favorite %} survivor_card_fan_favorite {% endif %}">
                                                 <td>
-                                                    <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{survivor.pic.name}}"
+                                                    {% if survivor.pic.name %}
+                                                        <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{survivor.pic.name}}"
+                                                    {% else %}
+                                                        <img src="{{ STATIC_PREFIX }}survive/silhouette_small.webp"
+                                                    {% endif %}
                                                     {% if survivor.tribe == "red" %}
                                                     class="survivor_tribe_red"
                                                     {% elif survivor.tribe == "blue" %}
@@ -154,7 +159,11 @@
                         {% endif %} {% if survivor.status %} survivor_cursor {% else %} survivor_elim_cursor {% endif %}
                         {% if survivor.fan_favorite %} survivor_card_fan_favorite {% endif %}">
                             <td>
-                                <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{survivor.pic.name}}"
+                                {% if survivor.pic.name %}
+                                    <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{survivor.pic.name}}"
+                                {% else %}
+                                    <img src="{{ STATIC_PREFIX }}survive/silhouette_small.webp"
+                                {% endif %}
                                 {% if survivor.tribe == "red" %}
                                 class="survivor_tribe_red"
                                 {% elif survivor.tribe == "blue" %}
