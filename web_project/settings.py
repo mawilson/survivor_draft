@@ -11,22 +11,25 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-69*#8^1j2_l36h+n!4r6^*qd^-ajhs6$oft6-n)fakl3ytm!kz'
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+is_prod = str(os.getenv('DJANGO_SURVIVOR_PROD'))
+DEBUG = is_prod != "true" # if the env var is undefined, debug will be set to True - only if the env var is present & 'true' will debug be set to False
 
-ALLOWED_HOSTS = ['127.0.0.1', '45.79.100.226']
+# SECURITY WARNING: keep the secret key used in production secret!
+if DEBUG:
+    SECRET_KEY = 'django-insecure-69*#8^1j2_l36h+n!4r6^*qd^-ajhs6$oft6-n)fakl3ytm!kz'
+else:
+    SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
+ALLOWED_HOSTS = ['127.0.0.1', '45.79.100.226', '0.0.0.0']
 
 # Application definition
 
