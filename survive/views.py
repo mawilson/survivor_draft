@@ -49,10 +49,15 @@ def home(request):
     if (request.user.is_authenticated):
         context["team_associable"] = len(request.user.team_set.filter(season_id = context["season"].id)) == 0
         context["team_form"] = team_creation_form
+        user_team = request.user.team_set.filter(season_id = context["season"].id).first() # user can have multiple teams - use the first from this season
     else:
         context["team_associable"] = False
+        user_team = None # an inauthenticated user has no teams
 
     context["undrafted_survivors"] = context["season"].survivor_set.filter(team_id=None)
+    user_team_id = user_team.id if user_team else None # ternary to prevent trying to access None.id if user_team was not found
+    if user_team_id is not None:
+        context["user_team_id"] = user_team_id
 
     if request.method == "POST": # there are a variety of types of POSTs that can come in to this view
         # use named hidden inputs submitted with the form to distinguish between them
@@ -62,28 +67,27 @@ def home(request):
         team_id = request.POST.get("team_id")
         survivor_id_draft = request.POST.get("survivor_id_draft")
         survivor_id_undraft = request.POST.get("survivor_id_undraft")
-        if team_id is not None: # survivor drafting, undrafting, & team association all require the team_id field present
-            if survivor_id_draft is not None:
-                team = get_object_or_404(Team, pk = team_id)
-                survivor = get_object_or_404(Survivor, pk = survivor_id_draft)
-                if survivor.team is None: # a Survivor should only be draftable by a Team if it currently does not have a Team
-                    survivor.team = team
-                    survivor.save()
-                return redirect("/")
-            elif survivor_id_undraft is not None:
-                team = get_object_or_404(Team, pk = team_id) # still need to get to ensure only the owning Team can unclaim a Survivor
-                survivor = get_object_or_404(Survivor, pk = survivor_id_undraft)
-                if survivor.team.id == team.id: # a Survivor should only be undraftable by a Team if it is currently claimed by it
-                    survivor.team = None
-                    survivor.save()
-                return redirect("/")
-            else:
-                team = get_object_or_404(Team, pk = request.POST.get("team_id"))
-                if team.user is None: # a Team should only be associable to a User if it does not already have one
-                    team.user = request.user
-                    team.save()
-                return redirect("/")
-        else: # team_id is None: # if POST did not include a team_id, it is a POST to create a team
+        if team_id is not None: # team association requires the team_id field present
+            team = get_object_or_404(Team, pk = request.POST.get("team_id"))
+            if team.user is None: # a Team should only be associable to a User if it does not already have one
+                team.user = request.user
+                team.save()
+            return redirect("/")
+        elif survivor_id_draft is not None: # survivor drafting requires the survivor_id_draft field present
+            team = get_object_or_404(Team, pk = user_team_id)
+            survivor = get_object_or_404(Survivor, pk = survivor_id_draft)
+            if survivor.team is None: # a Survivor should only be draftable by a Team if it currently does not have a Team
+                survivor.team = team
+                survivor.save()
+            return redirect("/")  
+        elif survivor_id_undraft is not None: # survivor undrafting requires the survivor_id_undraft field present
+            team = get_object_or_404(Team, pk = user_team_id) # still need to get to ensure only the owning Team can unclaim a Survivor
+            survivor = get_object_or_404(Survivor, pk = survivor_id_undraft)
+            if survivor.team.id == team.id: # a Survivor should only be undraftable by a Team if it is currently claimed by it
+                survivor.team = None
+                survivor.save()
+            return redirect("/")
+        else: # if POST did not include any POST variables, it is a POST to create a team
             if team_creation_form.is_valid():
                 team_creation_form.instance.user = request.user
                 if not team_creation_form.instance.captain: # if Captain was unprovided, fill one in

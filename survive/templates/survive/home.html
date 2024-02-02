@@ -45,8 +45,7 @@
                         </td>
                         <td>{{ team.captain }}</td>
                         {% if team.survivor_set.all %}
-                            <td>
-                                
+                            <td>                              
                                 <table class="survivor_list table_bordered">
                                     <thead>
                                         <tr>
@@ -111,13 +110,12 @@
                                                         </tr>
                                                     </table>
                                                 </td>
-                                                {% if not team_associable and season.is_season_active and season.survivor_drafting and user.team_set.first.id == team.id %}
+                                                {% if not team_associable and season.is_season_active and season.survivor_drafting and user_team_id == team.id %}
                                                     <td>
                                                         <form method="POST" class="margin_top">
                                                             {% csrf_token %}
                                                             <button type="submit">Undraft</button>
                                                             <input type="hidden" name="survivor_id_undraft" value="{{ survivor.id }}" />
-                                                            <input type="hidden" name="team_id" value="{{ user.team_set.first.id }}" />
                                                         </form>
                                                     </td>
                                                 {% endif %}
@@ -204,7 +202,6 @@
                                     {% csrf_token %}
                                     <button type="submit">Draft</button>
                                     <input type="hidden" name="survivor_id_draft" value="{{ survivor.id }}" />
-                                    <input type="hidden" name="team_id" value="{{ user.team_set.first.id }}" />
                                 </form>
                             </td>
                             {% endif %}
