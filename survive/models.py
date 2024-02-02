@@ -9,21 +9,21 @@ from django.contrib.auth.models import User
 
 class Rubric(models.Model):
     # following two fields have to do with scoring for the most idols & whether to split points on ties
-    idols = models.IntegerField(default=2, null=False)
-    idols_tie_split = models.BooleanField(default=True, null=False)
+    idols = models.IntegerField(default =2, null = False)
+    idols_tie_split = models.BooleanField(default = True, null = False)
 
     # following two fields have to do with scoring for the most individual immunities & whether to split points on ties
-    immunities = models.IntegerField(default=2, null=False)
-    immunities_tie_split = models.BooleanField(default=True, null=False)
+    immunities = models.IntegerField(default =2, null = False)
+    immunities_tie_split = models.BooleanField(default = True, null = False)
 
-    jury_number = models.IntegerField(default=1, null=False)
+    jury_number = models.IntegerField(default =1, null = False)
 
-    fan_favorite = models.IntegerField(default=2, null=False)
-    fan_favorite_self_votes = models.BooleanField(default=False, null=False)
-    fan_favorite_negative_votes = models.BooleanField(default=True, null=False)
+    fan_favorite = models.IntegerField(default =2, null = False)
+    fan_favorite_self_votes = models.BooleanField(default = False, null = False)
+    fan_favorite_negative_votes = models.BooleanField(default = True, null = False)
 
-    finalist = models.IntegerField(default=2, null=False)
-    winner = models.IntegerField(default=5, null=False)
+    finalist = models.IntegerField(default =2, null = False)
+    winner = models.IntegerField(default =5, null = False)
 
     @classmethod
     def get_default_pk(r):
@@ -133,7 +133,7 @@ class Season(models.Model):
         return max(lowest_placement - 1, 1) # for use by other Survivors, placement is always one better than the last eliminated Survivor
         # cannot return lower than 1
     
-    def fan_favorites(self, save=False):
+    def fan_favorites(self, save = False):
         """Returns a two element tuple - first the list of survivors with the most fan favorite votes, with tiebreakers being most 1st or 2nd place votes,
         & second the dictionary of survivors who received votes, & what those votes were
         Also assigns the Survivor.fan_favorite Boolean attribute for each survivor in the season
@@ -253,7 +253,7 @@ class Season(models.Model):
 
     def fan_favorites_no_vote(self):
         """Returns a string representation of survivors whose fan_favorite attribute is True"""
-        favorites = self.survivor_set.filter(fan_favorite=True)
+        favorites = self.survivor_set.filter(fan_favorite= True)
         if len(favorites) > 1:
             return ", ".join(favorites)
         elif len(favorites) == 0:
@@ -313,7 +313,7 @@ class Team(models.Model):
         verbose_name = "Captain name",
         blank = True # if unprovided, will default to User Name, followed by User Username
     )
-    winner = models.BooleanField(default=False, null=False)
+    winner = models.BooleanField(default = False, null = False)
 
     user = models.ForeignKey(
         User,
@@ -464,25 +464,26 @@ class Survivor(models.Model):
         null = True
     )
     name = models.CharField(max_length=100)
-    status = models.BooleanField(default=False, null=False, verbose_name="Elimination Status - False for eliminated, True for surviving")
+    status = models.BooleanField(default = False, null = False, verbose_name="Elimination Status - False for eliminated, True for surviving")
     team = models.ForeignKey(
         Team,
         on_delete = models.CASCADE, # if a Survivor's Team gets deleted, so too does that Survivor
         verbose_name = "the team that recruited this survivor",
-        null = True # nothing wrong with a Survivor having no Team, theoretically
+        null = True, # nothing wrong with a Survivor having no Team, theoretically
+        blank = True
     )
-    tribe = models.CharField(max_length=10, null=True) # Usually 'Red', 'Yellow', or 'Blue', but no tribe or some other value are valid
-    idols = models.IntegerField(default=0, null=False)
-    advantages = models.IntegerField(default=0, null=False)
-    immunities = models.IntegerField(default=0, null=False)
-    jury_number = models.IntegerField(default=0, null=False)
-    placement = models.IntegerField(default = 0, null=False) # place eliminated, where 0 is not yet eliminated, 1 is first, high number is last
-    confessionals = models.IntegerField(default=0, null=False)
-    fan_favorite = models.BooleanField(default=False, null=False) # this is calculated, but we don't want to run the calqs every time, so still saving it when Season.fan_favorites() runs
-    finalist = models.BooleanField(default=False, null=False) # Winner is an upgraded finalist
-    winner = models.BooleanField(default=False, null=False)
-    pic = models.ImageField(default=False, null=True) # a null image will use a default blank image
-    pic_full = models.ImageField(default=False, null=True) # larger image used by Survivor page, can also be null
+    tribe = models.CharField(max_length=10, null = True, default = None, blank = True) # Usually 'Red', 'Yellow', or 'Blue', but no tribe or some other value are valid
+    idols = models.IntegerField(default =0, null = False)
+    advantages = models.IntegerField(default = 0, null = False)
+    immunities = models.IntegerField(default = 0, null = False)
+    jury_number = models.IntegerField(default = 0, null = False)
+    placement = models.IntegerField(default = 0, null = False) # place eliminated, where 0 is not yet eliminated, 1 is first, high number is last
+    confessionals = models.IntegerField(default = 0, null = False)
+    fan_favorite = models.BooleanField(default = False, null = False) # this is calculated, but we don't want to run the calqs every time, so still saving it when Season.fan_favorites() runs
+    finalist = models.BooleanField(default = False, null = False) # Winner is an upgraded finalist
+    winner = models.BooleanField(default = False, null = False)
+    pic = models.ImageField(default = None, null = True, blank = True) # a null image will use a default blank image
+    pic_full = models.ImageField(default = None, null = True, blank = True) # larger image used by Survivor page, can also be null
 
     def __str__(self) -> str:
         """Returns a string representation of a Survivor contestant"""
