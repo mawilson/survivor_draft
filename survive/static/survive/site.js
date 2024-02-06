@@ -1,27 +1,32 @@
-// onChange event for the Theme form change
-function themeChange(value) {
+// onChange event for the Theme form change. Cookie only gets set if setCookie provided as 'true'
+function themeChange(value, setCookie) {
+    let cookie, className;
     switch(value) {
         case "unjeff":
-            document.cookie = "survivorTheme=unjeff;samesite=lax";
-            document.body.className = "theme_unjeff";
+            cookie = "survivorTheme=unjeff;samesite=lax;path=/;";
+            className = "theme_unjeff";
             break;
         case "bg_blue":
-            document.cookie = "survivorTheme=bg_blue;samesite=lax";
-            document.body.className = "theme_bg_blue";
+            cookie = "survivorTheme=bg_blue;samesite=lax;path=/;";
+            className = "theme_bg_blue";
             break;
         case "bg_grey":
-            document.cookie = "survivorTheme=bg_grey;samesite=lax";
-            document.body.className = "theme_bg_grey";
+            cookie = "survivorTheme=bg_grey;samesite=lax;path=/;";
+            className = "theme_bg_grey";
             break;
         case "jeff_grey":
-            document.cookie = "survivorTheme=jeff_grey;samesite=lax";
-            document.body.className = "theme_jeff_grey";
+            cookie = "survivorTheme=jeff_grey;samesite=lax;path=/;";
+            className = "theme_jeff_grey";
             break;
         case "jeff":
         default: 
-            document.cookie = "survivorTheme=jeff;samesite=lax";
-            document.body.className = "theme_jeff";
+            cookie = "survivorTheme=jeff;samesite=lax;path=/;";
+            className = "theme_jeff";
     }
+    if (setCookie) {
+        document.cookie = cookie;
+    }
+    document.body.className = className;
 }
 
 // onLoad event for the Theme selector dropdown to properly populate on page load
@@ -43,7 +48,7 @@ function processCookies() {
         if (cookie.length === 2) { // cookie is only valid for processing if it looks like key=value, split will have != 2 elements otherwise
             if (cookie[0] === "survivorTheme") {
                 let themeSelector = document.getElementById("theme_selector");
-                themeChange(cookie[1]);
+                themeChange(cookie[1], set_cookie = false);
                 switch (cookie[1]) {
                     case "unjeff":
                         themeSelector.selectedIndex = 1;
