@@ -40,7 +40,7 @@ def season_selector_request(request):
 def season_selector_response(response, new_season_id):
     """Helper function to interact with cookies to set season ID cookie if a new one has been provided"""
     if new_season_id:
-        response.set_cookie("season_id", new_season_id)
+        response.set_cookie("season_id", new_season_id, samesite="Lax")
 
 def home(request):
     context, new_season_id = season_selector_request(request)
