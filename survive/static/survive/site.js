@@ -1,4 +1,4 @@
-// onChange event for the Theme form change
+// onChange event for the Theme form change. Cookie only gets set if setCookie provided as 'true'
 function themeChange(value, setCookie) {
     let cookie, className;
     switch(value) {
@@ -48,7 +48,7 @@ function processCookies() {
         if (cookie.length === 2) { // cookie is only valid for processing if it looks like key=value, split will have != 2 elements otherwise
             if (cookie[0] === "survivorTheme") {
                 let themeSelector = document.getElementById("theme_selector");
-                themeChange(cookie[1], set_cookie = false); // not necessary, themeChange only needs to run when the Select element changes
+                themeChange(cookie[1], set_cookie = false);
                 switch (cookie[1]) {
                     case "unjeff":
                         themeSelector.selectedIndex = 1;
