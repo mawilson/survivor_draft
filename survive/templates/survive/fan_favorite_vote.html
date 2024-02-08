@@ -59,50 +59,34 @@
                                     <td>
                                         {% if team.fan_favorite_first %}
                                             <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{team.fan_favorite_first.pic.name}}"
-                                                {% if team.fan_favorite_first.tribe == "red" %}
-                                                class="survivor_tribe_red"
-                                                {% elif team.fan_favorite_first.tribe == "blue" %}
-                                                class="survivor_tribe_blue"
-                                                {% elif team.fan_favorite_first.tribe == "yellow" %}
-                                                class="survivor_tribe_yellow"
-                                                {% endif %} />
+                                            {% if team.fan_favorite_first.tribe != None %}
+                                                style="border: 2px solid {{ team.fan_favorite_first.tribe.color }};"
+                                            {% endif %} />
                                         {% endif %}
                                     </td>
                                     <td>
                                         {% if team.fan_favorite_second %}
                                             <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{team.fan_favorite_second.pic.name}}"
-                                                {% if team.fan_favorite_second.tribe == "red" %}
-                                                class="survivor_tribe_red"
-                                                {% elif team.fan_favorite_second.tribe == "blue" %}
-                                                class="survivor_tribe_blue"
-                                                {% elif team.fan_favorite_second.tribe == "yellow" %}
-                                                class="survivor_tribe_yellow"
-                                                {% endif %} />
+                                            {% if team.fan_favorite_second.tribe != None %}
+                                                style="border: 2px solid {{ team.fan_favorite_second.tribe.color }};"
+                                            {% endif %} />
                                         {% endif %}
                                     </td>
                                     <td>
                                         {% if team.fan_favorite_third %}
                                             <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{team.fan_favorite_third.pic.name}}"
-                                                {% if team.fan_favorite_third.tribe == "red" %}
-                                                class="survivor_tribe_red"
-                                                {% elif team.fan_favorite_third.tribe == "blue" %}
-                                                class="survivor_tribe_blue"
-                                                {% elif team.fan_favorite_third.tribe == "yellow" %}
-                                                class="survivor_tribe_yellow"
-                                                {% endif %} />
+                                            {% if team.fan_favorite_third.tribe != None %}
+                                                style="border: 2px solid {{ team.fan_favorite_third.tribe.color }};"
+                                            {% endif %} />
                                         {% endif %}
                                     </td>
                                     {% if season.rubric.fan_favorite_negative_votes %}
                                     <td>
                                         {% if team.fan_favorite_bad %}
                                             <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{team.fan_favorite_bad.pic.name}}"
-                                                {% if team.fan_favorite_bad.tribe == "red" %}
-                                                class="survivor_tribe_red"
-                                                {% elif team.fan_favorite_bad.tribe == "blue" %}
-                                                class="survivor_tribe_blue"
-                                                {% elif team.fan_favorite_bad.tribe == "yellow" %}
-                                                class="survivor_tribe_yellow"
-                                                {% endif %} />
+                                            {% if team.fan_favorite_bad.tribe != None %}
+                                                style="border: 2px solid {{ team.fan_favorite_bad.tribe.color }};"
+                                            {% endif %} />
                                         {% endif %}
                                     </td>
                                     {% endif %}
