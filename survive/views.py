@@ -239,3 +239,14 @@ def register(request):
             return render(request, "survive/register.html", context)
     else:
         return render(request, "survive/register.html", context)
+    
+def rubric(request):
+    context, new_season_id = season_selector_request(request)
+    rubric = context["season"].rubric
+    context["rubric"] = rubric
+    seasons_using_rubric = rubric.season_set.all()
+    context["seasons_using_rubric"] = ", ".join(sorted(season.name for season in seasons_using_rubric))
+
+    response = render(request, "survive/rubric.html", context)
+    season_selector_response(response, new_season_id)
+    return response

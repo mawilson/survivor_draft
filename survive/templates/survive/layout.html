@@ -22,6 +22,9 @@
                     <td class="float_left">
                         {% block navbar_predictions %}<a href="{% url 'predictions' %}" class="navbar_item">Predictions</a>{% endblock %}
                     </td>
+                    <td class="float_left">
+                        {% block navbar_rubric %}<a href="{% url 'rubric' %}" class="navbar_item">Rubrics</a>{% endblock %}
+                    </td>
                     <td class="float_right">
                         {% block navbar_login %}
                             {% if request.user.is_authenticated %}
