@@ -26,6 +26,7 @@ function themeChange(value, setCookie) {
     if (setCookie) {
         document.cookie = cookie;
     }
+    className = className + " survivor_cursor"; // also add torch cursor
     document.body.className = className;
 }
 
