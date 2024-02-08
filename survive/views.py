@@ -217,7 +217,7 @@ def register(request):
             new_user = form.save(commit = True)
             new_user = authenticate(username = form.cleaned_data["username"], password = form.cleaned_data["password1"])
             login(request, new_user)
-            return render(request, "survive/profile.html")
+            return redirect("profile")
         else:
             return render(request, "survive/register.html", context)
     else:
