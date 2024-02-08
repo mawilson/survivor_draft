@@ -455,6 +455,16 @@ class Team(models.Model):
                 elif t.points() > my_theoretical_points: # if any other team has more points than myself, & all my survivors are out, I have officially lost, return True
                     return True
         return False
+    
+class Tribe(models.Model):
+    season = models.ForeignKey(
+        Season,
+        on_delete = models.CASCADE,
+        verbose_name = "a tribe assigned at some point during a season.",
+        null = False
+    )
+    name = models.CharField(max_length = 100)
+    color = models.CharField(max_length = 100, verbose_name = "the hex code for the color associated with this tribe")
 
 class Survivor(models.Model):
     season = models.ForeignKey(
@@ -472,7 +482,14 @@ class Survivor(models.Model):
         null = True, # nothing wrong with a Survivor having no Team, theoretically
         blank = True
     )
-    tribe = models.CharField(max_length=10, null = True, default = None, blank = True) # Usually 'Red', 'Yellow', or 'Blue', but no tribe or some other value are valid
+    tribe = models.ForeignKey(
+        Tribe,
+        on_delete = models.SET_NULL,
+        verbose_name = "the tribe this survivor currently belongs to",
+        null = True,
+        blank = True,
+        default = None
+    )
     idols = models.IntegerField(default =0, null = False)
     advantages = models.IntegerField(default = 0, null = False)
     immunities = models.IntegerField(default = 0, null = False)

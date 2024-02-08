@@ -16,14 +16,10 @@
                     {% else %}
                         <img src="{{ STATIC_PREFIX }}survive/silhouette_large.webp"
                     {% endif %}
-                    {% if survivor.tribe == "red" %}
-                    class="survivor_tribe_red survivor_portrait_big"
-                    {% elif survivor.tribe == "blue" %}
-                    class="survivor_tribe_blue survivor_portrait_big"
-                    {% elif survivor.tribe == "yellow" %}
-                    class="survivor_tribe_yellow survivor_portrait_big"
+                    {% if survivor.tribe != None %}
+                        style="border: 2px solid {{ survivor.tribe.color }};"
                     {% else %}
-                    class="survivor_portrait_big"
+                        class="survivor_portrait_big"
                     {% endif %} />
                 </div>
                 <div class="survivor_card_right survivor_card_medium">

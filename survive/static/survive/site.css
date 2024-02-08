@@ -85,18 +85,6 @@
     border: 1px solid black;
 }
 
-.survivor_tribe_red {
-    border: 2px solid red;
-}
-
-.survivor_tribe_blue {
-    border: 2px solid blue;
-}
-
-.survivor_tribe_yellow {
-    border: 2px solid yellow;
-}
-
 .survivor_portrait_big {
     max-height: 500px;
     max-width: 500px;
@@ -229,6 +217,10 @@
 
 a {
     cursor: url("torch_hover.png") 0 0, auto;
+}
+
+button, select, label {
+    cursor: url("torch.png") 0 0, auto;
 }
 
 .survivor_cursor_help {

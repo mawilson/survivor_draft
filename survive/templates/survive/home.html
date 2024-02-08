@@ -76,12 +76,8 @@
                                                     {% else %}
                                                         <img src="{{ STATIC_PREFIX }}survive/silhouette_small.webp"
                                                     {% endif %}
-                                                    {% if survivor.tribe == "red" %}
-                                                    class="survivor_tribe_red"
-                                                    {% elif survivor.tribe == "blue" %}
-                                                    class="survivor_tribe_blue"
-                                                    {% elif survivor.tribe == "yellow" %}
-                                                    class="survivor_tribe_yellow"
+                                                    {% if survivor.tribe != None %}
+                                                        style="border: 2px solid {{ survivor.tribe.color }};"
                                                     {% endif %} />
                                                 </td>
                                                 <td>
@@ -162,12 +158,8 @@
                                 {% else %}
                                     <img src="{{ STATIC_PREFIX }}survive/silhouette_small.webp"
                                 {% endif %}
-                                {% if survivor.tribe == "red" %}
-                                class="survivor_tribe_red"
-                                {% elif survivor.tribe == "blue" %}
-                                class="survivor_tribe_blue"
-                                {% elif survivor.tribe == "yellow" %}
-                                class="survivor_tribe_yellow"
+                                {% if survivor.tribe != None %}
+                                    style="border: 2px solid {{ survivor.tribe.color }};"
                                 {% endif %} />
                             </td>
                             <td>
