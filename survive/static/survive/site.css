@@ -219,6 +219,10 @@ a {
     cursor: url("torch_hover.png") 0 0, auto;
 }
 
+button, select, label {
+    cursor: url("torch.png") 0 0, auto;
+}
+
 .survivor_cursor_help {
     cursor: url("torch_q.png") 0 0, auto;
 }
