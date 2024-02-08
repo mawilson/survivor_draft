@@ -1,0 +1,102 @@
+{% extends "survive/layout.html" %}
+{% block title %}
+    Rubrics
+{% endblock %}
+{% block navbar_rubric %}<a href="{% url 'rubric' %}" class="navbar_current">Rubrics</a>{% endblock %}
+{% block back_to_home %}{% endblock %}
+{% block content %}
+    <h1>Rubrics</h1>
+
+    <table class="table_center table_bordered max_width">
+        <thead>
+            <tr>
+                <th>Criteria</th>
+                <th>Description</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Winner</td>
+                <td>The points awarded to the sole survivor of the season. This is awarded instead of Finalist points, not in addition to.</td>
+                <td>{{rubric.winner}}</td>
+            </tr>
+            <tr>
+                <td>Finalist</td>
+                <td>The points awarded to the survivors who make it to the final jury, but don't win. The winner does not receive these points.</td>
+                <td>{{rubric.finalist}}</td>
+            </tr>
+            <tr>
+                <td>Fan Favorite</td>
+                <td>The points awarded to the fan favorite, optionally determined by a vote on this site.</td>
+                <td>{{rubric.fan_favorite}}</td>
+            </tr>
+            <tr>
+                <td>Idols</td>
+                <td>The points awarded to the survivor with the most immunity idols. Does not include other miscellaneous advantages.</td>
+                <td>{{rubric.idols}}</td>
+            </tr>
+            <tr>
+                <td>Immunities</td>
+                <td>The points awarded to the survivor who won the most immunity challenges.</td>
+                <td>{{rubric.immunities}}</td>
+            </tr>
+            <tr>
+                <td>Jury Number</td>
+                <td>The points awarded based on when a survivor reached the jury. Survivors never eliminated will receive the highest jury number awarded in the season.
+                    <br />The first survivor to be a member of the jury receives this many points, & subsequent survivors receive a multiple of that.
+                </td>
+                <td>{{rubric.jury_number}}</td>
+            </tr>
+            <tr>
+                <td>Idols Split Ties</td>
+                <td>Whether ties in most idols split points. True means points are split, False means each survivor is rewarded the maximum value.</td>
+                <td>
+                    {% if rubric.idols_tie_split == 1 %}
+                        True
+                    {% else %}
+                        False
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>Immunities Split Ties</td>
+                <td>Whether ties in most immunities split points. True means points are split, False means each survivor is rewarded the maximum value.</td>
+                <td>
+                    {% if rubric.immunities_tie_split == 1 %}
+                        True
+                    {% else %}
+                        False
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>Fan Favorite Negative Votes</td>
+                <td>Whether the fan favorite vote includes a 'bad' vote. True means the bad vote is present, False means it is not.</td>
+                <td>
+                    {% if rubric.fan_favorite_negative_votes == 1 %}
+                        True
+                    {% else %}
+                        False
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>Fan Favorite Self Votes</td>
+                <td>Whether the fan favorite vote allows you to vote for survivors on your own team. True means you can self-vote, False means you cannot.</td>
+                <td>
+                    {% if rubric.fan_favorite_self_votes == 1 %}
+                        True
+                    {% else %}
+                        False
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>Seasons using this Rubric</td>
+                <td>The names of the seasons that are making use of this particular rubric.</td>
+                <td>{{ seasons_using_rubric }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

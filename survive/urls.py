@@ -8,6 +8,7 @@ urlpatterns = [
     path("survivor/<int:id>/", views.survivor, name="survivor_page"),
     path("fan_favorite/", views.fan_favorite, name="fan_favorite"),
     path("predictions/", views.predictions, name="predictions"),
+    path("rubric/", views.rubric, name="rubric"),
 
     # account/auth paths
     path("accounts/login/", auth_views.LoginView.as_view(template_name="survive/login.html", redirect_authenticated_user=True), name="login"),

@@ -9,21 +9,21 @@ from django.contrib.auth.models import User
 
 class Rubric(models.Model):
     # following two fields have to do with scoring for the most idols & whether to split points on ties
-    idols = models.IntegerField(default =2, null = False)
+    idols = models.IntegerField(default = 2, null = False)
     idols_tie_split = models.BooleanField(default = True, null = False)
 
     # following two fields have to do with scoring for the most individual immunities & whether to split points on ties
-    immunities = models.IntegerField(default =2, null = False)
+    immunities = models.IntegerField(default = 2, null = False)
     immunities_tie_split = models.BooleanField(default = True, null = False)
 
-    jury_number = models.IntegerField(default =1, null = False)
+    jury_number = models.IntegerField(default = 1, null = False)
 
-    fan_favorite = models.IntegerField(default =2, null = False)
+    fan_favorite = models.IntegerField(default = 2, null = False)
     fan_favorite_self_votes = models.BooleanField(default = False, null = False)
     fan_favorite_negative_votes = models.BooleanField(default = True, null = False)
 
-    finalist = models.IntegerField(default =2, null = False)
-    winner = models.IntegerField(default =5, null = False)
+    finalist = models.IntegerField(default = 2, null = False)
+    winner = models.IntegerField(default = 5, null = False)
 
     @classmethod
     def get_default_pk(r):
