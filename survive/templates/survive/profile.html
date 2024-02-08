@@ -65,13 +65,37 @@
                         <th>Team Name</th>
                         <th>Captain Name</th>
                         <th>Season</th>
+                        <th>Edit</th>
                         <th>Release Team</th>
                     </tr>
                     {% for team in teams %}
+                        {% if edit_team_id == team.id %}
+                            <form method="POST">
+                                {% csrf_token %}
+                        {% endif %}
                         <tr>
-                            <td>{{team.name}}</td>
-                            <td>{{team.captain}}</td>
+                            {% if edit_team_id == team.id %}
+                                <td>
+                                    {{ edit_team_form.name }}
+                                    {{ edit_team_form.name.errors }}
+                                </td>
+                                <td>{{ edit_team_form.captain }}</td>
+                            {% else %}
+                                <td>{{team.name}}</td>
+                                <td>{{team.captain}}</td>
+                            {% endif %}
                             <td>{{team.season.name}}</td>
+                            <td>
+                                {% if edit_team_id == team.id %}
+                                    <button type="submit">Save &#128190</button>
+                                    <input type="hidden" name="edit_team_id" value="{{ team.id }}" />
+                                {% else %}
+                                    <form method="GET">
+                                        <button type="submit">Edit &#9998</button>
+                                        <input type="hidden" name="edit_team_id" value="{{ team.id }}" />
+                                    </form>
+                                {% endif %}
+                            </td>
                             <td>
                                 <form method="POST">
                                     {% csrf_token %}
@@ -80,6 +104,9 @@
                                 </form>
                             </td>
                         </tr>
+                        {% if edit_team_id == team.id %}
+                            </form>
+                        {% endif %}
                     {% endfor %}
                 </table>
             {% endif %}
