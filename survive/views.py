@@ -112,10 +112,24 @@ def profile(request):
     if request.user.is_authenticated: # process a POST to disassociate the profile from a team
         user_profile_form = UserProfileForm(request.POST or None, instance = request.user)
         context = {"form": user_profile_form}
+
+        if request.method == "GET":
+            edit_team_id = request.GET.get("edit_team_id") # used to determine if we are editing a team
+        else:
+            edit_team_id = request.POST.get("edit_team_id") # used to determine if we are editing a team
+        if edit_team_id is not None: # edit_team_id was provided, therefore we need to make a TeamCreationForm (whether for POST or GET)
+            edit_team = get_object_or_404(Team, pk = edit_team_id)
+            team_edit_form = TeamCreationForm(request.POST or None, instance = edit_team)
         
         if request.method == "POST":
             team_id = request.POST.get("team_id")
-            if team_id is None: # team_id was not provided, therefore this is a profile field modification
+            if edit_team_id is not None: # edit_team_id was provided, therefore we are modifying a team                
+                if team_edit_form.is_valid():
+                    edit_team.save()
+                    return redirect("./")
+                else:
+                    return render(request, "survive/profile.html", context)
+            elif team_id is None: # team_id was not provided, therefore this is a profile field modification
                 if user_profile_form.is_valid():
                     request.user.save() # if done editing the profile, save changes to the user
                     return redirect("./")
@@ -132,6 +146,9 @@ def profile(request):
                 context["edit"] = True
             else: # else, render it as normal
                 context["edit"] = False
+            if edit_team_id is not None: # if edit_team_id was specified, render the team with that ID in edit mode
+                context["edit_team_id"] = int(edit_team_id)
+                context["edit_team_form"] = team_edit_form
             return render(request, "survive/profile.html", context)
     else:
         return redirect("login") # if not currently logged in, go to the login page
