@@ -18,7 +18,7 @@
     {% if season %}
         {% load static %}
         {% get_static_prefix as STATIC_PREFIX %}
-        {% if team_associable and season.is_season_active %}
+        {% if team_associable and not season.is_season_open %}
             <fieldset>
                 <legend class="auto_horizontal_margins">Create new team</legend>
                 <p>You are not associated with a team this season. Would you like to create a new one?</p>
