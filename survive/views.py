@@ -54,7 +54,7 @@ def home(request):
         context["team_associable"] = False
         user_team = None # an inauthenticated user has no teams
 
-    context["undrafted_survivors"] = context["season"].survivor_set.filter(team_id=None)
+    context["undrafted_survivors"] = context["season"].survivor_set.filter(team_id=None).order_by("name")
     user_team_id = user_team.id if user_team else None # ternary to prevent trying to access None.id if user_team was not found
     if user_team_id is not None:
         context["user_team_id"] = user_team_id
