@@ -54,7 +54,6 @@ def home(request):
         context["team_associable"] = False
         user_team = None # an inauthenticated user has no teams
 
-    context["undrafted_survivors"] = context["season"].survivor_set.filter(team_id=None).order_by("name")
     user_team_id = user_team.id if user_team else None # ternary to prevent trying to access None.id if user_team was not found
     if user_team_id is not None:
         context["user_team_id"] = user_team_id
@@ -99,6 +98,17 @@ def home(request):
                 return redirect("/") # after submitting, redirect to home page to refresh
             else:
                 return render(request, "survive/home.html", context)
+    else: # GETs
+        display_type = request.GET.get("display_type")
+        if display_type == "tribe":
+            context["display_type"] = "tribe"
+        else:
+            context["display_type"] = "default"
+
+    if context["display_type"] != "tribe":
+        context["undrafted_survivors"] = context["season"].survivor_set.filter(team_id=None).order_by("name")
+    else:
+        context["undrafted_survivors"] = context["season"].survivor_set.filter(tribe=None).order_by("name")
 
     response = render(request, "survive/home.html", context)
     season_selector_response(response, new_season_id)

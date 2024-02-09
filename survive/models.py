@@ -466,6 +466,13 @@ class Tribe(models.Model):
     name = models.CharField(max_length = 100)
     color = models.CharField(max_length = 100, verbose_name = "the hex code for the color associated with this tribe")
 
+    def points(self) -> int:
+        """Returns an integer representing the sum of Survivor points of Survivors within this tribe"""
+        total = 0
+        for survivor in self.survivor_set.all():
+            total += survivor.points()[0]
+        return total
+
 class Survivor(models.Model):
     season = models.ForeignKey(
         Season,
