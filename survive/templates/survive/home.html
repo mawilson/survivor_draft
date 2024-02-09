@@ -6,6 +6,15 @@
 {% block back_to_home %}{% endblock %}
 {% block content %}
     <h1>Season Overview</h1>
+    <div>
+        <form method="GET">
+            <label>View: </label>
+            <select class="theme_selector" name="display_type" onchange="this.form.submit()">
+                <option value="default">By Team (Default)</option>
+                <option value="tribe" {% if display_type == "tribe" %}selected{% endif %}>By Tribe</option>
+            </select>
+        </form>
+    </div>
     {% if season %}
         {% load static %}
         {% get_static_prefix as STATIC_PREFIX %}
@@ -21,31 +30,21 @@
             </fieldset>
         {% endif %}
 
-        <table class="table_center table_bordered">
-            <thead>
-                <tr>
-                    <th>Team Name</th>
-                    <th>Team Captain</th>
-                    <th>Teammates</th>
-                    <th>Points</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for team in season.team_set.all %}
-                    <tr class="{% if team.winner %}team_winner {% elif team.lost %}team_loser {% endif %}{% if team.user and request.user.id == team.user.id %} team_self{% endif %}">
-                        <td>
-                            {{ team.name }}
-                            {% if not team.user and team_associable %}
-                                <form method="POST" class="margin_top">
-                                    {% csrf_token %}
-                                    <button type="submit">Claim this team</button>
-                                    <input type="hidden" name="team_id" value="{{ team.id }}" />
-                                </form>
-                            {% endif %}
-                        </td>
-                        <td>{{ team.captain }}</td>
-                        {% if team.survivor_set.all %}
-                            <td>                              
+        {% if display_type == "tribe" %}
+            <table class="table_center table_bordered">
+                <thead>
+                    <tr>
+                        <th>Tribe Name</th>
+                        <th>Survivors</th>
+                        <th>Points</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tribe in season.tribe_set.all %}
+                        <tr>
+                            <td style="color: {{tribe.color}}">{{tribe.name}}</td>
+                            {% if tribe.survivor_set.all %}
+                            <td>
                                 <table class="survivor_list table_bordered">
                                     <thead>
                                         <tr>
@@ -58,13 +57,10 @@
                                                 Confessionals
                                             </th>
                                             <th>Points</th>
-                                            {% if not team_associable and season.is_season_active and season.survivor_drafting %}
-                                                <th>Undraft</th>
-                                            {% endif %}
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for survivor in team.survivor_set.all %}
+                                        {% for survivor in tribe.survivor_set.all %}
                                             <tr {% if survivor.winner %} class="winning_survivor 
                                             {% elif not survivor.status %} class="eliminated_survivor
                                             {% else %} class="surviving_survivor
@@ -106,101 +102,198 @@
                                                         </tr>
                                                     </table>
                                                 </td>
-                                                {% if not team_associable and season.is_season_active and season.survivor_drafting and user_team_id == team.id %}
-                                                    <td>
-                                                        <form method="POST" class="margin_top">
-                                                            {% csrf_token %}
-                                                            <button type="submit">Undraft</button>
-                                                            <input type="hidden" name="survivor_id_undraft" value="{{ survivor.id }}" />
-                                                        </form>
-                                                    </td>
-                                                {% endif %}
                                             </tr>
                                         {% endfor %}
                                     </tbody>
                                 </table>
                             </td>
-                            <td>{{ team.points }}</td>
-                        {% endif %}
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        {% if undrafted_survivors %}
-            <hr />
-            <h2>Undrafted Survivors</h2>
+                            <td>{{tribe.points}}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
             <table class="table_center table_bordered">
                 <thead>
-                    <th>Portrait</th>
-                    <th>Name</th>
-                    <th>Status</th>
-                    <th>
-                        Idols / <br />
-                        Immunities / <br />
-                        Confessionals
-                    </th>
-                    <th>Points</th>
-                    {% if not team_associable and season.is_season_active and season.survivor_drafting %}
-                        <th>Draft</th>
-                    {% endif %}
+                    <tr>
+                        <th>Team Name</th>
+                        <th>Team Captain</th>
+                        <th>Teammates</th>
+                        <th>Points</th>
+                    </tr>
                 </thead>
                 <tbody>
-                    {% for survivor in undrafted_survivors %}
-                        <tr {% if survivor.winner %} class="winning_survivor 
-                        {% elif not survivor.status %} class="eliminated_survivor
-                        {% else %} class="surviving_survivor
-                        {% endif %} {% if survivor.status %} survivor_cursor {% else %} survivor_elim_cursor {% endif %}
-                        {% if survivor.fan_favorite %} survivor_card_fan_favorite {% endif %}">
+                    {% for team in season.team_set.all %}
+                        <tr class="{% if team.winner %}team_winner {% elif team.lost %}team_loser {% endif %}{% if team.user and request.user.id == team.user.id %} team_self{% endif %}">
                             <td>
-                                {% if survivor.pic.name %}
-                                    <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{survivor.pic.name}}"
-                                {% else %}
-                                    <img src="{{ STATIC_PREFIX }}survive/silhouette_small.webp"
-                                {% endif %}
-                                {% if survivor.tribe != None %}
-                                    style="border: 2px solid {{ survivor.tribe.color }};"
-                                {% endif %} />
-                            </td>
-                            <td>
-                                <a href="survivor/{{survivor.id}}/">
-                                    {{ survivor.name }}
-                                </a>
-                            </td>
-                            <td>
-                                {% if survivor.winner %}
-                                    Sole Survivor
-                                {% elif survivor.status %}
-                                    Surviving
-                                {% else %}
-                                    Eliminated
+                                {{ team.name }}
+                                {% if not team.user and team_associable %}
+                                    <form method="POST" class="margin_top">
+                                        {% csrf_token %}
+                                        <button type="submit">Claim this team</button>
+                                        <input type="hidden" name="team_id" value="{{ team.id }}" />
+                                    </form>
                                 {% endif %}
                             </td>
-                            <td>
-                                {{ survivor.idols }} / {{ survivor.immunities }} / {{ survivor.confessionals }}
-                            </td>
-                            <td class={% if survivor.status %}"survivor_cursor_help"{% else %}"survivor_elim_cursor_help"{% endif %} title="{{survivor.points.1}}">
-                                <table class="points_table">
-                                    <tr>
-                                        <td class="points_table_left"></td>
-                                        <td class="points_table_center">{{ survivor.points.0 }} </td>
-                                        <td class="points_table_right"><p class="tooltip">?</p></td>
-                                    </tr>
-                                </table>
-                            </td>
-                            {% if not team_associable and season.is_season_active and season.survivor_drafting %}
-                            <td>
-                                <form method="POST" class="margin_top">
-                                    {% csrf_token %}
-                                    <button type="submit">Draft</button>
-                                    <input type="hidden" name="survivor_id_draft" value="{{ survivor.id }}" />
-                                </form>
-                            </td>
+                            <td>{{ team.captain }}</td>
+                            {% if team.survivor_set.all %}
+                                <td>                              
+                                    <table class="survivor_list table_bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Portrait</th>
+                                                <th>Name</th>
+                                                <th>Status</th>
+                                                <th>
+                                                    Idols / <br />
+                                                    Immunities / <br />
+                                                    Confessionals
+                                                </th>
+                                                <th>Points</th>
+                                                {% if not team_associable and season.is_season_active and season.survivor_drafting %}
+                                                    <th>Undraft</th>
+                                                {% endif %}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for survivor in team.survivor_set.all %}
+                                                <tr {% if survivor.winner %} class="winning_survivor 
+                                                {% elif not survivor.status %} class="eliminated_survivor
+                                                {% else %} class="surviving_survivor
+                                                {% endif %} {% if survivor.status %} survivor_cursor {% else %} survivor_elim_cursor {% endif %}
+                                                {% if survivor.fan_favorite %} survivor_card_fan_favorite {% endif %}">
+                                                    <td>
+                                                        {% if survivor.pic.name %}
+                                                            <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{survivor.pic.name}}"
+                                                        {% else %}
+                                                            <img src="{{ STATIC_PREFIX }}survive/silhouette_small.webp"
+                                                        {% endif %}
+                                                        {% if survivor.tribe != None %}
+                                                            style="border: 2px solid {{ survivor.tribe.color }};"
+                                                        {% endif %} />
+                                                    </td>
+                                                    <td>
+                                                        <a href="survivor/{{survivor.id}}/">
+                                                            {{ survivor.name }}
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        {% if survivor.winner %}
+                                                            Sole Survivor
+                                                        {% elif survivor.status %}
+                                                            Surviving
+                                                        {% else %}
+                                                            Eliminated
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {{ survivor.idols }} / {{ survivor.immunities }} / {{ survivor.confessionals }}
+                                                    </td>
+                                                    <td class={% if survivor.status %}"survivor_cursor_help"{% else %}"survivor_elim_cursor_help"{% endif %} title="{{survivor.points.1}}">
+                                                        <table class="points_table">
+                                                            <tr>
+                                                                <td class="points_table_left"></td>
+                                                                <td class="points_table_center">{{ survivor.points.0 }} </td>
+                                                                <td class="points_table_right"><p class="tooltip">?</p></td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                    {% if not team_associable and season.is_season_active and season.survivor_drafting and user_team_id == team.id %}
+                                                        <td>
+                                                            <form method="POST" class="margin_top">
+                                                                {% csrf_token %}
+                                                                <button type="submit">Undraft</button>
+                                                                <input type="hidden" name="survivor_id_undraft" value="{{ survivor.id }}" />
+                                                            </form>
+                                                        </td>
+                                                    {% endif %}
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td>{{ team.points }}</td>
                             {% endif %}
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         {% endif %}
+        {% if undrafted_survivors %}
+                <hr />
+                <h2>{% if display_type == "tribe" %}Untribed{% else %}Undrafted{% endif %} Survivors</h2>
+                <table class="table_center table_bordered">
+                    <thead>
+                        <th>Portrait</th>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>
+                            Idols / <br />
+                            Immunities / <br />
+                            Confessionals
+                        </th>
+                        <th>Points</th>
+                        {% if not team_associable and season.is_season_active and season.survivor_drafting and display_type != "tribe" %}
+                            <th>Draft</th>
+                        {% endif %}
+                    </thead>
+                    <tbody>
+                        {% for survivor in undrafted_survivors %}
+                            <tr {% if survivor.winner %} class="winning_survivor 
+                            {% elif not survivor.status %} class="eliminated_survivor
+                            {% else %} class="surviving_survivor
+                            {% endif %} {% if survivor.status %} survivor_cursor {% else %} survivor_elim_cursor {% endif %}
+                            {% if survivor.fan_favorite %} survivor_card_fan_favorite {% endif %}">
+                                <td>
+                                    {% if survivor.pic.name %}
+                                        <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{survivor.pic.name}}"
+                                    {% else %}
+                                        <img src="{{ STATIC_PREFIX }}survive/silhouette_small.webp"
+                                    {% endif %}
+                                    {% if survivor.tribe != None %}
+                                        style="border: 2px solid {{ survivor.tribe.color }};"
+                                    {% endif %} />
+                                </td>
+                                <td>
+                                    <a href="survivor/{{survivor.id}}/">
+                                        {{ survivor.name }}
+                                    </a>
+                                </td>
+                                <td>
+                                    {% if survivor.winner %}
+                                        Sole Survivor
+                                    {% elif survivor.status %}
+                                        Surviving
+                                    {% else %}
+                                        Eliminated
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ survivor.idols }} / {{ survivor.immunities }} / {{ survivor.confessionals }}
+                                </td>
+                                <td class={% if survivor.status %}"survivor_cursor_help"{% else %}"survivor_elim_cursor_help"{% endif %} title="{{survivor.points.1}}">
+                                    <table class="points_table">
+                                        <tr>
+                                            <td class="points_table_left"></td>
+                                            <td class="points_table_center">{{ survivor.points.0 }} </td>
+                                            <td class="points_table_right"><p class="tooltip">?</p></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                {% if not team_associable and season.is_season_active and season.survivor_drafting and display_type != "tribe" %}
+                                <td>
+                                    <form method="POST" class="margin_top">
+                                        {% csrf_token %}
+                                        <button type="submit">Draft</button>
+                                        <input type="hidden" name="survivor_id_draft" value="{{ survivor.id }}" />
+                                    </form>
+                                </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
     {% endif %}
 {% endblock %}
