@@ -25,6 +25,9 @@
                 <div class="survivor_card_right survivor_card_medium">
                     <p>Team: {{survivor.team.name}}</p>
                     <p>Team Captain: {{survivor.team.captain}}</p>
+                    {% if survivor.tribe != None %}
+                        <p>Tribe: <span style="color: {{survivor.tribe.color}}">{{survivor.tribe.name}}</span></p>
+                    {% endif %}
                 </div>
             </div>
             <div class="survivor_card_medium">
