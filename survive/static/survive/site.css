@@ -50,6 +50,12 @@
     margin-right: auto;
 }
 
+.table_center th,
+.table_center td {
+    overflow-wrap: break-word;
+}
+
+
 .table_bordered th,
 .table_bordered td {
     border: 1px solid black;
@@ -178,7 +184,24 @@
     display: table;
     text-align: center;
     background-color: #67d4e9;
-    width: 50%;
+}
+
+@media screen and (1150px < width) {
+    .body_content {
+        width: 50%;
+    }
+}
+
+@media screen and (950px <= width <= 1150px) {
+    .body_content {
+        width: 75%;
+    }
+}
+
+@media screen and (width < 950px) {
+    .body_content {
+        width: 100%;
+    }
 }
 
 .points_table {
@@ -292,4 +315,10 @@ button, select, label {
 
 .auto_horizontal_margins {
     margin: 0 auto;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
 }
