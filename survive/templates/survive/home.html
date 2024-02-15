@@ -9,7 +9,7 @@
     <div>
         <form method="GET">
             <label>View: </label>
-            <select class="theme_selector" name="display_type" onchange="this.form.submit()">
+            <select class="text-lg bg-survivor-blue" name="display_type" onchange="this.form.submit()">
                 <option value="default">By Team (Default)</option>
                 <option value="tribe" {% if display_type == "tribe" %}selected{% endif %}>By Tribe</option>
             </select>
@@ -19,10 +19,10 @@
         {% load static %}
         {% get_static_prefix as STATIC_PREFIX %}
         {% if team_associable and not season.is_season_open %}
-            <fieldset>
-                <legend class="auto_horizontal_margins">Create new team</legend>
+            <fieldset class="border border-solid border-gray-300">
+                <legend class="mx-auto">Create new team</legend>
                 <p>You are not associated with a team this season. Would you like to create a new one?</p>
-                <form method="POST">
+                <form class="space-y-1.5"method="POST">
                     {% csrf_token %}
                     {{ team_form.as_p }}
                     <button type="submit">Add new team</button>

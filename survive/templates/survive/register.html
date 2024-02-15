@@ -9,8 +9,7 @@
     <h1>Register</h1>
     <form class="list_style_position_inside" method="POST">
         {% csrf_token %}
-        <fieldset>
-
+        <fieldset class="border border-solid border-gray-300">
             <div>
                 {{ form.username.errors }}
                 <div>{{ form.username.label_tag }} {{ form.username }}</div>

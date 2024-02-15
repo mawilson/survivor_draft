@@ -14,19 +14,19 @@
         {% block navbar %}
             <table class="navbar">
                 <tr>
-                    <td class="float_left">
+                    <td class="float-left">
                         {% block navbar_home %}<a href="{% url 'home' %}" class="navbar_item">Home</a>{% endblock %}
                     </td>
-                    <td class="float_left">
+                    <td class="float-left">
                         {% block navbar_ff %}<a href="{% url 'fan_favorite' %}" class="navbar_item">Fan Favorite</a>{% endblock %}
                     </td>
-                    <td class="float_left">
+                    <td class="float-left">
                         {% block navbar_predictions %}<a href="{% url 'predictions' %}" class="navbar_item">Predictions</a>{% endblock %}
                     </td>
-                    <td class="float_left">
+                    <td class="float-left">
                         {% block navbar_rubric %}<a href="{% url 'rubric' %}" class="navbar_item">Rubrics</a>{% endblock %}
                     </td>
-                    <td class="float_right">
+                    <td class="float-right">
                         {% block navbar_login %}
                             {% if request.user.is_authenticated %}
                                 <a href="{% url 'logout' %}" class="navbar_item">Logout</a>
@@ -35,16 +35,16 @@
                             {% endif %}
                         {% endblock %}
                     </td>
-                    <td class="float_right">
+                    <td class="float-right">
                         {% block navbar_profile %}<a href="{% url 'profile' %}" class="navbar_item">
                             {% if request.user.is_authenticated %}{{ user.username }}{% else %}Profile{% endif %}
                         </a>{% endblock %}
                     </td>
                 </tr>
             </table>
-            <div class="float_right background_readable">
+            <div class="float-right background_readable">
                 <label>Theme:</label>
-                <select id="theme_selector" onchange="themeChange(this.value, set_cookie=true)" class="theme_selector">
+                <select id="theme_selector" onchange="themeChange(this.value, set_cookie=true)" class="text-lg bg-survivor-blue">
                     <option value="jeff">Original Jeff Theme</option>
                     <option value="unjeff">Jeffless Void</option>
                     <option value="jeff_grey">Jeff but Grey</option>
@@ -60,9 +60,9 @@
             <br />
         {% endblock %}
         {% block season_selector %}
-            <form class="float_left background_readable">
+            <form class="float-left background_readable">
                 <label class="background_readable">Season:</label>
-                <select class="theme_selector" name="season_id" onchange="this.form.submit()">
+                <select class="text-lg bg-survivor-blue" name="season_id" onchange="this.form.submit()">
                     {% for s in seasons %}
                         <option value="{{ s.id }}" {% if season.id is s.id %}selected{% endif %}>{{s.name}}</option>
                     {% endfor %}
@@ -71,7 +71,7 @@
         {% endblock %}
         <div class="body_content">
             {% block content %}{% endblock %}
-            <hr class="max_width"/>
+            <hr class="w-full"/>
             <footer>
                 <p>Mt Wlsn 2024</p>
             </footer>
