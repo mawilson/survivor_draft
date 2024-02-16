@@ -18,10 +18,8 @@
                         <img src="{{ STATIC_PREFIX }}survive/silhouette_large.webp"
                     {% endif %}
                     {% if survivor.tribe != None %}
-                        style="border: 2px solid {{ survivor.tribe.color }};"
-                    {% else %}
-                        class="survivor_portrait_big"
-                    {% endif %} />
+                        style="border: 2px solid {{ survivor.tribe.color }};" 
+                    {% endif %} class="max-w-[623px] max-h-[934px]" />
                 </div>
                 <div class="survivor_card_right survivor_card_medium">
                     <p>Team: {{survivor.team.name}}</p>

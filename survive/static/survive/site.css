@@ -97,13 +97,6 @@
     border: 1px solid black;
 }
 
-.survivor_portrait_big {
-    max-height: 500px;
-    max-width: 500px;
-    height: auto;
-    width: auto;
-}
-
 .survivor_card {
     background-color:#67d4e9;
     width: 100%;
