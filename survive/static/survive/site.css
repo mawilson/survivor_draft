@@ -135,31 +135,16 @@
     margin: 0px 100px 0px 20px;
 }
 
-.navbar {
-    background-color: lightslategray;
-    font-size: 1em;
-    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    color: white;
-    padding: 8px 5px 8px 5px;
-    width: 100%;
-}
-
-.navbar a {
-    text-decoration: none;
-    color: inherit;
-}
-
 .navbar_current {
-    padding-left: 5px;
-    font-size: 1.2em;
-    font-weight: 600;
-    margin-right: 30px;
+    @apply font-semibold text-lg text-white no-underline ml-1.5 pr-7 leading-6;
 }
 
 .navbar_item {
-    padding-left: 5px;
-    font-variant: small-caps;
-    margin-right: 30px;
+    @apply uppercase text-base text-white no-underline hover:underline ml-1.5 pr-7 leading-6;
+}
+
+.link {
+    @apply underline text-link-blue hover:text-blue-800 visited:text-link-purple;
 }
 
 .body_content {

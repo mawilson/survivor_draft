@@ -5,6 +5,8 @@ module.exports = {
     extend: {
       colors: {
         'survivor-blue': '#439BA6',
+        'link-blue': '#0066CC',
+        'link-purple': '#551a8b',
       },
     },
   },

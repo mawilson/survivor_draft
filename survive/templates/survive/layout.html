@@ -12,7 +12,7 @@
     <body class="theme_jeff">
         <script src="{% static 'survive/site.js' %}"></script>
         {% block navbar %}
-            <table class="navbar">
+            <table class="w-full py-2 px-1.5 text-white font-sans bg-slate-500">
                 <tr>
                     <td class="float-left">
                         {% block navbar_home %}<a href="{% url 'home' %}" class="navbar_item">Home</a>{% endblock %}
@@ -55,7 +55,7 @@
         {% endblock %}
         {% block back_to_home %}
             <button class="background_readable">
-                <a href="{% url 'home' %}">Back</a>
+                <a class="link" href="{% url 'home' %}">Back</a>
             </button>
             <br />
         {% endblock %}
