@@ -44,7 +44,7 @@
             </table>
             <div class="float-right background_readable">
                 <label>Theme:</label>
-                <select id="theme_selector" onchange="themeChange(this.value, set_cookie=true)" class="text-lg bg-survivor-blue">
+                <select id="theme_selector" onchange="themeChange(this.value, set_cookie=true)">
                     <option value="jeff">Original Jeff Theme</option>
                     <option value="unjeff">Jeffless Void</option>
                     <option value="jeff_grey">Jeff but Grey</option>
@@ -62,7 +62,7 @@
         {% block season_selector %}
             <form class="float-left background_readable">
                 <label class="background_readable">Season:</label>
-                <select class="text-lg bg-survivor-blue" name="season_id" onchange="this.form.submit()">
+                <select name="season_id" onchange="this.form.submit()">
                     {% for s in seasons %}
                         <option value="{{ s.id }}" {% if season.id is s.id %}selected{% endif %}>{{s.name}}</option>
                     {% endfor %}

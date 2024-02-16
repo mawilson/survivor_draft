@@ -9,7 +9,7 @@
     <div>
         <form method="GET">
             <label>View: </label>
-            <select class="text-lg bg-survivor-blue" name="display_type" onchange="this.form.submit()">
+            <select name="display_type" onchange="this.form.submit()">
                 <option value="default">By Team (Default)</option>
                 <option value="tribe" {% if display_type == "tribe" %}selected{% endif %}>By Tribe</option>
             </select>
