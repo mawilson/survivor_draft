@@ -444,6 +444,13 @@ video {
   display: none;
 }
 
+h1 {
+  margin-bottom: 1rem;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+}
+
 *, ::before, ::after {
   --tw-border-spacing-x: 0;
   --tw-border-spacing-y: 0;
@@ -556,9 +563,17 @@ video {
   float: left;
 }
 
+.m-1 {
+  margin: 0.25rem;
+}
+
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
 }
 
 .block {
@@ -607,9 +622,18 @@ video {
   background-color: rgb(67 155 166 / var(--tw-bg-opacity));
 }
 
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
 .text-lg {
   font-size: 1.125rem;
   line-height: 1.75rem;
+}
+
+.font-bold {
+  font-weight: 700;
 }
 
 .theme_jeff {
@@ -721,10 +745,6 @@ video {
 
 .survivor_card_lr {
   display: inline-block;
-}
-
-.survivor_card_h1 {
-  margin: 5px;
 }
 
 .survivor_card_text_right {
@@ -899,8 +919,4 @@ button, select, label {
 
 .errorlist {
   color: red;
-}
-
-.list_style_position_inside {
-  list-style-position: inside;
 }

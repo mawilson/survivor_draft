@@ -4,8 +4,8 @@
 {% endblock %}
 {% block navbar_home %}<a href="{% url 'home' %}" class="navbar_current">Home</a>{% endblock %}
 {% block back_to_home %}{% endblock %}
+{% block page_title %}Season Overview{% endblock %}
 {% block content %}
-    <h1>Season Overview</h1>
     <div>
         <form method="GET">
             <label>View: </label>
@@ -19,15 +19,15 @@
         {% load static %}
         {% get_static_prefix as STATIC_PREFIX %}
         {% if team_associable and not season.is_season_open %}
-            <fieldset class="border border-solid border-gray-300">
-                <legend class="mx-auto">Create new team</legend>
-                <p>You are not associated with a team this season. Would you like to create a new one?</p>
-                <form class="space-y-1.5"method="POST">
-                    {% csrf_token %}
-                    {{ team_form.as_p }}
-                    <button type="submit">Add new team</button>
-                </form>
-            </fieldset>
+            <form method="POST">   
+                <fieldset class="border border-solid border-gray-300 space-y-1.5">
+                    <legend class="mx-auto">Create new team</legend>
+                    <p>You are not associated with a team this season. Would you like to create a new one?</p>
+                        {% csrf_token %}
+                        {{ team_form.as_p }}
+                        <button type="submit">Add new team</button>
+                </fieldset>
+            </form>
         {% endif %}
 
         {% if display_type == "tribe" %}

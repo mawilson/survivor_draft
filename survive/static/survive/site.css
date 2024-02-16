@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    h1 {
+        @apply text-3xl font-bold mb-4;
+    }
+}
+
 .theme_jeff {
     background-image: url("/static/images/jeff.png");
     background-repeat: repeat;
@@ -112,10 +118,6 @@
 
 .survivor_card_lr {
     display: inline-block;
-}
-
-.survivor_card_h1 {
-    margin: 5px;
 }
 
 .survivor_card_text_right {
@@ -291,8 +293,4 @@ button, select, label {
 
 .errorlist {
     color: red;
-}
-
-.list_style_position_inside {
-    list-style-position: inside;
 }

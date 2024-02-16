@@ -3,12 +3,13 @@
     Survivor Overview
 {% endblock %}
 {% block season_selector %}{% endblock %}
+{% block _page_title %}{% endblock %}
 {% block content %}
     {% if survivor %}
         {% load static %}
         {% get_static_prefix as STATIC_PREFIX %}
         <div class="survivor_card {% if survivor.fan_favorite %}survivor_card_fan_favorite {% endif %}{% if survivor.status %}survivor_cursor{% else %}survivor_elim_cursor{% endif %}">
-            <h1 class="survivor_card_h1">{{survivor.name}}</h1>
+            <h1>{{survivor.name}}</h1>
             <div class="survivor_card_lr">
                 <div class="survivor_card_left">
                     {% if survivor.pic.name %}

@@ -6,8 +6,8 @@
     {% if request.user.is_authenticated %}{{ user.username }}{% else %}Profile{% endif %}
 </a>{% endblock %}{% block back_to_home %}{% endblock %}
 {% block season_selector %}{% endblock %}
+{% block page_title %}Profile{% endblock %}
 {% block content %}
-    <h1>Profile</h1>
     {% if request.user.is_authenticated %}
         {% if edit %}
             <form method="POST">
