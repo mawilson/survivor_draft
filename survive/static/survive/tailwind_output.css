@@ -622,6 +622,10 @@ h1 {
   background-color: rgb(100 116 139 / var(--tw-bg-opacity));
 }
 
+.p-1 {
+  padding: 0.25rem;
+}
+
 .px-1 {
   padding-left: 0.25rem;
   padding-right: 0.25rem;
@@ -679,12 +683,6 @@ h1 {
 .theme_selector {
   font-size: larger;
   background-color: #67d4e9;
-}
-
-.background_readable {
-  background-color:#67d4e9;
-  display: inline-block;
-  padding: 5px;
 }
 
 .table_center {
@@ -814,13 +812,13 @@ h1 {
 }
 
 .body_content {
-  padding: 5px;
   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin-left: auto;
   margin-right: auto;
-  display: table;
+  padding: 5px;
   text-align: center;
   background-color: #67d4e9;
+  flex: auto;
 }
 
 @media screen and (1150px < width) {
@@ -963,4 +961,8 @@ select {
   padding: 2px;
   font-size: large;
   border: 2px inset lightgrey;
+}
+
+.survivor_blue {
+  background-color: #67d4e9;
 }

@@ -43,12 +43,6 @@
     background-color: #67d4e9;
 }
 
-.background_readable {
-    background-color:#67d4e9;
-    display: inline-block;
-    padding: 5px;
-}
-
 .table_center {
     table-layout: auto;
     background-color: #67d4e9;
@@ -150,10 +144,9 @@
 .body_content {
     padding: 5px;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
     margin-left: auto;
     margin-right: auto;
-    display: table;
+
     text-align: center;
     background-color: #67d4e9;
 }
@@ -282,4 +275,8 @@ select {
     padding: 2px;
     font-size: large;
     border: 2px inset lightgrey;
+}
+
+.survivor_blue {
+    background-color: #67d4e9;
 }

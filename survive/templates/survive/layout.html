@@ -42,7 +42,7 @@
                     </td>
                 </tr>
             </table>
-            <div class="float-right background_readable">
+            <div class="float-right survivor_blue p-1">
                 <label>Theme:</label>
                 <select id="theme_selector" onchange="themeChange(this.value, set_cookie=true)">
                     <option value="jeff">Original Jeff Theme</option>
@@ -54,14 +54,14 @@
             </div>
         {% endblock %}
         {% block back_to_home %}
-            <button class="background_readable">
+            <button>
                 <a class="link" href="{% url 'home' %}">Back</a>
             </button>
             <br />
         {% endblock %}
         {% block season_selector %}
-            <form class="float-left background_readable">
-                <label class="background_readable">Season:</label>
+            <form class="float-left survivor_blue p-1">
+                <label>Season:</label>
                 <select name="season_id" onchange="this.form.submit()">
                     {% for s in seasons %}
                         <option value="{{ s.id }}" {% if season.id is s.id %}selected{% endif %}>{{s.name}}</option>
