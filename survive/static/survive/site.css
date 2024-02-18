@@ -38,14 +38,8 @@
     background-size: 250px 250px;
 }
 
-.theme_selector {
-    font-size: larger;
-    background-color: #67d4e9;
-}
-
 .table_center {
     table-layout: auto;
-    background-color: #67d4e9;
     margin-left: auto;
     margin-right: auto;
 }
@@ -55,6 +49,10 @@
     overflow-wrap: break-word;
 }
 
+.table_bordered {
+    border-collapse: separate;
+    border-spacing: 6px;
+}
 
 .table_bordered th,
 .table_bordered td {
@@ -63,16 +61,7 @@
 
 .table_center th,
 .table_center td {
-    text-align: center;
     padding-right: 2px;
-}
-
-.team_winner {
-    background-color: gold;
-}
-
-.team_loser {
-    background-color: grey;
 }
 
 .team_self td {
@@ -86,7 +75,6 @@
 
 .survivor_list th,
 .survivor_list td {
-    text-align: center;
     padding: 2px 5px;
     border: 1px solid black;
 }

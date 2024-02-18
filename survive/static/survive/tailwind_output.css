@@ -630,9 +630,19 @@ h1 {
   border-color: rgb(209 213 219 / var(--tw-border-opacity));
 }
 
+.bg-neutral-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(115 115 115 / var(--tw-bg-opacity));
+}
+
 .bg-slate-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(100 116 139 / var(--tw-bg-opacity));
+}
+
+.bg-yellow-400 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(250 204 21 / var(--tw-bg-opacity));
 }
 
 .p-1 {
@@ -718,14 +728,8 @@ h1 {
   background-size: 250px 250px;
 }
 
-.theme_selector {
-  font-size: larger;
-  background-color: #67d4e9;
-}
-
 .table_center {
   table-layout: auto;
-  background-color: #67d4e9;
   margin-left: auto;
   margin-right: auto;
 }
@@ -735,6 +739,11 @@ h1 {
   overflow-wrap: break-word;
 }
 
+.table_bordered {
+  border-collapse: separate;
+  border-spacing: 6px;
+}
+
 .table_bordered th,
 .table_bordered td {
   border: 1px solid black;
@@ -742,16 +751,7 @@ h1 {
 
 .table_center th,
 .table_center td {
-  text-align: center;
   padding-right: 2px;
-}
-
-.team_winner {
-  background-color: gold;
-}
-
-.team_loser {
-  background-color: grey;
 }
 
 .team_self td {
@@ -765,7 +765,6 @@ h1 {
 
 .survivor_list th,
 .survivor_list td {
-  text-align: center;
   padding: 2px 5px;
   border: 1px solid black;
 }

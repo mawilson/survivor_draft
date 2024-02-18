@@ -124,7 +124,7 @@
                 </thead>
                 <tbody>
                     {% for team in season.team_set.all %}
-                        <tr class="{% if team.winner %}team_winner {% elif team.lost %}team_loser {% endif %}{% if team.user and request.user.id == team.user.id %} team_self{% endif %}">
+                        <tr class="{% if team.winner %}bg-yellow-400 {% elif team.lost %}bg-neutral-500 {% endif %}{% if team.user and request.user.id == team.user.id %} team_self{% endif %}">
                             <td>
                                 {{ team.name }}
                                 {% if not team.user and team_associable %}
