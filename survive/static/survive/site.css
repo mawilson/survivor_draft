@@ -1,3 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    h1 {
+        @apply text-3xl font-bold mb-4;
+    }
+}
+
 .theme_jeff {
     background-image: url("/static/images/jeff.png");
     background-repeat: repeat;
@@ -28,24 +38,8 @@
     background-size: 250px 250px;
 }
 
-.theme_selector_div {
-    float: right;
-}
-
-.theme_selector {
-    font-size: larger;
-    background-color: #67d4e9;
-}
-
-.background_readable {
-    background-color:#67d4e9;
-    display: inline-block;
-    padding: 5px;
-}
-
 .table_center {
     table-layout: auto;
-    background-color: #67d4e9;
     margin-left: auto;
     margin-right: auto;
 }
@@ -55,6 +49,10 @@
     overflow-wrap: break-word;
 }
 
+.table_bordered {
+    border-collapse: separate;
+    border-spacing: 6px;
+}
 
 .table_bordered th,
 .table_bordered td {
@@ -63,16 +61,7 @@
 
 .table_center th,
 .table_center td {
-    text-align: center;
     padding-right: 2px;
-}
-
-.team_winner {
-    background-color: gold;
-}
-
-.team_loser {
-    background-color: grey;
 }
 
 .team_self td {
@@ -86,23 +75,8 @@
 
 .survivor_list th,
 .survivor_list td {
-    text-align: center;
     padding: 2px 5px;
     border: 1px solid black;
-}
-
-.survivor_portrait_big {
-    max-height: 500px;
-    max-width: 500px;
-    height: auto;
-    width: auto;
-}
-
-.survivor_card {
-    background-color:#67d4e9;
-    width: 100%;
-    text-align: left;
-    margin-left: 5px;
 }
 
 .survivor_card_fan_favorite {
@@ -110,78 +84,23 @@
     #67d4e9;
 }
 
-.survivor_card_lr {
-    display: inline-block;
-}
-
-.survivor_card_h1 {
-    margin: 5px;
-}
-
-.survivor_card_text_right {
-    text-align: right;
-}
-
-.survivor_card_medium {
-    margin-right: 5px;
-}
-
-.survivor_card_medium p {
-    font-size: medium;
-    margin: 3px 0px 6px 0px;
-}
-
-.survivor_card_left {
-    float: left;
-}
-
-.survivor_card_right {
-    float: right;
-    margin: 0px 100px 0px 20px;
-}
-
-.navbar {
-    background-color: lightslategray;
-    font-size: 1em;
-    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    color: white;
-    padding: 8px 5px 8px 5px;
-    width: 100%;
-}
-
-.navbar a {
-    text-decoration: none;
-    color: inherit;
-}
-
 .navbar_current {
-    padding-left: 5px;
-    font-size: 1.2em;
-    font-weight: 600;
-    margin-right: 30px;
+    @apply font-semibold text-lg text-white no-underline ml-1.5 pr-7 leading-6;
 }
 
 .navbar_item {
-    padding-left: 5px;
-    font-variant: small-caps;
-    margin-right: 30px;
+    @apply uppercase text-base text-white no-underline hover:underline ml-1.5 pr-7 leading-6;
 }
 
-.float_left {
-    float: left;
-}
-
-.float_right {
-    float: right;
+.link {
+    @apply underline text-link-blue hover:text-blue-800 visited:text-link-purple;
 }
 
 .body_content {
     padding: 5px;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
     margin-left: auto;
     margin-right: auto;
-    display: table;
     text-align: center;
     background-color: #67d4e9;
 }
@@ -210,7 +129,6 @@
 
 .points_table td {
     border: 0px;
-    padding: 2px;
 }
 
 .points_table .points_table_left {
@@ -218,20 +136,17 @@
 }
 
 .points_table .points_table_center {
-    text-align: center;
-    padding: 2px 0px;
     width: 33%;
 }
 
 .points_table .points_table_right {
-    text-align: center;
     width: 33%;
 }
 
 .tooltip {
     display: inline;
     border-bottom: 1px dashed #000;
-    margin-left: 90%;
+    float: right;
 }
 
 .survivor_cursor {
@@ -275,50 +190,22 @@ button, select, label {
     font-weight: bold;
 }
 
-.fan_favorite_form {
-    padding: 5px;
-}
-
-.fan_favorite_results {
-    padding: 5px;
-    text-align: center;
-    background-color: #67d4e9;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.fan_favorite_results p {
-    background-color: #67d4e9;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    padding: 5px 0px;
-}
-
 .errorlist {
     color: red;
 }
 
-.max_width {
-    width: 100%;
+button,
+input[type=submit] {
+    @apply bg-slate-200 hover:bg-slate-300 p-0.5 my-0.5 rounded-md drop-shadow !important; /* important necessary to overwrite Tailwind Preflight transparenting the background */
 }
 
-.list_style_position_inside {
-    list-style-position: inside;
+select {
+    background-color: #67d4e9;
+    padding: 2px;
+    font-size: large;
+    border: 2px inset lightgrey;
 }
 
-.margin_top {
-    margin-top: 10px;
-}
-
-.auto_horizontal_margins {
-    margin: 0 auto;
-}
-
-img {
-    max-width: 100%;
-    height: auto;
-    display: block;
+.survivor_blue {
+    background-color: #67d4e9;
 }

@@ -4,10 +4,10 @@
 {% endblock %}
 {% block navbar_profile %}<a href="{% url 'profile' %}" class="navbar_current">
     {% if request.user.is_authenticated %}{{ user.username }}{% else %}Profile{% endif %}
-</a>{% endblock %}{% block back_to_home %}{% endblock %}
+</a>{% endblock %}
 {% block season_selector %}{% endblock %}
+{% block page_title %}Profile{% endblock %}
 {% block content %}
-    <h1>Profile</h1>
     {% if request.user.is_authenticated %}
         {% if edit %}
             <form method="POST">
@@ -112,7 +112,7 @@
             {% endif %}
         {% endwith %}
         <br /><br />
-        <a href="{% url 'password_change' %}">Change Password</a>
+        <a class="link" href="{% url 'password_change' %}">Change Password</a>
     {% else %}
         No profile for an inauthenticated user.
     {% endif %}

@@ -3,14 +3,12 @@
     Register Page
 {% endblock %}
 {% block navbar_login %}<a href="{% url 'login' %}" class="navbar_current">Login</a>{% endblock %}
-{% block back_to_home %}{% endblock %}
 {% block season_selector %}{% endblock %}
+{% block page_title %}Register{% endblock %}
 {% block content %}
-    <h1>Register</h1>
-    <form class="list_style_position_inside" method="POST">
+    <form method="POST">
         {% csrf_token %}
-        <fieldset>
-
+        <fieldset class="border border-solid border-gray-300 space-y-1.5">
             <div>
                 {{ form.username.errors }}
                 <div>{{ form.username.label_tag }} {{ form.username }}</div>

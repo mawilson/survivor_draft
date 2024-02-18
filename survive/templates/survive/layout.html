@@ -6,27 +6,27 @@
         <title>{% block title %}{% endblock %}</title>
         {% load static %}
         <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}" />
-        <link rel="stylesheet" type="text/css" href="{% static 'survive/site.css' %}"/>
+        <link rel="stylesheet" type="text/css" href="{% static 'survive/tailwind_output.css' %}"/>
     </head>
 
     <body class="theme_jeff">
         <script src="{% static 'survive/site.js' %}"></script>
         {% block navbar %}
-            <table class="navbar">
+            <table class="w-full py-2 px-1.5 text-white font-sans bg-slate-500">
                 <tr>
-                    <td class="float_left">
+                    <td class="float-left">
                         {% block navbar_home %}<a href="{% url 'home' %}" class="navbar_item">Home</a>{% endblock %}
                     </td>
-                    <td class="float_left">
+                    <td class="float-left">
                         {% block navbar_ff %}<a href="{% url 'fan_favorite' %}" class="navbar_item">Fan Favorite</a>{% endblock %}
                     </td>
-                    <td class="float_left">
+                    <td class="float-left">
                         {% block navbar_predictions %}<a href="{% url 'predictions' %}" class="navbar_item">Predictions</a>{% endblock %}
                     </td>
-                    <td class="float_left">
+                    <td class="float-left">
                         {% block navbar_rubric %}<a href="{% url 'rubric' %}" class="navbar_item">Rubrics</a>{% endblock %}
                     </td>
-                    <td class="float_right">
+                    <td class="float-right">
                         {% block navbar_login %}
                             {% if request.user.is_authenticated %}
                                 <a href="{% url 'logout' %}" class="navbar_item">Logout</a>
@@ -35,16 +35,16 @@
                             {% endif %}
                         {% endblock %}
                     </td>
-                    <td class="float_right">
+                    <td class="float-right">
                         {% block navbar_profile %}<a href="{% url 'profile' %}" class="navbar_item">
                             {% if request.user.is_authenticated %}{{ user.username }}{% else %}Profile{% endif %}
                         </a>{% endblock %}
                     </td>
                 </tr>
             </table>
-            <div class="float_right background_readable">
+            <div class="float-right survivor_blue p-1">
                 <label>Theme:</label>
-                <select id="theme_selector" onchange="themeChange(this.value, set_cookie=true)" class="theme_selector">
+                <select id="theme_selector" onchange="themeChange(this.value, set_cookie=true)">
                     <option value="jeff">Original Jeff Theme</option>
                     <option value="unjeff">Jeffless Void</option>
                     <option value="jeff_grey">Jeff but Grey</option>
@@ -53,16 +53,10 @@
                 </select>
             </div>
         {% endblock %}
-        {% block back_to_home %}
-            <button class="background_readable">
-                <a href="{% url 'home' %}">Back</a>
-            </button>
-            <br />
-        {% endblock %}
         {% block season_selector %}
-            <form class="float_left background_readable">
-                <label class="background_readable">Season:</label>
-                <select class="theme_selector" name="season_id" onchange="this.form.submit()">
+            <form class="float-left survivor_blue p-1">
+                <label>Season:</label>
+                <select name="season_id" onchange="this.form.submit()">
                     {% for s in seasons %}
                         <option value="{{ s.id }}" {% if season.id is s.id %}selected{% endif %}>{{s.name}}</option>
                     {% endfor %}
@@ -70,8 +64,9 @@
             </form>
         {% endblock %}
         <div class="body_content">
+            {% block _page_title %}<h1>{% block page_title %}{% endblock %}</h1>{% endblock %}
             {% block content %}{% endblock %}
-            <hr class="max_width"/>
+            <hr class="w-full"/>
             <footer>
                 <p>Mt Wlsn 2024</p>
             </footer>
