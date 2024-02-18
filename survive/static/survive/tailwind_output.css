@@ -568,13 +568,17 @@ h1 {
   margin-right: auto;
 }
 
-.my-auto {
-  margin-top: auto;
-  margin-bottom: auto;
+.mx-2 {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
 }
 
 .mr-2 {
   margin-right: 0.5rem;
+}
+
+.ml-2 {
+  margin-left: 0.5rem;
 }
 
 .block {
@@ -589,12 +593,32 @@ h1 {
   display: none;
 }
 
+.h-\[667px\] {
+  height: 667px;
+}
+
+.h-\[667\] {
+  height: 667;
+}
+
+.h-auto {
+  height: auto;
+}
+
 .max-h-\[667px\] {
   max-height: 667px;
 }
 
+.w-\[312px\] {
+  width: 312px;
+}
+
 .w-full {
   width: 100%;
+}
+
+.w-\[312\] {
+  width: 312;
 }
 
 .max-w-\[312px\] {
@@ -659,13 +683,16 @@ h1 {
   padding-bottom: 0.5rem;
 }
 
-.px-2 {
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-}
-
 .text-right {
   text-align: right;
+}
+
+.align-top {
+  vertical-align: top;
+}
+
+.align-bottom {
+  vertical-align: bottom;
 }
 
 .font-sans {
