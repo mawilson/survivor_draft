@@ -563,22 +563,22 @@ h1 {
   float: left;
 }
 
-.mx-auto {
-  margin-left: auto;
-  margin-right: auto;
-}
-
 .mx-2 {
   margin-left: 0.5rem;
   margin-right: 0.5rem;
 }
 
-.mr-2 {
-  margin-right: 0.5rem;
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.ml-2 {
-  margin-left: 0.5rem;
+.ml-1 {
+  margin-left: 0.25rem;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
 }
 
 .block {
@@ -593,20 +593,8 @@ h1 {
   display: none;
 }
 
-.h-\[667px\] {
-  height: 667px;
-}
-
-.h-\[667\] {
-  height: 667;
-}
-
 .h-auto {
   height: auto;
-}
-
-.max-h-\[667px\] {
-  max-height: 667px;
 }
 
 .w-\[312px\] {
@@ -615,14 +603,6 @@ h1 {
 
 .w-full {
   width: 100%;
-}
-
-.w-\[312\] {
-  width: 312;
-}
-
-.max-w-\[312px\] {
-  max-width: 312px;
 }
 
 .space-y-1 > :not([hidden]) ~ :not([hidden]) {
@@ -681,6 +661,10 @@ h1 {
 .py-2 {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
+}
+
+.text-left {
+  text-align: left;
 }
 
 .text-right {
@@ -786,29 +770,9 @@ h1 {
   border: 1px solid black;
 }
 
-.survivor_card {
-  background-color:#67d4e9;
-  width: 100%;
-  text-align: left;
-  margin-left: 5px;
-}
-
-.survivor_card_container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 200px;
-}
-
 .survivor_card_fan_favorite {
   background: linear-gradient(35deg, transparent 0% 90%, #de0021 91%, #ff6d27 92%, #ffe243 93%, #04df21 94%, #0bdde3 95%, #0067d8 96%, #ffb8d9 97%, transparent 98% 100%),
     #67d4e9;
-}
-
-.survivor_card_medium p {
-  font-size: medium;
-  margin: 3px 0px 6px 0px;
 }
 
 .navbar_current {

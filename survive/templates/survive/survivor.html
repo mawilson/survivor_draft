@@ -8,7 +8,7 @@
     {% if survivor %}
         {% load static %}
         {% get_static_prefix as STATIC_PREFIX %}
-        <div class="survivor_card {% if survivor.fan_favorite %}survivor_card_fan_favorite {% endif %}{% if survivor.status %}survivor_cursor{% else %}survivor_elim_cursor{% endif %}">
+        <div class="w-full text-left ml-1 {% if survivor.fan_favorite %}survivor_card_fan_favorite {% endif %}{% if survivor.status %}survivor_cursor{% else %}survivor_elim_cursor{% endif %}">
             <h1>{{survivor.name}}</h1>
 
             <table class="w-full">
