@@ -3,7 +3,6 @@
     Fan Favorite Vote Page
 {% endblock %}
 {% block navbar_ff %}<a href="{% url 'fan_favorite' %}" class="navbar_current">Fan Favorite</a>{% endblock %}
-{% block back_to_home %}{% endblock %}
 {% block page_title %}Fan Favorites{% endblock %}
 {% block content %}
     {% if not season.is_season_closed %}

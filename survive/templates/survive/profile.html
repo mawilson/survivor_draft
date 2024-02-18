@@ -4,7 +4,7 @@
 {% endblock %}
 {% block navbar_profile %}<a href="{% url 'profile' %}" class="navbar_current">
     {% if request.user.is_authenticated %}{{ user.username }}{% else %}Profile{% endif %}
-</a>{% endblock %}{% block back_to_home %}{% endblock %}
+</a>{% endblock %}
 {% block season_selector %}{% endblock %}
 {% block page_title %}Profile{% endblock %}
 {% block content %}
