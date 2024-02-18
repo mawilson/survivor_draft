@@ -21,17 +21,17 @@
             </form>
         {% else %}
             {% if not season.team_set.all %}
-                <p class="table_center fan_favorite_form">No teams were found in this season. Can't have a vote without a team to associate it with!</p>
+                <p class="table_center p-1">No teams were found in this season. Can't have a vote without a team to associate it with!</p>
             {% elif request.user.is_authenticated %}
-                <p class="table_center fan_favorite_form">No teams associated with your user were found in this season. Try claiming a team from this season first!</p>
+                <p class="table_center p-1">No teams associated with your user were found in this season. Try claiming a team from this season first!</p>
             {% else %}
-                <p class="table_center fan_favorite_form">No unclaimed teams were found in this season. Logged out users can only vote for teams not claimed by a user.</p>
+                <p class="table_center p-1">No unclaimed teams were found in this season. Logged out users can only vote for teams not claimed by a user.</p>
             {% endif %}
         {% endif %}
     {% else %}
         {% with results=season.fan_favorites_display %}
             {% if results|length > 1 %}
-                <div class="fan_favorite_results">
+                <div class="p-2">
                     <p>This season closed on {{season.season_close}}. Here are the fan favorite voting results!</p>
 
                     <table class="table_center table_bordered w-full">
@@ -61,7 +61,7 @@
                                             <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{team.fan_favorite_first.pic.name}}"
                                             {% if team.fan_favorite_first.tribe != None %}
                                                 style="border: 2px solid {{ team.fan_favorite_first.tribe.color }};"
-                                            {% endif %} />
+                                            {% endif %} class="mx-auto" />
                                         {% endif %}
                                     </td>
                                     <td>
@@ -69,7 +69,7 @@
                                             <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{team.fan_favorite_second.pic.name}}"
                                             {% if team.fan_favorite_second.tribe != None %}
                                                 style="border: 2px solid {{ team.fan_favorite_second.tribe.color }};"
-                                            {% endif %} />
+                                            {% endif %} class="mx-auto" />
                                         {% endif %}
                                     </td>
                                     <td>
@@ -77,7 +77,7 @@
                                             <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{team.fan_favorite_third.pic.name}}"
                                             {% if team.fan_favorite_third.tribe != None %}
                                                 style="border: 2px solid {{ team.fan_favorite_third.tribe.color }};"
-                                            {% endif %} />
+                                            {% endif %} class="mx-auto" />
                                         {% endif %}
                                     </td>
                                     {% if season.rubric.fan_favorite_negative_votes %}
@@ -86,7 +86,7 @@
                                             <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{team.fan_favorite_bad.pic.name}}"
                                             {% if team.fan_favorite_bad.tribe != None %}
                                                 style="border: 2px solid {{ team.fan_favorite_bad.tribe.color }};"
-                                            {% endif %} />
+                                            {% endif %} class="mx-auto" />
                                         {% endif %}
                                     </td>
                                     {% endif %}
@@ -95,7 +95,7 @@
                         </tbody>
                     </table>
                     {% for line in results %}
-                        <p>{{ line }}</p>
+                        <p class="py-1">{{ line }}</p>
                     {% endfor %}
                 </div>
             {% else %}

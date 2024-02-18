@@ -98,35 +98,22 @@
     margin-left: 5px;
 }
 
+.survivor_card_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 200px;
+}
+
 .survivor_card_fan_favorite {
     background: linear-gradient(35deg, transparent 0% 90%, #de0021 91%, #ff6d27 92%, #ffe243 93%, #04df21 94%, #0bdde3 95%, #0067d8 96%, #ffb8d9 97%, transparent 98% 100%),
     #67d4e9;
 }
 
-.survivor_card_lr {
-    display: inline-block;
-}
-
-.survivor_card_text_right {
-    text-align: right;
-}
-
-.survivor_card_medium {
-    margin-right: 5px;
-}
-
 .survivor_card_medium p {
     font-size: medium;
     margin: 3px 0px 6px 0px;
-}
-
-.survivor_card_left {
-    float: left;
-}
-
-.survivor_card_right {
-    float: right;
-    margin: 0px 100px 0px 20px;
 }
 
 .navbar_current {
@@ -146,7 +133,6 @@
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin-left: auto;
     margin-right: auto;
-
     text-align: center;
     background-color: #67d4e9;
 }
@@ -175,7 +161,6 @@
 
 .points_table td {
     border: 0px;
-    padding: 2px;
 }
 
 .points_table .points_table_left {
@@ -183,20 +168,17 @@
 }
 
 .points_table .points_table_center {
-    text-align: center;
-    padding: 2px 0px;
     width: 33%;
 }
 
 .points_table .points_table_right {
-    text-align: center;
     width: 33%;
 }
 
 .tooltip {
     display: inline;
     border-bottom: 1px dashed #000;
-    margin-left: 90%;
+    float: right;
 }
 
 .survivor_cursor {
@@ -240,33 +222,12 @@ button, select, label {
     font-weight: bold;
 }
 
-.fan_favorite_form {
-    padding: 5px;
-}
-
-.fan_favorite_results {
-    padding: 5px;
-    text-align: center;
-    background-color: #67d4e9;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.fan_favorite_results p {
-    background-color: #67d4e9;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    padding: 5px 0px;
-}
-
 .errorlist {
     color: red;
 }
 
-button {
+button,
+input[type=submit] {
     @apply bg-slate-200 hover:bg-slate-300 p-0.5 my-0.5 rounded-md drop-shadow !important; /* important necessary to overwrite Tailwind Preflight transparenting the background */
 }
 
