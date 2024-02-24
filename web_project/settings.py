@@ -29,7 +29,7 @@ if DEBUG:
 else:
     SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
-ALLOWED_HOSTS = ['127.0.0.1', '45.79.100.226', '0.0.0.0']
+ALLOWED_HOSTS = ['127.0.0.1', '45.79.100.226', '0.0.0.0', '24.22.54.151']
 
 # Application definition
 
