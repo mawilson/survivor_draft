@@ -113,7 +113,13 @@
                 </tbody>
             </table>
         {% else %}
-            <table class="table_center table_bordered">
+            <table class="table_center table_bordered table-fixed w-full">
+                <colgroup>
+                    <col class="w-2/12" />
+                    <col class="w-1/12" />
+                    <col class="w-4/6" />
+                    <col class="w-1/12" />
+                </colgroup>
                 <thead>
                     <tr>
                         <th>Team Name</th>
@@ -143,8 +149,8 @@
                                             <tr>
                                                 <th>Portrait</th>
                                                 <th>Name</th>
-                                                <th>Status</th>
-                                                <th>
+                                                <th class="hidden md:table-cell">Status</th>
+                                                <th class="hidden md:table-cell">
                                                     Idols / <br />
                                                     Immunities / <br />
                                                     Confessionals
@@ -177,7 +183,7 @@
                                                             {{ survivor.name }}
                                                         </a>
                                                     </td>
-                                                    <td>
+                                                    <td class="hidden md:table-cell">
                                                         {% if survivor.winner %}
                                                             Sole Survivor
                                                         {% elif survivor.status %}
@@ -186,7 +192,7 @@
                                                             Eliminated
                                                         {% endif %}
                                                     </td>
-                                                    <td>
+                                                    <td class="hidden md:table-cell">
                                                         {{ survivor.idols }} / {{ survivor.immunities }} / {{ survivor.confessionals }}
                                                     </td>
                                                     <td class={% if survivor.status %}"survivor_cursor_help"{% else %}"survivor_elim_cursor_help"{% endif %} title="{{survivor.points.1}}">
