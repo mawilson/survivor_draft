@@ -141,4 +141,6 @@ MEDIA_ROOT = [ BASE_DIR / 'media' ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = '/' # on login, redirect to home page (until a profiles page exists?)
+LOGIN_REDIRECT_URL = '/profile' # on login, redirect to profile page
+
+
