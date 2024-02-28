@@ -26,7 +26,6 @@ DEBUG = is_prod != "true" # if the env var is undefined, debug will be set to Tr
 
 # SECURITY WARNING: keep the secret key used in production secret!
 if DEBUG:
-    #SECRET_KEY = 'django-insecure-69*#8^1j2_l36h+n!4r6^*qd^-ajhs6$oft6-n)fakl3ytm!kz'
     SECRET_KEY = str(os.getenv('SECRET_KEY_DEV'))
 else:
     SECRET_KEY = str(os.getenv('SECRET_KEY'))
