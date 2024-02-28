@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+from django.core.management.utils import get_random_secret_key
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,9 +26,16 @@ DEBUG = is_prod != "true" # if the env var is undefined, debug will be set to Tr
 
 # SECURITY WARNING: keep the secret key used in production secret!
 if DEBUG:
-    SECRET_KEY = 'django-insecure-69*#8^1j2_l36h+n!4r6^*qd^-ajhs6$oft6-n)fakl3ytm!kz'
+    #SECRET_KEY = 'django-insecure-69*#8^1j2_l36h+n!4r6^*qd^-ajhs6$oft6-n)fakl3ytm!kz'
+    SECRET_KEY = str(os.getenv('SECRET_KEY_DEV'))
 else:
     SECRET_KEY = str(os.getenv('SECRET_KEY'))
+if SECRET_KEY is None: # if the appropriate environment variable for secret key was not present, generate a new one, then set it for future uses
+    SECRET_KEY = get_random_secret_key() # if environment has not provided a secret key, generate a random one for this server runtime
+    if DEBUG:
+        os.environ["SECRET_KEY_DEV"] = SECRET_KEY
+    else:
+        os.environ["SECRET_KEY"] = SECRET_KEY
 
 ALLOWED_HOSTS = ['127.0.0.1', '45.79.100.226', '0.0.0.0', '24.22.54.151']
 
