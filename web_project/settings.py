@@ -143,4 +143,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/profile' # on login, redirect to profile page
 
-
+if not DEBUG: # Security/HTTPS settings to be set when not in development mode
+    SECURE_SSL_REDIRECT = True # redirect all non-HTTPS requests to HTTPS
+    SESSION_COOKIE_SECURE = True # generate secure cookies
+    CSRF_COOKIE_SECURE = True # sessions will not work over HTTP, & POST data will not be sent over HTTP - should be fine given SECURE_SSL_REDIRECT to HTTPS
+    SECURE_HSTS_SECONDS = 3600 # small value temporary, later 31536000 (one year). 
