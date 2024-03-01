@@ -1,6 +1,7 @@
 // onChange event for the Theme form change. Cookie only gets set if setCookie provided as 'true'
 function themeChange(value, setCookie) {
     let cookie, className;
+    let age = (30 * 60 * 24 * 365) // half of a year lifetime
     switch(value) {
         case "unjeff":
             cookie = "survivorTheme=unjeff;samesite=lax;path=/;";
@@ -23,6 +24,7 @@ function themeChange(value, setCookie) {
             cookie = "survivorTheme=jeff;samesite=lax;path=/;";
             className = "theme_jeff";
     }
+    cookie = cookie + "max-age=" + age + ";";
     if (setCookie) {
         document.cookie = cookie;
     }

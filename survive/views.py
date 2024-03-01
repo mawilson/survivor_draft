@@ -40,7 +40,8 @@ def season_selector_request(request):
 def season_selector_response(response, new_season_id):
     """Helper function to interact with cookies to set season ID cookie if a new one has been provided"""
     if new_season_id:
-        response.set_cookie("season_id", new_season_id, samesite="Lax")
+        age = 30 * 60 * 24 * 365 # half of a year lifetime
+        response.set_cookie("season_id", new_season_id, samesite="Lax", max_age=age)
 
 def home(request):
     context, new_season_id = season_selector_request(request)
