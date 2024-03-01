@@ -8,4 +8,4 @@ Survivor data includes overall placement, number of immunities won, idols found,
 
 Future plans include graph visualization, historical data, user accounts, comments, DB administrative capabilities (modifying stuff thru the UI instead of thru an external DB tool), & more.
 
-For now hosting is done at http://45.79.100.226:5000/ - feel free to take a look!
+Now with a proper domain, draft your survivors at https://outdraft.me
