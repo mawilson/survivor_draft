@@ -4,5 +4,6 @@ __pycache__/
 db.sqlite3
 static_collected/
 node_modules/
-*private_key.key
-*ssl_certificate.cer
+accesslog
+errorlog
+*.pem
