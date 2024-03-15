@@ -60,6 +60,7 @@ class Season(models.Model):
     season_close = models.DateField(null = True) # used to close the fan favorite & 'finalize' a season
     season_open = models.DateField(null = True) # used to close the predictions
     survivor_drafting = models.BooleanField(default = False, null = False) # used to allow drafting of survivors
+    team_creation = models.BooleanField(default = True, null = False) # used to allow creation of teams
 
     def __str__(self) -> str:
         """Returns a string representation of a Season"""

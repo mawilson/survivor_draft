@@ -18,7 +18,7 @@
     {% if season %}
         {% load static %}
         {% get_static_prefix as STATIC_PREFIX %}
-        {% if team_associable and not season.is_season_closed %}
+        {% if team_associable and season.team_creation %}
             <form method="POST">   
                 <fieldset class="border border-solid border-gray-300 space-y-1.5">
                     <legend class="mx-auto">Create new team</legend>
