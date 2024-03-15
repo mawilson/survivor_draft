@@ -107,7 +107,7 @@ def home(request):
             context["display_type"] = "default"
 
     if context["display_type"] != "tribe":
-        context["undrafted_survivors"] = context["season"].survivor_set.filter(team_id=None).order_by("name")
+        context["undrafted_survivors"] = context["season"].survivor_set.filter(team=None).order_by("name")
     else:
         context["undrafted_survivors"] = context["season"].survivor_set.filter(tribe=None).order_by("name")
 
