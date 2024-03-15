@@ -25,11 +25,7 @@
                     </td>
                     <td class="align-top">
                         <div class="mx-2">
-                            <p>{% if survivor.placement == 0 %}
-                                Overall Placement: {{season.placement}}
-                            {% else %}
-                                Overall Placement: {{survivor.placement}}
-                            {% endif %}</p>
+                            <p>Overall Placement: {{survivor.placement_calq}}</p>
                             <p>Points Total: {{survivor.points.0}}</p>
                             <p>Status:
                             {% if survivor.winner %}

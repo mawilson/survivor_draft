@@ -285,7 +285,7 @@ class Season(models.Model):
         
         results = []
         for key, value in survivor_dict.items():
-            results.append(f"{value.name} ended up placing {value.placement}.")
+            results.append(f"{value.name} ended up placing {value.placement_calq()}.")
 
         return results
 
@@ -572,3 +572,11 @@ class Survivor(models.Model):
                 total += self.finalist * rubric.finalist
                 description += f"Finalist: {self.finalist} * {rubric.finalist} = {self.finalist * rubric.finalist}"
         return total, description.strip() # remove trailing newline if present
+    
+    def placement_calq(self):
+        """Returns an integer representing either the place eliminated or, if not yet eliminated, one better than the last person eliminated
+        Finalists can come in second if they did not win, but did receive more votes then the other loser"""
+        if self.placement == 0: # a value of 0 indicates the survivor did not explictly 'place', meaning they're still alive & receive one better than the last eliminated survivor
+            return self.season.all().first().placement()
+        else: # any nonzero value is a valid placement & is returned as such
+            return self.placement
