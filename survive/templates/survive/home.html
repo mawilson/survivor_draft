@@ -279,11 +279,12 @@
                                 <td>
                                     {{ survivor.idols }} / {{ survivor.immunities }} / {{ survivor.confessionals }}
                                 </td>
-                                <td class={% if survivor.status %}"survivor_cursor_help"{% else %}"survivor_elim_cursor_help"{% endif %} title="{{survivor.points.1}}">
+                                {% survivor_points survivor season as points %}
+                                <td class={% if survivor.status %}"survivor_cursor_help"{% else %}"survivor_elim_cursor_help"{% endif %} title="{{points.1}}">
                                     <table class="points_table">
                                         <tr>
                                             <td class="points_table_left"></td>
-                                            <td class="points_table_center">{{ survivor.points.0 }} </td>
+                                            <td class="points_table_center">{{ points.0 }} </td>
                                             <td class="points_table_right"><p class="tooltip">?</p></td>
                                         </tr>
                                     </table>

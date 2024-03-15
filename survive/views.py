@@ -116,7 +116,13 @@ def home(request):
     return response
     
 def survivor(request, id):
-    context = {'survivor': Survivor.objects.get(pk=id)}
+    survivor = Survivor.objects.get(pk=id)
+    context = {'survivor': survivor }
+    season = request.COOKIES.get("season_id")
+    if (season):
+        season = get_object_or_404(Season, pk = season)
+        context["season"] = season
+        context["team"] = survivor.team.filter(season_id = season.id).first() # get first matching team for this survivor, for this season
     return render(request, "survive/survivor.html", context)
 
 def profile(request):

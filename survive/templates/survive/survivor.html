@@ -15,7 +15,7 @@
                 <tr>
                     <td class="w-[312px] h-auto">
                         {% if survivor.pic.name %}
-                            <img src="{{ STATIC_PREFIX }}survive/{{survivor.season.id}}/portraits_big/{{survivor.pic_full.name}}"
+                            <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_big/{{survivor.pic_full.name}}"
                         {% else %}
                             <img src="{{ STATIC_PREFIX }}survive/silhouette_large.webp"
                         {% endif %}
@@ -26,7 +26,7 @@
                     <td class="align-top">
                         <div class="mx-2">
                             <p>{% if survivor.placement == 0 %}
-                                Overall Placement: {{survivor.season.placement}}
+                                Overall Placement: {{season.placement}}
                             {% else %}
                                 Overall Placement: {{survivor.placement}}
                             {% endif %}</p>
@@ -42,13 +42,13 @@
                             <p>Immunities: {{survivor.immunities}}</p>
                             <p>Idols: {{survivor.idols}}</p>
                             <p>Confessionals: {{survivor.confessionals}}</p>
-                            <p>Team: {{survivor.team.name}}</p>
-                            <p>Team Captain: {{survivor.team.captain}}</p>
+                            <p>Team: {{team.name}}</p>
+                            <p>Team Captain: {{team.captain}}</p>
                             {% if survivor.tribe != None %}
                                 <p>Tribe: <span style="color: {{survivor.tribe.color}}">{{survivor.tribe.name}}</span></p>
                             {% endif %}
                             <p>Jury Number: {% if survivor.status %}
-                                {{survivor.season.jury_number}}
+                                {{season.jury_number}}
                             {% else %}
                                 {{survivor.jury_number}}
                             {% endif %}
@@ -56,7 +56,7 @@
                         </div>
                     </td>
                     <td class="text-right align-bottom">
-                        <p class="text-right mr-2">Season: {{survivor.season.name}}</p>
+                        <p class="text-right mr-2">Season: {{season.name}}</p>
                     </td>
                 </tr>
             </table>
