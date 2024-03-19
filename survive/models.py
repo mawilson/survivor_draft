@@ -61,6 +61,12 @@ class Season(models.Model):
     season_open = models.DateField(null = True) # used to close the predictions
     survivor_drafting = models.BooleanField(default = False, null = False) # used to allow drafting of survivors
     team_creation = models.BooleanField(default = True, null = False) # used to allow creation of teams
+    linked_seasons = models.ManyToManyField(
+        "Season", # trick the compiler into letting us reference a class not yet defined
+        verbose_name="The other seasons this season is associated with",
+        blank = True,
+        default = None,
+    )
 
     def __str__(self) -> str:
         """Returns a string representation of a Season"""
@@ -475,11 +481,11 @@ class Tribe(models.Model):
     name = models.CharField(max_length = 100)
     color = models.CharField(max_length = 100, verbose_name = "the hex code for the color associated with this tribe")
 
-    def points(self) -> int:
-        """Returns an integer representing the sum of Survivor points of Survivors within this tribe"""
+    def points(self, season) -> int:
+        """Returns an integer representing the sum of Survivor points of Survivors within this tribe for the given season"""
         total = 0
         for survivor in self.survivor_set.all():
-            total += survivor.points()[0]
+            total += survivor.points(season)[0]
         return total
 
 class Survivor(models.Model):
