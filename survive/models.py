@@ -66,6 +66,7 @@ class Season(models.Model):
         verbose_name="The other seasons this season is associated with",
         blank = True,
         default = None,
+        symmetrical = True # if one season is related to another, another is related to one
     )
 
     def __str__(self) -> str:

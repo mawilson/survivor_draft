@@ -108,6 +108,13 @@ def home(request):
 
     if context["display_type"] != "tribe":
         context["undrafted_survivors"] = context["season"].survivor_set.filter(team=None).order_by("name")
+        context["linked_seasons"] = context["season"].linked_seasons.all()
+
+        teams = context["season"].team_set.all() # always show teams in the selected season
+        for linked_season in context["linked_seasons"]: # always collect teams in linked seasons, though template may not display them
+            teams = teams | linked_season.team_set.all()
+        teams = sorted(teams, key = lambda t: t.name) # first sort by name
+        context["teams"] = sorted(teams, key=lambda t: t.points(), reverse = True) # then sort by points, descending
     else:
         context["undrafted_survivors"] = context["season"].survivor_set.filter(tribe=None).order_by("name")
 

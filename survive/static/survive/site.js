@@ -74,4 +74,25 @@ function processCookies() {
     }
 }
 
+function linked_seasons_display_toggle(e) {
+    let season = e.value; // should be the season ID of the linked season to display or hide
+    let enabled = e.checked; // whether the box was checked or unchecked
+    let linked_season_teams = document.getElementsByName("linked_season_" + season + "_team");
+    for (let t of linked_season_teams) {
+        if (enabled) {
+            t.style.display = "";
+        } else {
+            t.style.display = "none";
+        }
+    }
+}
+
+function linked_seasons_visibility_on_load() {// function to show or hide teams on page load based on linked_seasons checkbox statuses
+    let linked_season_checkboxes = document.getElementsByName("linked_seasons_checkbox"); // get all linked_seasons_checkboxes
+    for (let c of linked_season_checkboxes) { // for each checkbox, will enable or disable teams with matching season values based on checked property
+        linked_seasons_display_toggle(c);
+    }
+}
+
 window.addEventListener("DOMContentLoaded", themeSelectorInitialize);
+window.addEventListener("DOMContentLoaded", linked_seasons_visibility_on_load);
