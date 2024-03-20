@@ -80,7 +80,7 @@
                                             {% if survivor.fan_favorite %} survivor_card_fan_favorite {% endif %}">
                                                 <td>
                                                     {% if survivor.pic.name %}
-                                                        <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{survivor.pic.name}}"
+                                                        <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{survivor.pic.name}}"
                                                     {% else %}
                                                         <img src="{{ STATIC_PREFIX }}survive/silhouette_small.webp"
                                                     {% endif %}
@@ -186,7 +186,7 @@
                                                 {% if survivor.fan_favorite %} survivor_card_fan_favorite {% endif %}">
                                                     <td>
                                                         {% if survivor.pic.name %}
-                                                            <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{survivor.pic.name}}"
+                                                            <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{survivor.pic.name}}"
                                                         {% else %}
                                                             <img src="{{ STATIC_PREFIX }}survive/silhouette_small.webp"
                                                         {% endif %}
@@ -195,7 +195,7 @@
                                                         {% endif %} />
                                                     </td>
                                                     <td>
-                                                        <a class="link" href="survivor/{{survivor.id}}/">
+                                                        <a class="link" href="survivor/{{survivor.id}}/{{team.id}}">
                                                             {{ survivor.name }}
                                                         </a>
                                                     </td>
@@ -269,7 +269,7 @@
                             {% if survivor.fan_favorite %} survivor_card_fan_favorite {% endif %}">
                                 <td>
                                     {% if survivor.pic.name %}
-                                        <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{survivor.pic.name}}"
+                                        <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{survivor.pic.name}}"
                                     {% else %}
                                         <img src="{{ STATIC_PREFIX }}survive/silhouette_small.webp"
                                     {% endif %}

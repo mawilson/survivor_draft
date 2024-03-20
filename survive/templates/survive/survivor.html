@@ -5,6 +5,7 @@
 {% block season_selector %}{% endblock %}
 {% block _page_title %}{% endblock %}
 {% block content %}
+    {% load model_extras %}
     {% if survivor %}
         {% load static %}
         {% get_static_prefix as STATIC_PREFIX %}
@@ -15,7 +16,7 @@
                 <tr>
                     <td class="w-[312px] h-auto">
                         {% if survivor.pic.name %}
-                            <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_big/{{survivor.pic_full.name}}"
+                            <img src="{{ STATIC_PREFIX }}survive/portraits_big/{{survivor.pic_full.name}}"
                         {% else %}
                             <img src="{{ STATIC_PREFIX }}survive/silhouette_large.webp"
                         {% endif %}
@@ -26,7 +27,8 @@
                     <td class="align-top">
                         <div class="mx-2">
                             <p>Overall Placement: {{survivor.placement_calq}}</p>
-                            <p>Points Total: {{survivor.points.0}}</p>
+                            {% survivor_points survivor season as points %}
+                            <p>Points Total: {{points.0}}</p>
                             <p>Status:
                             {% if survivor.winner %}
                             Sole Survivor
