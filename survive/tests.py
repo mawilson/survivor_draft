@@ -19,8 +19,6 @@ class SurvivorTestCase(TestCase):
         season = Season.objects.get(name = "TestSeason")
         team = Team.objects.get(id = 1)
         survivor = Survivor.objects.create( # this is a 'base' Survivor, fresh off the boat, no points earned
-            season = season,
-            team = team,
             name = "Test Player",
             status = False,
             idols = 0,
@@ -32,6 +30,8 @@ class SurvivorTestCase(TestCase):
             finalist = False,
             winner = False
         )
+        survivor.season.add(season)
+        survivor.team.add(team)
 
     def test_points_sum_simple(self):
         """Survivor points sum correctly. This tests for individual accomplishments, not comparisons (most idols etc.)"""
@@ -41,8 +41,6 @@ class SurvivorTestCase(TestCase):
         season = Season.objects.get(name = "TestSeason")
         team = Team.objects.get(id = 1)
         survivor = Survivor.objects.create( # this is a 'base' Survivor, fresh off the boat, no points earned
-            season = season,
-            team = team,
             name = "Test Player",
             status = False,
             idols = 0,
@@ -55,19 +53,22 @@ class SurvivorTestCase(TestCase):
             winner = False
         )
 
-        self.assertEqual(survivor.points()[0], 0)
+        survivor.season.add(season)
+        survivor.team.add(team)
+
+        self.assertEqual(survivor.points(season)[0], 0)
 
         survivor.finalist = True
 
-        self.assertEqual(survivor.points()[0], 2)
+        self.assertEqual(survivor.points(season)[0], 2)
 
         survivor.winner = True
 
-        self.assertEqual(survivor.points()[0], 5) # winner should be worth 5, not (Finalist + Winner) = 7
+        self.assertEqual(survivor.points(season)[0], 5) # winner should be worth 5, not (Finalist + Winner) = 7
 
         survivor.fan_favorite = True
 
-        self.assertEqual(survivor.points()[0], 7)
+        self.assertEqual(survivor.points(season)[0], 7)
 
     def test_points_zero_start(self):
         """Survivor points sum to zero when nothing has been accomplished."""
@@ -77,8 +78,6 @@ class SurvivorTestCase(TestCase):
         season = Season.objects.get(name = "TestSeason")
         team = Team.objects.get(id = 1)
         survivor = Survivor.objects.create( # this is a 'base' Survivor, fresh off the boat, no points earned
-            season = season,
-            team = team,
             name = "Test Player",
             status = True,
             idols = 0,
@@ -91,11 +90,12 @@ class SurvivorTestCase(TestCase):
             winner = False
         )
 
-        self.assertEqual(survivor.points()[0], 0)
+        survivor.season.add(season)
+        survivor.team.add(team)
+
+        self.assertEqual(survivor.points(season)[0], 0)
 
         survivor2 = Survivor.objects.create( # this is a 'base' Survivor, fresh off the boat, no points earned
-            season = season,
-            team = team,
             name = "Test Player2",
             status = True,
             idols = 0,
@@ -108,11 +108,12 @@ class SurvivorTestCase(TestCase):
             winner = False
         )
 
-        self.assertEqual(survivor.points()[0], 0)
+        survivor2.season.add(season)
+        survivor2.team.add(team)
+
+        self.assertEqual(survivor.points(season)[0], 0)
 
         survivor3 = Survivor.objects.create( # this is a 'base' Survivor, fresh off the boat, no points earned
-            season = season,
-            team = team,
             name = "Test Player3",
             status = False, # this survivor has been eliminated
             idols = 0,
@@ -125,11 +126,12 @@ class SurvivorTestCase(TestCase):
             winner = False
         )
 
-        self.assertEqual(survivor.points()[0], 0) # survivor3 has been eliminated, but their jury number was 0, so jury_number points should still be 0
+        survivor3.season.add(season)
+        survivor3.team.add(team)
+
+        self.assertEqual(survivor.points(season)[0], 0) # survivor3 has been eliminated, but their jury number was 0, so jury_number points should still be 0
 
         survivor4 = Survivor.objects.create( # this is a 'base' Survivor, fresh off the boat, no points earned
-            season = season,
-            team = team,
             name = "Test Player4",
             status = False, # this survivor has been eliminated
             idols = 0,
@@ -142,7 +144,10 @@ class SurvivorTestCase(TestCase):
             winner = False
         )
 
-        self.assertEqual(survivor.points()[0], 2) # survivor4 has been eliminated, & their jury number was 1 (nonzero), so jury_number points should be 2
+        survivor4.season.add(season)
+        survivor4.team.add(team)
+
+        self.assertEqual(survivor.points(season)[0], 2) # survivor4 has been eliminated, & their jury number was 1 (nonzero), so jury_number points should be 2
 
 
     def test_points_sum_comparisons_no_ties(self):
@@ -156,8 +161,6 @@ class SurvivorTestCase(TestCase):
         rubric.immunities_tie_split = False
         rubric.save() # must save changes made
         survivor = Survivor.objects.create(
-            season = season,
-            team = team,
             name = "Test Player 2",
             status = False,
             idols = 0,
@@ -170,27 +173,30 @@ class SurvivorTestCase(TestCase):
             winner = False
         )
 
+        survivor.season.add(season)
+        survivor.team.add(team)
+
         other_survivor = Survivor.objects.get(name = "Test Player") # get other survivor for comparison
 
         survivor.idols = 1
         survivor.save()
 
-        self.assertEqual(survivor.points()[0], 2) # now that I have an idol on the board, I should win the idol points
+        self.assertEqual(survivor.points(season)[0], 2) # now that I have an idol on the board, I should win the idol points
 
         other_survivor.idols = 1
         other_survivor.save()
 
-        self.assertEqual(survivor.points()[0], 2) # because ties don't split points, we should still have 2
+        self.assertEqual(survivor.points(season)[0], 2) # because ties don't split points, we should still have 2
 
         survivor.immunities = 1
         survivor.save()
 
-        self.assertEqual(survivor.points()[0], 4) # as above, should now have idol & immunity points
+        self.assertEqual(survivor.points(season)[0], 4) # as above, should now have idol & immunity points
 
         other_survivor.immunities = 1
         other_survivor.save()
 
-        self.assertEqual(survivor.points()[0], 4) # as above, no ties, therefore still have both points
+        self.assertEqual(survivor.points(season)[0], 4) # as above, no ties, therefore still have both points
 
     def test_points_sum_comparisons_only_ties(self):
         """Survivor points sum correctly. This tests whether points calq correctly when determining 'most of' awards. Ties only here"""
@@ -199,8 +205,6 @@ class SurvivorTestCase(TestCase):
         season = Season.objects.filter(pk=1).first()
         team = Team.objects.filter(pk=1).first()
         survivor = Survivor.objects.create(
-            season = season,
-            team = team,
             name = "Test Player 2",
             status = False,
             idols = 0,
@@ -213,27 +217,30 @@ class SurvivorTestCase(TestCase):
             winner = False
         )
 
+        survivor.season.add(season)
+        survivor.team.add(team)
+
         other_survivor = Survivor.objects.get(name = "Test Player") # get other survivor for comparison
 
         survivor.idols = 1
         survivor.save()
 
-        self.assertEqual(survivor.points()[0], 2) # now that I have an idol on the board, I should win the idol points
+        self.assertEqual(survivor.points(season)[0], 2) # now that I have an idol on the board, I should win the idol points
 
         other_survivor.idols = 1
         other_survivor.save()
 
-        self.assertEqual(survivor.points()[0], 1) # because ties split points, we should now have 1
+        self.assertEqual(survivor.points(season)[0], 1) # because ties split points, we should now have 1
 
         survivor.immunities = 1
         survivor.save()
 
-        self.assertEqual(survivor.points()[0], 3)
+        self.assertEqual(survivor.points(season)[0], 3)
 
         other_survivor.immunities = 1
         other_survivor.save()
 
-        self.assertEqual(survivor.points()[0], 2)
+        self.assertEqual(survivor.points(season)[0], 2)
 
     def test_season_jury_number(self):
         """Season jury number returns highest jury number amongst eliminated Survivors."""
@@ -242,8 +249,6 @@ class SurvivorTestCase(TestCase):
         season = Season.objects.filter(pk=1).first()
         team = Team.objects.filter(pk=1).first()
         survivor1 = Survivor.objects.create(
-            season = season,
-            team = team,
             name = "Test Player 2",
             status = False,
             idols = 0,
@@ -255,9 +260,9 @@ class SurvivorTestCase(TestCase):
             finalist = False,
             winner = False
         )
+        survivor1.season.add(season)
+        survivor1.team.add(team)
         survivor2 = Survivor.objects.create(
-            season = season,
-            team = team,
             name = "Test Player 2",
             status = True,
             idols = 0,
@@ -269,9 +274,9 @@ class SurvivorTestCase(TestCase):
             finalist = False,
             winner = False
         )
+        survivor2.season.add(season)
+        survivor2.team.add(team)
         survivor3 = Survivor.objects.create(
-            season = season,
-            team = team,
             name = "Test Player 2",
             status = False,
             idols = 0,
@@ -283,15 +288,25 @@ class SurvivorTestCase(TestCase):
             finalist = False,
             winner = False
         )
+        survivor3.season.add(season)
+        survivor3.team.add(team)
 
-        survivor4 = Survivor.objects.create(season = season, name = "test")
-        survivor5 = Survivor.objects.create(season = season, name = "test")
-        survivor6 = Survivor.objects.create(season = season, name = "test")
-        survivor7 = Survivor.objects.create(season = season, name = "test")
-        survivor8 = Survivor.objects.create(season = season, name = "test")
-        survivor9 = Survivor.objects.create(season = season, name = "test")
-        survivor10 = Survivor.objects.create(season = season, name = "test")
-        survivor11 = Survivor.objects.create(season = season, name = "test")
+        survivor4 = Survivor.objects.create(name = "test")
+        survivor5 = Survivor.objects.create(name = "test")
+        survivor6 = Survivor.objects.create(name = "test")
+        survivor7 = Survivor.objects.create(name = "test")
+        survivor8 = Survivor.objects.create(name = "test")
+        survivor9 = Survivor.objects.create(name = "test")
+        survivor10 = Survivor.objects.create(name = "test")
+        survivor11 = Survivor.objects.create(name = "test")
+        survivor4.season.add(season)
+        survivor5.season.add(season)
+        survivor6.season.add(season)
+        survivor7.season.add(season)
+        survivor8.season.add(season)
+        survivor9.season.add(season)
+        survivor10.season.add(season)
+        survivor11.season.add(season)
 
         self.assertEqual(7, season.jury_number())
 
@@ -302,8 +317,6 @@ class SurvivorTestCase(TestCase):
         season = Season.objects.filter(pk=1).first()
         team = Team.objects.filter(pk=1).first()
         survivor1 = Survivor.objects.create(
-            season = season,
-            team = team,
             name = "Test Player 2",
             status = False,
             idols = 0,
@@ -316,9 +329,9 @@ class SurvivorTestCase(TestCase):
             winner = False,
             placement = 3
         )
+        survivor1.season.add(season)
+        survivor1.team.add(team)
         survivor2 = Survivor.objects.create(
-            season = season,
-            team = team,
             name = "Test Player 2",
             status = True,
             idols = 0,
@@ -330,9 +343,9 @@ class SurvivorTestCase(TestCase):
             finalist = False,
             winner = False
         )
+        survivor2.season.add(season)
+        survivor2.team.add(team)
         survivor3 = Survivor.objects.create(
-            season = season,
-            team = team,
             name = "Test Player 2",
             status = False,
             idols = 0,
@@ -345,6 +358,8 @@ class SurvivorTestCase(TestCase):
             winner = False,
             placement = 2
         )
+        survivor3.season.add(season)
+        survivor3.team.add(team)
 
         self.assertEqual(1, season.placement())
 
@@ -358,8 +373,6 @@ class SurvivorTestCase(TestCase):
         t3 = Team.objects.create(name = "Team3", captain = "Captain3", season = s)
 
         s1 = Survivor.objects.create(
-            season = s,
-            team = t1,
             name = "Test Player Team1",
             status = False,
             idols = 0,
@@ -371,9 +384,9 @@ class SurvivorTestCase(TestCase):
             finalist = False,
             winner = False
         )
+        s1.season.add(s)
+        s1.team.add(t1)
         s2 = Survivor.objects.create(
-            season = s,
-            team = t2,
             name = "Test Player Team2",
             status = False,
             idols = 0,
@@ -385,9 +398,9 @@ class SurvivorTestCase(TestCase):
             finalist = False,
             winner = False
         )
+        s2.season.add(s)
+        s2.team.add(t2)
         s3 = Survivor.objects.create(
-            season = s,
-            team = t2,
             name = "Test Player2 Team2",
             status = False,
             idols = 0,
@@ -399,6 +412,8 @@ class SurvivorTestCase(TestCase):
             finalist = False,
             winner = False
         )
+        s3.season.add(s)
+        s3.team.add(t2)
 
         t1.fan_favorite_first = s1
         t1.fan_favorite_second = s2
