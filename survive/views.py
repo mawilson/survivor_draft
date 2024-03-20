@@ -108,6 +108,13 @@ def home(request):
 
     if context["display_type"] != "tribe":
         context["undrafted_survivors"] = context["season"].survivor_set.filter(team=None).order_by("name")
+        context["linked_seasons"] = context["season"].linked_seasons.all()
+
+        teams = context["season"].team_set.all() # always show teams in the selected season
+        for linked_season in context["linked_seasons"]: # always collect teams in linked seasons, though template may not display them
+            teams = teams | linked_season.team_set.all()
+        teams = sorted(teams, key = lambda t: t.name) # first sort by name
+        context["teams"] = sorted(teams, key=lambda t: t.points(), reverse = True) # then sort by points, descending
     else:
         context["undrafted_survivors"] = context["season"].survivor_set.filter(tribe=None).order_by("name")
 
@@ -115,11 +122,17 @@ def home(request):
     season_selector_response(response, new_season_id)
     return response
     
-def survivor(request, id):
-    survivor = Survivor.objects.get(pk=id)
+def survivor(request, **kwargs):
+    id = kwargs["id"]
+    team_id = kwargs["team_id"] if "team_id" in kwargs else None
+    survivor = Survivor.objects.get(pk = id)
     context = {'survivor': survivor }
     season = request.COOKIES.get("season_id")
-    if (season):
+    if team_id: # if team ID was provided (url is /survivor/survivor_id/team_id), then use that team & the season associated with it
+            team = get_object_or_404(Team, pk = team_id)
+            context["team"] = team
+            context["season"] = team.season
+    elif season: # if team ID was not provided (url is just /survivor/survivor_id), then use the first team we can find associated with that survivor, & the cookie season
         season = get_object_or_404(Season, pk = season)
         context["season"] = season
         context["team"] = survivor.team.filter(season_id = season.id).first() # get first matching team for this survivor, for this season

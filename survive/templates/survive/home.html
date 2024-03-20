@@ -14,6 +14,18 @@
                 <option value="tribe" {% if display_type == "tribe" %}selected{% endif %}>By Tribe</option>
             </select>
         </form>
+
+        {% if display_type == "default" and linked_seasons %}
+            <fieldset>
+                <label>Linked seasons to display</label>
+                <ul>
+                {% for s in linked_seasons %}
+                    <input type="checkbox" value="{{ s.id }}" id="linked_seasons_selector_{{ s.id }}" onchange="linked_seasons_display_toggle(this)" name="linked_seasons_checkbox">
+                    <label for="linked_seasons_selector_{{ s.id }}">{{ s.name }}</label>
+                {% endfor %}
+                </ul>
+            </fieldset>
+        {% endif %}
     </div>
     {% if season %}
         {% load static %}
@@ -68,7 +80,7 @@
                                             {% if survivor.fan_favorite %} survivor_card_fan_favorite {% endif %}">
                                                 <td>
                                                     {% if survivor.pic.name %}
-                                                        <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{survivor.pic.name}}"
+                                                        <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{survivor.pic.name}}"
                                                     {% else %}
                                                         <img src="{{ STATIC_PREFIX }}survive/silhouette_small.webp"
                                                     {% endif %}
@@ -93,11 +105,12 @@
                                                 <td>
                                                     {{ survivor.idols }} / {{ survivor.immunities }} / {{ survivor.confessionals }}
                                                 </td>
-                                                <td class={% if survivor.status %}"survivor_cursor_help"{% else %}"survivor_elim_cursor_help"{% endif %} title="{{survivor.points.1}}">
+                                                {% survivor_points survivor season as points %}
+                                                <td class={% if survivor.status %}"survivor_cursor_help"{% else %}"survivor_elim_cursor_help"{% endif %} title="{{points.1}}">
                                                     <table class="points_table">
                                                         <tr>
                                                             <td class="points_table_left"></td>
-                                                            <td class="points_table_center">{{ survivor.points.0 }} </td>
+                                                            <td class="points_table_center">{{ points.0 }} </td>
                                                             <td class="points_table_right"><p class="tooltip">?</p></td>
                                                         </tr>
                                                     </table>
@@ -107,7 +120,8 @@
                                     </tbody>
                                 </table>
                             </td>
-                            <td>{{tribe.points}}</td>
+
+                            <td>{% tribe_points tribe season %}</td>
                             {% endif %}
                         </tr>
                     {% endfor %}
@@ -130,8 +144,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for team in season.team_set.all %}
-                        <tr class="{% if team.winner %}bg-yellow-400 {% elif team.lost %}bg-neutral-500 {% endif %}{% if team.user and request.user.id == team.user.id %} team_self{% endif %}">
+                    {% for team in teams %}
+                        <tr class="{% if team.winner %}bg-yellow-400 {% elif team.lost %}bg-neutral-500 {% endif %}{% if team.user and request.user.id == team.user.id %} team_self{% endif %}"
+                        name="linked_season_{{ team.season.id }}_team">
                             <td>
                                 {{ team.name }}
                                 {% if not team.user and team_associable %}
@@ -171,7 +186,7 @@
                                                 {% if survivor.fan_favorite %} survivor_card_fan_favorite {% endif %}">
                                                     <td>
                                                         {% if survivor.pic.name %}
-                                                            <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{survivor.pic.name}}"
+                                                            <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{survivor.pic.name}}"
                                                         {% else %}
                                                             <img src="{{ STATIC_PREFIX }}survive/silhouette_small.webp"
                                                         {% endif %}
@@ -180,7 +195,7 @@
                                                         {% endif %} />
                                                     </td>
                                                     <td>
-                                                        <a class="link" href="survivor/{{survivor.id}}/">
+                                                        <a class="link" href="survivor/{{survivor.id}}/{{team.id}}">
                                                             {{ survivor.name }}
                                                         </a>
                                                     </td>
@@ -254,7 +269,7 @@
                             {% if survivor.fan_favorite %} survivor_card_fan_favorite {% endif %}">
                                 <td>
                                     {% if survivor.pic.name %}
-                                        <img src="{{ STATIC_PREFIX }}survive/{{season.id}}/portraits_small/{{survivor.pic.name}}"
+                                        <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{survivor.pic.name}}"
                                     {% else %}
                                         <img src="{{ STATIC_PREFIX }}survive/silhouette_small.webp"
                                     {% endif %}
