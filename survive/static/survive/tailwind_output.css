@@ -597,14 +597,6 @@ h1 {
   height: auto;
 }
 
-.w-\[312px\] {
-  width: 312px;
-}
-
-.w-full {
-  width: 100%;
-}
-
 .w-1\/12 {
   width: 8.333333%;
 }
@@ -615,6 +607,14 @@ h1 {
 
 .w-4\/6 {
   width: 66.666667%;
+}
+
+.w-\[312px\] {
+  width: 312px;
+}
+
+.w-full {
+  width: 100%;
 }
 
 .table-fixed {
@@ -644,6 +644,11 @@ h1 {
 .border-gray-300 {
   --tw-border-opacity: 1;
   border-color: rgb(209 213 219 / var(--tw-border-opacity));
+}
+
+.bg-black {
+  --tw-bg-opacity: 1;
+  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
 }
 
 .bg-neutral-500 {
@@ -707,6 +712,11 @@ h1 {
 
 .font-sans {
   font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.text-black {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
 .text-white {
@@ -962,25 +972,7 @@ select {
   background-color: #67d4e9;
 }
 
-@media (min-width: 640px) {
-  .sm\:hidden {
-    display: none;
-  }
-}
-
 @media (min-width: 768px) {
-  .md\:block {
-    display: block;
-  }
-
-  .md\:inline {
-    display: inline;
-  }
-
-  .md\:table {
-    display: table;
-  }
-
   .md\:table-cell {
     display: table-cell;
   }

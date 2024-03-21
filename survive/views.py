@@ -78,16 +78,14 @@ def home(request):
         elif survivor_id_draft is not None: # survivor drafting requires the survivor_id_draft field present
             team = get_object_or_404(Team, pk = user_team_id)
             survivor = get_object_or_404(Survivor, pk = survivor_id_draft)
-            if survivor.team is None: # a Survivor should only be draftable by a Team if it currently does not have a Team
-                survivor.team = team
+            if not survivor.team.filter(season__id=context["season"].id): # a Survivor should only be draftable by a Team if it currently does not have a Team for this Season
+                survivor.team.add(team)
                 survivor.save()
             return redirect("/")  
         elif survivor_id_undraft is not None: # survivor undrafting requires the survivor_id_undraft field present
             team = get_object_or_404(Team, pk = user_team_id) # still need to get to ensure only the owning Team can unclaim a Survivor
             survivor = get_object_or_404(Survivor, pk = survivor_id_undraft)
-            if survivor.team.id == team.id: # a Survivor should only be undraftable by a Team if it is currently claimed by it
-                survivor.team = None
-                survivor.save()
+            survivor.team.remove(team) # if Survivor Teams do not include team, this will fail silently, which is fine
             return redirect("/")
         else: # if POST did not include any POST variables, it is a POST to create a team
             if team_creation_form.is_valid():

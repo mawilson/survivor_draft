@@ -225,7 +225,7 @@
                                                         <td>
                                                             <form method="POST" class="margin_top">
                                                                 {% csrf_token %}
-                                                                <button type="submit">Undraft</button>
+                                                                <button type="submit" class="text-black">Undraft</button>
                                                                 <input type="hidden" name="survivor_id_undraft" value="{{ survivor.id }}" />
                                                             </form>
                                                         </td>
@@ -308,7 +308,7 @@
                                 <td>
                                     <form method="POST" class="margin_top">
                                         {% csrf_token %}
-                                        <button type="submit">Draft</button>
+                                        <button type="submit" class="text-black">Draft</button>
                                         <input type="hidden" name="survivor_id_draft" value="{{ survivor.id }}" />
                                     </form>
                                 </td>
