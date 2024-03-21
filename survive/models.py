@@ -68,6 +68,10 @@ class Season(models.Model):
         default = None,
         symmetrical = True # if one season is related to another, another is related to one
     )
+    draft_marker = models.IntegerField(
+        default = 1,
+        verbose_name = "Number representing the spot in the draft, with 1 being the first draft & going up from there"
+    )
 
     def __str__(self) -> str:
         """Returns a string representation of a Season"""
@@ -393,6 +397,11 @@ class Team(models.Model):
         verbose_name = "Third place prediction for this season",
         null = True, # a team can forgo a vote
         related_name = "+", # no need for backwards relating a prediction to the team that voted it
+        blank = True
+    )
+    draft_order = models.CharField(
+        max_length = 300,
+        verbose_name = ("Comma-delimited list of positions this team can draft in"),
         blank = True
     )
 

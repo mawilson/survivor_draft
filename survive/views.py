@@ -72,6 +72,8 @@ def home(request):
             if team.user is None: # a Team should only be associable to a User if it does not already have one
                 team.user = request.user
                 team.save()
+                team.season.draft_market += 1 # increment draft marker to reflect a survivor having been drafted
+                team.season.save()
             return redirect("/")
         elif survivor_id_draft is not None: # survivor drafting requires the survivor_id_draft field present
             team = get_object_or_404(Team, pk = user_team_id)
@@ -107,10 +109,13 @@ def home(request):
             context["display_type"] = "default"
 
     if context["display_type"] != "tribe":
-        context["undrafted_survivors"] = context["season"].survivor_set.filter(team=None).order_by("name")
         context["linked_seasons"] = context["season"].linked_seasons.all()
 
         teams = context["season"].team_set.all() # always show teams in the selected season
+        context["undrafted_survivors"] = context["season"].survivor_set.exclude(
+            team__season__in=[context["season"].id] # show all survivors who don't have a team for this season
+        ).order_by("name")
+
         for linked_season in context["linked_seasons"]: # always collect teams in linked seasons, though template may not display them
             teams = teams | linked_season.team_set.all()
         teams = sorted(teams, key = lambda t: t.name) # first sort by name
