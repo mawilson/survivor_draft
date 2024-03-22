@@ -72,20 +72,29 @@ def home(request):
             if team.user is None: # a Team should only be associable to a User if it does not already have one
                 team.user = request.user
                 team.save()
-                team.season.draft_market += 1 # increment draft marker to reflect a survivor having been drafted
-                team.season.save()
             return redirect("/")
         elif survivor_id_draft is not None: # survivor drafting requires the survivor_id_draft field present
             team = get_object_or_404(Team, pk = user_team_id)
+            if team.season.draft_marker > 0: # if draft_marker is 0, draft_marker/draft_order are not used to determine if draft is allowed for this team
+                draft_spots = team.draft_order.split(",") # get spots this team is allowed to draft in
+                if str(team.season.draft_marker) not in draft_spots: # if the current draft marker is not in draft_order array, cannot draft now, just reload
+                    return redirect("/") 
             survivor = get_object_or_404(Survivor, pk = survivor_id_draft)
             if not survivor.team.filter(season__id=context["season"].id): # a Survivor should only be draftable by a Team if it currently does not have a Team for this Season
                 survivor.team.add(team)
                 survivor.save()
+                num_drafted = len(context["season"].survivor_set.filter( # number of survivors in this season that have a team from this season
+                    team__season__id=context["season"].id
+                ))
+                context["season"].draft_marker = num_drafted + 1
+                context["season"].save()
             return redirect("/")  
         elif survivor_id_undraft is not None: # survivor undrafting requires the survivor_id_undraft field present
             team = get_object_or_404(Team, pk = user_team_id) # still need to get to ensure only the owning Team can unclaim a Survivor
             survivor = get_object_or_404(Survivor, pk = survivor_id_undraft)
             survivor.team.remove(team) # if Survivor Teams do not include team, this will fail silently, which is fine
+            context["season"].draft_marker = 0 # set draft_marker to 0, a special state indicating somebody went & complicated the draft ordering
+            context["season"].save()
             return redirect("/")
         else: # if POST did not include any POST variables, it is a POST to create a team
             if team_creation_form.is_valid():
@@ -113,6 +122,8 @@ def home(request):
         context["undrafted_survivors"] = context["season"].survivor_set.exclude(
             team__season__in=[context["season"].id] # show all survivors who don't have a team for this season
         ).order_by("name")
+        if context["season"].survivor_drafting:
+            context["drafters"] = context["season"].draft_order()
 
         for linked_season in context["linked_seasons"]: # always collect teams in linked seasons, though template may not display them
             teams = teams | linked_season.team_set.all()

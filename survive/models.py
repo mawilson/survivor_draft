@@ -315,6 +315,19 @@ class Season(models.Model):
     def is_season_active(self):
         """Returns True if the season is currently running (past its opening date, before its closing date)"""
         return self.is_season_open() and not self.is_season_closed()
+    
+    def draft_order(self):
+        """Returns a list of tuples of draft orders, with each entry the (draft position, team)"""
+        draft_positions = {}
+        for t in self.team_set.all():
+            draft_markers = t.draft_order.split(",") # draft markers should be a comma-delimited string of numbers
+            for draft_marker in draft_markers:
+                try:
+                    _draft_marker = int(draft_marker)
+                except ValueError:
+                    continue
+                draft_positions[_draft_marker] = t # this team is drafting at this marker, e.g. {1: team_1, 2: team_2}
+        return sorted(draft_positions.items()) # sorts by key of the dictionary, which is handy
 
 class Team(models.Model):
     season = models.ForeignKey(

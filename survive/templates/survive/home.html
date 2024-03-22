@@ -242,9 +242,29 @@
                 </tbody>
             </table>
         {% endif %}
+
+        {% if season.survivor_drafting %}
+            {% if drafters %}
+                <hr />
+                <h2 class="font-bold">Draft Ordering</h2>
+                <ul>
+                {% for drafter in drafters %}
+                    {% if drafter.0 == season.draft_marker %}
+                        <li class="font-bold">{{drafter.0}}: {{drafter.1.name}} (current)</li>
+                    {% else %}
+                        <li>{{drafter.0}}: {{drafter.1.name}}</li>
+                    {% endif %}
+                {% endfor %}
+                {% if season.draft_marker > season.survivor_set|length %}
+                    <li class="font-bold">Draft complete</li>
+                {% endif %}
+                </ul>
+            {% endif %}
+        {% endif %}
+
         {% if undrafted_survivors %}
                 <hr />
-                <h2>{% if display_type == "tribe" %}Untribed{% else %}Undrafted{% endif %} Survivors</h2>
+                <h2 class="font-bold">{% if display_type == "tribe" %}Untribed{% else %}Undrafted{% endif %} Survivors</h2>
                 <table class="table_center table_bordered">
                     <thead>
                         <th>Portrait</th>
