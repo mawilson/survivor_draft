@@ -255,7 +255,7 @@
                         <li>{{drafter.0}}: {{drafter.1.name}}</li>
                     {% endif %}
                 {% endfor %}
-                {% if season.draft_marker > season.survivor_set|length %}
+                {% if not undrafted_survivors %}
                     <li class="font-bold">Draft complete</li>
                 {% endif %}
                 </ul>
