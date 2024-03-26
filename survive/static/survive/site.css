@@ -152,7 +152,7 @@
     cursor: url("torch.png") 0 0, auto;
 }
 
-a {
+a, button, input[type='checkbox'] {
     cursor: url("torch_hover.png") 0 0, auto;
 }
 
@@ -207,4 +207,8 @@ select {
 
 .survivor_blue {
     background-color: #67d4e9;
+}
+
+:root {
+    cursor: url("torch.png") 0 0, auto;
 }

@@ -1,5 +1,6 @@
 from django.db import models
 import math
+import random
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 from datetime import date
@@ -67,6 +68,10 @@ class Season(models.Model):
         blank = True,
         default = None,
         symmetrical = True # if one season is related to another, another is related to one
+    )
+    draft_marker = models.IntegerField(
+        default = 1,
+        verbose_name = "Number representing the spot in the draft, with 1 being the first draft & going up from there"
     )
 
     def __str__(self) -> str:
@@ -311,6 +316,60 @@ class Season(models.Model):
     def is_season_active(self):
         """Returns True if the season is currently running (past its opening date, before its closing date)"""
         return self.is_season_open() and not self.is_season_closed()
+    
+    def draft_order(self):
+        """Returns a list of tuples of draft orders, with each entry the (draft position, team)"""
+        draft_positions = {}
+        for t in self.team_set.all():
+            draft_markers = t.draft_order.split(",") # draft markers should be a comma-delimited string of numbers
+            for draft_marker in draft_markers:
+                try:
+                    _draft_marker = int(draft_marker)
+                except ValueError:
+                    continue
+                draft_positions[_draft_marker] = t # this team is drafting at this marker, e.g. {1: team_1, 2: team_2}
+        return sorted(draft_positions.items()) # sorts by key of the dictionary, which is handy
+    
+    def reorder_draft(self, type):
+        """Assigns draft positions for teams within this season based on the type parameter provided
+        Supported types:
+        random: randomizes each round of the draft
+        snake: randomizes the first round, then does reverse order of that, then reverse, etc.
+        snake_with_random_tail: same as snake, but the final round is also randomized"""
+        teams = self.team_set.all()
+        number_of_teams = len(teams)
+        number_of_survivors = len(self.survivor_set.all())
+        number_of_rounds = math.floor(number_of_survivors / number_of_teams) if number_of_teams > 0 else 0 # prevent divide by zero if no teams are present
+        team_ordering = teams # need to scope these variables outside of the below round loop so they don't reset per iteration
+        team_ordering_backwards = team_ordering
+        for team in teams:
+            team.draft_order = "" # empty out each team's draft order in order to create a new one
+        for round in range(0, number_of_rounds):
+            last_round = round == (number_of_rounds - 1)
+            if round == 0 and (type == "snake" or type == "snake_random_tail"):
+                team_ordering = sorted(teams, key=lambda x: random.random())
+                team_ordering_backwards = reversed(team_ordering) # not in place reversed copy of team_ordering
+            if type == "random": # if random, each round gets a randomized order
+                order = sorted(teams, key = lambda x: random.random())
+            elif type == "snake" or type == "snake_random_tail":
+                if last_round and type == "snake_random_tail": # if snake_with_random tail & it's the last round, the round gets a random order
+                    order = sorted(teams, key = lambda x: random.random())
+                elif round % 2 == 0: # if either type of snake, even rounds use team_ordering, odd rounds use team_ordering_backwards
+                    order = team_ordering
+                else:
+                    order = team_ordering_backwards
+            else:
+                order = teams # if no matching type was provided, just leave the team ordering in place
+            for pick, team in enumerate(order, start = 1):
+                new_draft_order = (number_of_teams * round) + pick # so for the first pick of round 0, this would make 1.
+                # for the last pick of six teams in round 0, this would make 6
+                # for the last pick of six teams in round 2, this would make 18
+                if last_round:
+                    team.draft_order += str(new_draft_order)
+                else:
+                    team.draft_order += str(new_draft_order) + ","
+        for team in teams:
+            team.save() # save the new draft order for each team
 
 class Team(models.Model):
     season = models.ForeignKey(
@@ -394,6 +453,17 @@ class Team(models.Model):
         null = True, # a team can forgo a vote
         related_name = "+", # no need for backwards relating a prediction to the team that voted it
         blank = True
+    )
+    draft_order = models.CharField(
+        max_length = 300,
+        verbose_name = "Comma-delimited list of positions this team can draft in",
+        blank = True
+    )
+
+    draft_owner = models.BooleanField(
+        default = False,
+        verbose_name = "Whether this Team has administrative access to the draft & draft ordering",
+        null = False
     )
 
     def clean(self):

@@ -55,3 +55,11 @@ class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ("username", "first_name", "last_name", "email",)
+
+class DraftEnabledForm(forms.ModelForm):
+    class Meta:
+        model = Season
+        fields = ("survivor_drafting",)
+        widgets = {
+            "survivor_drafting": forms.CheckboxInput(attrs = {"onchange": "this.form.submit();", "name": "survivor_drafting"})
+        }

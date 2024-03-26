@@ -16,15 +16,22 @@
         </form>
 
         {% if display_type == "default" and linked_seasons %}
-            <fieldset>
-                <label>Linked seasons to display</label>
-                <ul>
-                {% for s in linked_seasons %}
-                    <input type="checkbox" value="{{ s.id }}" id="linked_seasons_selector_{{ s.id }}" onchange="linked_seasons_display_toggle(this)" name="linked_seasons_checkbox">
-                    <label for="linked_seasons_selector_{{ s.id }}">{{ s.name }}</label>
-                {% endfor %}
-                </ul>
-            </fieldset>
+            <label>Linked seasons to display</label>
+            <ul>
+            {% for s in linked_seasons %}
+                <input type="checkbox" value="{{ s.id }}" id="linked_seasons_selector_{{ s.id }}" onchange="linked_seasons_display_toggle(this)" name="linked_seasons_checkbox">
+                <label for="linked_seasons_selector_{{ s.id }}">{{ s.name }}</label>
+            {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if user_team and user_team.draft_owner %}
+            <form method="POST">
+                {% csrf_token %}
+                <label>Enable Draft</label>
+                {{ draft_enabled_form.survivor_drafting }}
+                <input type="hidden" name="survivor_drafting_helper">
+            </form>
         {% endif %}
     </div>
     {% if season %}
@@ -225,7 +232,7 @@
                                                         <td>
                                                             <form method="POST" class="margin_top">
                                                                 {% csrf_token %}
-                                                                <button type="submit">Undraft</button>
+                                                                <button type="submit" class="text-black">Undraft</button>
                                                                 <input type="hidden" name="survivor_id_undraft" value="{{ survivor.id }}" />
                                                             </form>
                                                         </td>
@@ -242,9 +249,49 @@
                 </tbody>
             </table>
         {% endif %}
+
+        {% if season.survivor_drafting %}
+            {% if user_team.draft_owner %}
+                <h2 class="font-bold">Generate draft order</h2>
+                <form method="POST">
+                    {% csrf_token %}
+                    <ul>
+                        <li>
+                            <button value="random" name="draft_order"
+                                title="Each round of drafting has its order randomized">Full random</button>
+                        </li>
+                        <li>
+                            <button value="snake" name="draft_order"
+                                title="The first round of drafting has its order randomized, the next is the reverse of that, then the reverse of that, & so on">Snake</button> 
+                        </li>
+                        <li>
+                            <button value="snake_random_tail" name="draft_order"
+                                title="Same as Snake, but the final round of drafting is randomized">Snake with random tail</button> 
+                        </li>
+                    </ul>
+                </form>
+            {% endif %}
+            {% if drafters %}
+                <hr />
+                <h2 class="font-bold">Draft Ordering</h2>
+                <ul>
+                {% for drafter in drafters %}
+                    {% if drafter.0 == season.draft_marker %}
+                        <li class="font-bold">{{drafter.0}}: {{drafter.1.name}} (current)</li>
+                    {% else %}
+                        <li>{{drafter.0}}: {{drafter.1.name}}</li>
+                    {% endif %}
+                {% endfor %}
+                {% if not undrafted_survivors %}
+                    <li class="font-bold">Draft complete</li>
+                {% endif %}
+                </ul>
+            {% endif %}
+        {% endif %}
+
         {% if undrafted_survivors %}
                 <hr />
-                <h2>{% if display_type == "tribe" %}Untribed{% else %}Undrafted{% endif %} Survivors</h2>
+                <h2 class="font-bold">{% if display_type == "tribe" %}Untribed{% else %}Undrafted{% endif %} Survivors</h2>
                 <table class="table_center table_bordered">
                     <thead>
                         <th>Portrait</th>
@@ -308,7 +355,7 @@
                                 <td>
                                     <form method="POST" class="margin_top">
                                         {% csrf_token %}
-                                        <button type="submit">Draft</button>
+                                        <button type="submit" class="text-black">Draft</button>
                                         <input type="hidden" name="survivor_id_draft" value="{{ survivor.id }}" />
                                     </form>
                                 </td>

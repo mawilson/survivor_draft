@@ -1,9 +1,8 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
-from survive.forms import FanFavoriteForm, PredictionForm, UserProfileForm
+from survive.forms import FanFavoriteForm, PredictionForm, UserProfileForm, RegisterUserForm, TeamCreationForm, DraftEnabledForm
 from django.contrib.auth import authenticate, login
 from survive.models import Team, Survivor, Season
-from survive.forms import RegisterUserForm, TeamCreationForm
 from django.views.generic import ListView
 from django.shortcuts import get_object_or_404
 
@@ -46,11 +45,14 @@ def season_selector_response(response, new_season_id):
 def home(request):
     context, new_season_id = season_selector_request(request)
     team_creation_form = TeamCreationForm(request.POST or None, instance = Team(season = context["season"]))
+    draft_enabled_form = DraftEnabledForm(request.POST or None, instance = context["season"])
 
     if (request.user.is_authenticated):
         context["team_associable"] = len(request.user.team_set.filter(season_id = context["season"].id)) == 0
         context["team_form"] = team_creation_form
         user_team = request.user.team_set.filter(season_id = context["season"].id).first() # user can have multiple teams - use the first from this season
+        context["user_team"] = user_team
+        context["draft_enabled_form"] = draft_enabled_form
     else:
         context["team_associable"] = False
         user_team = None # an inauthenticated user has no teams
@@ -67,7 +69,17 @@ def home(request):
         team_id = request.POST.get("team_id")
         survivor_id_draft = request.POST.get("survivor_id_draft")
         survivor_id_undraft = request.POST.get("survivor_id_undraft")
-        if team_id is not None: # team association requires the team_id field present
+        draft_order = request.POST.get("draft_order")
+        survivor_drafting = request.POST.get("survivor_drafting") # used to toggle Season survivor_drafting
+        survivor_drafting_helper = request.POST.get("survivor_drafting_helper") # also used to help determine if it's a survivor_drafting POST
+        if draft_order is not None: # if draft_order was provided, it is a draft ordering post
+            context["season"].reorder_draft(draft_order)
+            return redirect("/")
+        elif survivor_drafting_helper is not None:
+            context["season"].survivor_drafting = True if survivor_drafting == "on" else False
+            context["season"].save()
+            return redirect("/")
+        elif team_id is not None: # team association requires the team_id field present
             team = get_object_or_404(Team, pk = request.POST.get("team_id"))
             if team.user is None: # a Team should only be associable to a User if it does not already have one
                 team.user = request.user
@@ -75,17 +87,26 @@ def home(request):
             return redirect("/")
         elif survivor_id_draft is not None: # survivor drafting requires the survivor_id_draft field present
             team = get_object_or_404(Team, pk = user_team_id)
+            if team.season.draft_marker > 0: # if draft_marker is 0, draft_marker/draft_order are not used to determine if draft is allowed for this team
+                draft_spots = team.draft_order.split(",") # get spots this team is allowed to draft in
+                if str(team.season.draft_marker) not in draft_spots: # if the current draft marker is not in draft_order array, cannot draft now, just reload
+                    return redirect("/") 
             survivor = get_object_or_404(Survivor, pk = survivor_id_draft)
-            if survivor.team is None: # a Survivor should only be draftable by a Team if it currently does not have a Team
-                survivor.team = team
+            if not survivor.team.filter(season__id=context["season"].id): # a Survivor should only be draftable by a Team if it currently does not have a Team for this Season
+                survivor.team.add(team)
                 survivor.save()
+                num_drafted = len(context["season"].survivor_set.filter( # number of survivors in this season that have a team from this season
+                    team__season__id=context["season"].id
+                ))
+                context["season"].draft_marker = num_drafted + 1
+                context["season"].save()
             return redirect("/")  
         elif survivor_id_undraft is not None: # survivor undrafting requires the survivor_id_undraft field present
             team = get_object_or_404(Team, pk = user_team_id) # still need to get to ensure only the owning Team can unclaim a Survivor
             survivor = get_object_or_404(Survivor, pk = survivor_id_undraft)
-            if survivor.team.id == team.id: # a Survivor should only be undraftable by a Team if it is currently claimed by it
-                survivor.team = None
-                survivor.save()
+            survivor.team.remove(team) # if Survivor Teams do not include team, this will fail silently, which is fine
+            context["season"].draft_marker = 0 # set draft_marker to 0, a special state indicating somebody went & complicated the draft ordering
+            context["season"].save()
             return redirect("/")
         else: # if POST did not include any POST variables, it is a POST to create a team
             if team_creation_form.is_valid():
@@ -107,10 +128,15 @@ def home(request):
             context["display_type"] = "default"
 
     if context["display_type"] != "tribe":
-        context["undrafted_survivors"] = context["season"].survivor_set.filter(team=None).order_by("name")
         context["linked_seasons"] = context["season"].linked_seasons.all()
 
         teams = context["season"].team_set.all() # always show teams in the selected season
+        context["undrafted_survivors"] = context["season"].survivor_set.exclude(
+            team__season__in=[context["season"].id] # show all survivors who don't have a team for this season
+        ).order_by("name")
+        if context["season"].survivor_drafting:
+            context["drafters"] = context["season"].draft_order()
+
         for linked_season in context["linked_seasons"]: # always collect teams in linked seasons, though template may not display them
             teams = teams | linked_season.team_set.all()
         teams = sorted(teams, key = lambda t: t.name) # first sort by name
