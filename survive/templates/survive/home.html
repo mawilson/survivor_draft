@@ -244,6 +244,26 @@
         {% endif %}
 
         {% if season.survivor_drafting %}
+            {% if user.is_staff %}
+                <h2 class="font-bold">Generate draft order</h2>
+                <form method="POST">
+                    {% csrf_token %}
+                    <ul>
+                        <li>
+                            <button value="random" name="draft_order"
+                                title="Each round of drafting has its order randomized">Full random</button>
+                        </li>
+                        <li>
+                            <button value="snake" name="draft_order"
+                                title="The first round of drafting has its order randomized, the next is the reverse of that, then the reverse of that, & so on">Snake</button> 
+                        </li>
+                        <li>
+                            <button value="snake_random_tail" name="draft_order"
+                                title="Same as Snake, but the final round of drafting is randomized">Snake with random tail</button> 
+                        </li>
+                    </ul>
+                </form>
+            {% endif %}
             {% if drafters %}
                 <hr />
                 <h2 class="font-bold">Draft Ordering</h2>

@@ -67,7 +67,11 @@ def home(request):
         team_id = request.POST.get("team_id")
         survivor_id_draft = request.POST.get("survivor_id_draft")
         survivor_id_undraft = request.POST.get("survivor_id_undraft")
-        if team_id is not None: # team association requires the team_id field present
+        draft_order = request.POST.get("draft_order")
+        if draft_order is not None: # if draft_order was provided, it is a draft ordering post
+            context["season"].reorder_draft(draft_order)
+            return redirect("/")
+        elif team_id is not None: # team association requires the team_id field present
             team = get_object_or_404(Team, pk = request.POST.get("team_id"))
             if team.user is None: # a Team should only be associable to a User if it does not already have one
                 team.user = request.user
