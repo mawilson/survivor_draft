@@ -456,8 +456,14 @@ class Team(models.Model):
     )
     draft_order = models.CharField(
         max_length = 300,
-        verbose_name = ("Comma-delimited list of positions this team can draft in"),
+        verbose_name = "Comma-delimited list of positions this team can draft in",
         blank = True
+    )
+
+    draft_owner = models.BooleanField(
+        default = False,
+        verbose_name = "Whether this Team has administrative access to the draft & draft ordering",
+        null = False
     )
 
     def clean(self):

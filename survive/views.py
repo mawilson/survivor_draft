@@ -1,9 +1,8 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
-from survive.forms import FanFavoriteForm, PredictionForm, UserProfileForm
+from survive.forms import FanFavoriteForm, PredictionForm, UserProfileForm, RegisterUserForm, TeamCreationForm, DraftEnabledForm
 from django.contrib.auth import authenticate, login
 from survive.models import Team, Survivor, Season
-from survive.forms import RegisterUserForm, TeamCreationForm
 from django.views.generic import ListView
 from django.shortcuts import get_object_or_404
 
@@ -46,11 +45,14 @@ def season_selector_response(response, new_season_id):
 def home(request):
     context, new_season_id = season_selector_request(request)
     team_creation_form = TeamCreationForm(request.POST or None, instance = Team(season = context["season"]))
+    draft_enabled_form = DraftEnabledForm(request.POST or None, instance = context["season"])
 
     if (request.user.is_authenticated):
         context["team_associable"] = len(request.user.team_set.filter(season_id = context["season"].id)) == 0
         context["team_form"] = team_creation_form
         user_team = request.user.team_set.filter(season_id = context["season"].id).first() # user can have multiple teams - use the first from this season
+        context["user_team"] = user_team
+        context["draft_enabled_form"] = draft_enabled_form
     else:
         context["team_associable"] = False
         user_team = None # an inauthenticated user has no teams
@@ -68,8 +70,14 @@ def home(request):
         survivor_id_draft = request.POST.get("survivor_id_draft")
         survivor_id_undraft = request.POST.get("survivor_id_undraft")
         draft_order = request.POST.get("draft_order")
+        survivor_drafting = request.POST.get("survivor_drafting") # used to toggle Season survivor_drafting
+        survivor_drafting_helper = request.POST.get("survivor_drafting_helper") # also used to help determine if it's a survivor_drafting POST
         if draft_order is not None: # if draft_order was provided, it is a draft ordering post
             context["season"].reorder_draft(draft_order)
+            return redirect("/")
+        elif survivor_drafting_helper is not None:
+            context["season"].survivor_drafting = True if survivor_drafting == "on" else False
+            context["season"].save()
             return redirect("/")
         elif team_id is not None: # team association requires the team_id field present
             team = get_object_or_404(Team, pk = request.POST.get("team_id"))

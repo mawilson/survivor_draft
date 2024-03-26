@@ -16,15 +16,22 @@
         </form>
 
         {% if display_type == "default" and linked_seasons %}
-            <fieldset>
-                <label>Linked seasons to display</label>
-                <ul>
-                {% for s in linked_seasons %}
-                    <input type="checkbox" value="{{ s.id }}" id="linked_seasons_selector_{{ s.id }}" onchange="linked_seasons_display_toggle(this)" name="linked_seasons_checkbox">
-                    <label for="linked_seasons_selector_{{ s.id }}">{{ s.name }}</label>
-                {% endfor %}
-                </ul>
-            </fieldset>
+            <label>Linked seasons to display</label>
+            <ul>
+            {% for s in linked_seasons %}
+                <input type="checkbox" value="{{ s.id }}" id="linked_seasons_selector_{{ s.id }}" onchange="linked_seasons_display_toggle(this)" name="linked_seasons_checkbox">
+                <label for="linked_seasons_selector_{{ s.id }}">{{ s.name }}</label>
+            {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if user_team and user_team.draft_owner %}
+            <form method="POST">
+                {% csrf_token %}
+                <label>Enable Draft</label>
+                {{ draft_enabled_form.survivor_drafting }}
+                <input type="hidden" name="survivor_drafting_helper">
+            </form>
         {% endif %}
     </div>
     {% if season %}
@@ -244,7 +251,7 @@
         {% endif %}
 
         {% if season.survivor_drafting %}
-            {% if user.is_staff %}
+            {% if user_team.draft_owner %}
                 <h2 class="font-bold">Generate draft order</h2>
                 <form method="POST">
                     {% csrf_token %}
