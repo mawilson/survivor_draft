@@ -111,15 +111,10 @@ def home(request):
         elif survivor_id_draft is not None: # survivor drafting requires the survivor_id_draft field present
             team = get_object_or_404(Team, pk = user_team_id)
             survivor = get_object_or_404(Survivor, pk = survivor_id_draft)
-            if team.season.draft_marker > 0: # if draft_marker is 0, draft_marker/draft_order are not used to determine if draft is allowed for this team
-                next_pick = team.next_pick() # gets next pick this team is allowed to draft at
-                if team.season.draft_marker != next_pick: # if the current draft marker is not this team's next pick, it cannot draft
-                    if next_pick is None:
-                        draft_out_of_order_error = "Could not draft {}, your team has no picks left.".format(survivor.name)
-                    else:
-                        draft_out_of_order_error = "Could not draft {}, draft is at pick {} & your next pick is {}".format(survivor.name, team.season.draft_marker, team.next_pick())
-                    context["draft_out_of_order_error"] = draft_out_of_order_error
-                    return render(request, "survive/home.html", context)
+            can_pick = team.can_pick()
+            if not can_pick[0]:
+                context["draft_out_of_order_error"] = can_pick[1]
+                return render(request, "survive/home.html", context)
             if not survivor.team.filter(season__id=context["season"].id): # a Survivor should only be draftable by a Team if it currently does not have a Team for this Season
                 survivor.team.add(team)
                 survivor.save()

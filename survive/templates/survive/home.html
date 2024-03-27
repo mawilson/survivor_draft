@@ -183,7 +183,7 @@
                                                     Confessionals
                                                 </th>
                                                 <th>Points</th>
-                                                {% if not team_associable and season.is_season_active and season.survivor_drafting %}
+                                                {% if user.is_authenticated and not team_associable and season.is_season_active and season.survivor_drafting %}
                                                     <th>Undraft</th>
                                                 {% endif %}
                                             </tr>
@@ -232,7 +232,7 @@
                                                             </tr>
                                                         </table>
                                                     </td>
-                                                    {% if not team_associable and season.is_season_active and season.survivor_drafting and user_team_id == team.id %}
+                                                    {% if user.is_authenticated and not team_associable and season.is_season_active and season.survivor_drafting and user_team_id == team.id %}
                                                         <td>
                                                             <form method="POST" class="margin_top">
                                                                 {% csrf_token %}
@@ -296,6 +296,8 @@
         {% if undrafted_survivors %}
                 <hr />
                 <h2 class="font-bold">{% if display_type == "tribe" %}Untribed{% else %}Undrafted{% endif %} Survivors</h2>
+                
+                {% team_can_pick user_team as can_pick %}
                 <table class="table_center table_bordered">
                     <thead>
                         <th>Portrait</th>
@@ -307,7 +309,7 @@
                             Confessionals
                         </th>
                         <th>Points</th>
-                        {% if not team_associable and season.is_season_active and season.survivor_drafting and display_type != "tribe" %}
+                        {% if user.is_authenticated and not team_associable and season.is_season_active and season.survivor_drafting and display_type != "tribe" %}
                             <th>Draft</th>
                         {% endif %}
                     </thead>
@@ -355,11 +357,15 @@
                                         </tr>
                                     </table>
                                 </td>
-                                {% if not team_associable and season.is_season_active and season.survivor_drafting and display_type != "tribe" %}
+                                {% if user.is_authenticated and not team_associable and season.is_season_active and season.survivor_drafting and display_type != "tribe" %}
                                 <td>
                                     <form method="POST" class="margin_top">
                                         {% csrf_token %}
-                                        <button type="submit" class="text-black">Draft</button>
+                                        <button type="submit" class="text-black"
+                                            {% if not can_pick.0 %} disabled
+                                            title="{{can_pick.1}}"{% endif %}>
+                                            Draft
+                                        </button>
                                         <input type="hidden" name="survivor_id_draft" value="{{ survivor.id }}" />
                                     </form>
                                 </td>

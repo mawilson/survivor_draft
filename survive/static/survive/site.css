@@ -198,6 +198,11 @@ input[type=submit] {
     @apply bg-slate-200 hover:bg-slate-300 p-0.5 my-0.5 rounded-md drop-shadow !important; /* important necessary to overwrite Tailwind Preflight transparenting the background */
 }
 
+button:disabled,
+input[type=submit]:disabled {
+    @apply bg-gray-400 text-gray-600 p-0.5 my-0.5 rounded-md drop-shadow !important; /* important necessary to overwrite Tailwind Preflight transparenting the background */
+}
+
 select {
     background-color: #67d4e9;
     padding: 2px;
