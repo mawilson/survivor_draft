@@ -25,7 +25,7 @@
             </ul>
         {% endif %}
 
-        {% if user_team and user_team.draft_owner %}
+        {% if not season.is_season_closed and user_team and user_team.draft_owner %}
             <form method="POST">
                 {% csrf_token %}
                 <label>Enable Draft</label>
@@ -250,7 +250,7 @@
             </table>
         {% endif %}
 
-        {% if season.survivor_drafting %}
+        {% if season.survivor_drafting and not season.is_season_closed %}
             {% if user_team.draft_owner %}
                 <h2 class="font-bold">Generate draft order</h2>
                 <form method="POST">
