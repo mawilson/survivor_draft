@@ -543,16 +543,34 @@ class Team(models.Model):
         return False
     
     def next_pick(self) -> int | None:
-        """Returns next pick in the team's draft order based on survivor_set, or None if no picks left or no draft order defined"""
-        if self.draft_order == "":
-            return None
+        """Returns next pick in the team's draft order based on survivor_set, or None if no picks left.
+        A value of -1 indicates draft_order was empty, but the team still has picks left."""
+        if self.draft_order == "": # in the event a draft order is undefined, can still draft is draft_marker is 0. This distinguishes from None for a full team
+            return -1
         num_team_members = len(self.survivor_set.all())
         picks = self.draft_order.split(",")
         if num_team_members >= len(picks): # if I already have equal or more team members than picks, I've already made all available picks
             return None
         else: # else, return the next entry in the picks list (because of zero indexing, this is just index num_team_members)
             return int(picks[num_team_members])
-         
+
+    def can_pick(self) -> tuple[bool, str]:
+        """Returns a boolean indicating whether I can currently pick, & a string containing what to say if I can't"""
+        next_pick = self.next_pick()
+        if next_pick is None: # team is full, cannot draft
+            pick_text = "It's not your turn to draft. You appear to have no picks left."
+            _can_pick = False
+        elif self.season.draft_marker == 0: # not tracking draft marker, so can draft
+            pick_text = "Draft marker tracking disabled. You can draft."
+            _can_pick = True
+        else: # draft_marker is tracked, team is not full
+            if self.season.draft_marker == next_pick:
+                pick_text = "Draft marker matches your next pick. You can draft."
+                _can_pick = True
+            else:
+                pick_text = "It's not your turn to draft. Current pick is at {}, whereas your next pick is {}".format(self.season.draft_marker, next_pick)
+                _can_pick = False
+        return (_can_pick, pick_text)        
     
 class Tribe(models.Model):
     season = models.ForeignKey(
