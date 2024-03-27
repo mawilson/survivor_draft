@@ -7,6 +7,10 @@
 {% block content %}
     {% load model_extras %}
     <div>
+        {% if draft_out_of_order_error %}
+            <p class="errorlist">{{draft_out_of_order_error}}</p>
+        {% endif %}
+
         <form method="GET">
             <label>View: </label>
             <select name="display_type" onchange="this.form.submit()">

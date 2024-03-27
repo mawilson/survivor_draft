@@ -542,6 +542,18 @@ class Team(models.Model):
                     return True
         return False
     
+    def next_pick(self) -> int | None:
+        """Returns next pick in the team's draft order based on survivor_set, or None if no picks left or no draft order defined"""
+        if self.draft_order == "":
+            return None
+        num_team_members = len(self.survivor_set.all())
+        picks = self.draft_order.split(",")
+        if num_team_members >= len(picks): # if I already have equal or more team members than picks, I've already made all available picks
+            return None
+        else: # else, return the next entry in the picks list (because of zero indexing, this is just index num_team_members)
+            return int(picks[num_team_members])
+         
+    
 class Tribe(models.Model):
     season = models.ForeignKey(
         Season,

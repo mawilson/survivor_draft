@@ -61,6 +61,29 @@ def home(request):
     if user_team_id is not None:
         context["user_team_id"] = user_team_id
 
+    display_type = request.GET.get("display_type")
+    if display_type == "tribe":
+        context["display_type"] = "tribe"
+    else:
+        context["display_type"] = "default"
+
+    if context["display_type"] != "tribe":
+        context["linked_seasons"] = context["season"].linked_seasons.all()
+
+        teams = context["season"].team_set.all() # always show teams in the selected season
+        context["undrafted_survivors"] = context["season"].survivor_set.exclude(
+            team__season__in=[context["season"].id] # show all survivors who don't have a team for this season
+        ).order_by("name")
+        if context["season"].survivor_drafting:
+            context["drafters"] = context["season"].draft_order()
+
+        for linked_season in context["linked_seasons"]: # always collect teams in linked seasons, though template may not display them
+            teams = teams | linked_season.team_set.all()
+        teams = sorted(teams, key = lambda t: t.name) # first sort by name
+        context["teams"] = sorted(teams, key=lambda t: t.points(), reverse = True) # then sort by points, descending
+    else:
+        context["undrafted_survivors"] = context["season"].survivor_set.filter(tribe=None).order_by("name")
+
     if request.method == "POST": # there are a variety of types of POSTs that can come in to this view
         # use named hidden inputs submitted with the form to distinguish between them
         # the team_id variable is used to associate a user with a team, & also to select a team to draft a survivor to
@@ -87,11 +110,16 @@ def home(request):
             return redirect("/")
         elif survivor_id_draft is not None: # survivor drafting requires the survivor_id_draft field present
             team = get_object_or_404(Team, pk = user_team_id)
-            if team.season.draft_marker > 0: # if draft_marker is 0, draft_marker/draft_order are not used to determine if draft is allowed for this team
-                draft_spots = team.draft_order.split(",") # get spots this team is allowed to draft in
-                if str(team.season.draft_marker) not in draft_spots: # if the current draft marker is not in draft_order array, cannot draft now, just reload
-                    return redirect("/") 
             survivor = get_object_or_404(Survivor, pk = survivor_id_draft)
+            if team.season.draft_marker > 0: # if draft_marker is 0, draft_marker/draft_order are not used to determine if draft is allowed for this team
+                next_pick = team.next_pick() # gets next pick this team is allowed to draft at
+                if team.season.draft_marker != next_pick: # if the current draft marker is not this team's next pick, it cannot draft
+                    if next_pick is None:
+                        draft_out_of_order_error = "Could not draft {}, your team has no picks left.".format(survivor.name)
+                    else:
+                        draft_out_of_order_error = "Could not draft {}, draft is at pick {} & your next pick is {}".format(survivor.name, team.season.draft_marker, team.next_pick())
+                    context["draft_out_of_order_error"] = draft_out_of_order_error
+                    return render(request, "survive/home.html", context)
             if not survivor.team.filter(season__id=context["season"].id): # a Survivor should only be draftable by a Team if it currently does not have a Team for this Season
                 survivor.team.add(team)
                 survivor.save()
@@ -120,29 +148,6 @@ def home(request):
                 return redirect("/") # after submitting, redirect to home page to refresh
             else:
                 return render(request, "survive/home.html", context)
-    else: # GETs
-        display_type = request.GET.get("display_type")
-        if display_type == "tribe":
-            context["display_type"] = "tribe"
-        else:
-            context["display_type"] = "default"
-
-    if context["display_type"] != "tribe":
-        context["linked_seasons"] = context["season"].linked_seasons.all()
-
-        teams = context["season"].team_set.all() # always show teams in the selected season
-        context["undrafted_survivors"] = context["season"].survivor_set.exclude(
-            team__season__in=[context["season"].id] # show all survivors who don't have a team for this season
-        ).order_by("name")
-        if context["season"].survivor_drafting:
-            context["drafters"] = context["season"].draft_order()
-
-        for linked_season in context["linked_seasons"]: # always collect teams in linked seasons, though template may not display them
-            teams = teams | linked_season.team_set.all()
-        teams = sorted(teams, key = lambda t: t.name) # first sort by name
-        context["teams"] = sorted(teams, key=lambda t: t.points(), reverse = True) # then sort by points, descending
-    else:
-        context["undrafted_survivors"] = context["season"].survivor_set.filter(tribe=None).order_by("name")
 
     response = render(request, "survive/home.html", context)
     season_selector_response(response, new_season_id)
