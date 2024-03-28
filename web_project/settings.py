@@ -44,8 +44,9 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'live_draft',
     'survive',
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -84,7 +85,12 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'web_project.wsgi.application'
-
+ASGI_APPLICATION = 'web_project.asgi.application'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer" # for dev use only!!
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

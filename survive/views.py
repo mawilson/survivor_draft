@@ -5,6 +5,8 @@ from django.contrib.auth import authenticate, login
 from survive.models import Team, Survivor, Season
 from django.views.generic import ListView
 from django.shortcuts import get_object_or_404
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 class HomeListView(ListView):
     """Renders the home page, with a list of all teams."""
@@ -123,6 +125,12 @@ def home(request):
                 ))
                 context["season"].draft_marker = num_drafted + 1
                 context["season"].save()
+
+                channel_layer = get_channel_layer()
+                async_to_sync(channel_layer.group_send)(
+                    "draft_1", # "draft_" + str(context["season"].id), 
+                    {"type": "draft.message", "message": str(num_drafted + 1)}
+                ) # tell everyone in the season channel that the draft_marker has changed
             return redirect("/")  
         elif survivor_id_undraft is not None: # survivor undrafting requires the survivor_id_undraft field present
             team = get_object_or_404(Team, pk = user_team_id) # still need to get to ensure only the owning Team can unclaim a Survivor

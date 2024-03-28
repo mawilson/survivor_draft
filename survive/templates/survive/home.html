@@ -361,7 +361,7 @@
                                 <td>
                                     <form method="POST" class="margin_top">
                                         {% csrf_token %}
-                                        <button type="submit" class="text-black"
+                                        <button type="submit" class="text-black" onclick="draft_submit_message(this)"
                                             {% if not can_pick.0 %} disabled
                                             title="{{can_pick.1}}"{% endif %}>
                                             Draft
