@@ -20,8 +20,6 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
 from django.conf import settings
 urlpatterns = [
-    # path("", include("hello.urls")),
-    path("live_draft/", include("live_draft.urls")),
     path("", include("survive.urls")),
     path('admin/', admin.site.urls)
 ]

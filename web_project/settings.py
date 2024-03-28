@@ -45,7 +45,6 @@ else:
 
 INSTALLED_APPS = [
     'daphne',
-    'live_draft',
     'survive',
     'django.contrib.admin',
     'django.contrib.auth',
