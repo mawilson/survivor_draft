@@ -285,14 +285,14 @@
                 <h2 class="font-bold">Draft Ordering</h2>
                 <ul>
                 {% for drafter in drafters %}
-                    {% if drafter.0 == season.draft_marker %}
-                        <li class="font-bold">{{drafter.0}}: {{drafter.1.name}} (current)</li>
+                    {% if drafter.0 == season.draft_marker and undrafted_survivors %}
+                        <li name="draft_ordering" class="font-bold">{{drafter.0}}: {{drafter.1.name}} (current)</li>
                     {% else %}
-                        <li>{{drafter.0}}: {{drafter.1.name}}</li>
+                        <li name="draft_ordering">{{drafter.0}}: {{drafter.1.name}}</li>
                     {% endif %}
                 {% endfor %}
                 {% if not undrafted_survivors %}
-                    <li class="font-bold">Draft complete</li>
+                    <li name="draft_complete" class="font-bold">Draft complete</li>
                 {% endif %}
                 </ul>
             {% endif %}
@@ -366,7 +366,7 @@
                                 <td>
                                     <form method="POST" class="margin_top">
                                         {% csrf_token %}
-                                        <button type="submit" class="text-black" onclick="draft_submit_message(this)"
+                                        <button type="submit" class="text-black"
                                             {% if not can_pick.0 %} disabled
                                             title="{{can_pick.1}}"{% endif %}>
                                             Draft

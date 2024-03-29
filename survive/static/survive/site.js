@@ -109,7 +109,35 @@ function createDraftWatchSocket(season_id) {
     
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
-        console.log("data: " + data.message);
+        let draft_marker = parseInt(data.message);
+        let draft_ordering_list_items = document.querySelectorAll("li[name='draft_ordering']");
+        if (draft_ordering_list_items) {
+            for (const li of draft_ordering_list_items) {
+                let parts = li.innerText.split(" ");
+                if (parts.length > 2) {
+                    let position = parseInt(parts[0].substring(0, parts[0].length - 1), 10);
+                    let team_name;
+                    if (parts[parts.length - 1] === "(current)") {
+                        team_name = parts.slice(1, parts.length - 1).join(" ");
+                    } else {
+                        team_name = parts.slice(1).join(" ");
+                    }
+                    if (draft_marker === position) {
+                        li.innerText = position + ": " + team_name + " (current)";
+                        li.className = "font-bold";
+                    } else {
+                        li.innerText = position + ": " + team_name;
+                        li.className = "";
+                    }
+                }
+            }
+            let draft_complete = document.querySelector("li[name='draft_complete']");
+            if (draft_marker > draft_ordering_list_items.length) {
+                draft_complete.style.display = ""; // show draft complete if draft marker is greater than number of survivors
+            } else {
+                draft_complete.style.display = "none"; // hide draft complete if draft marker is not beyond number of survivors
+            }
+        }
     };
     
     chatSocket.onclose = function(e) {

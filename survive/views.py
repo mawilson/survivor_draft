@@ -138,6 +138,12 @@ def home(request):
             survivor.team.remove(team) # if Survivor Teams do not include team, this will fail silently, which is fine
             context["season"].draft_marker = 0 # set draft_marker to 0, a special state indicating somebody went & complicated the draft ordering
             context["season"].save()
+
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                "draft_" + str(context["season"].id), 
+                {"type": "draft.message", "message": "0"} # draft_marker after an undraft is set to 0
+            ) # tell everyone in the season channel that the draft_marker has changed
             return redirect("/")
         else: # if POST did not include any POST variables, it is a POST to create a team
             if team_creation_form.is_valid():
