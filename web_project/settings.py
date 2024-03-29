@@ -37,7 +37,7 @@ if SECRET_KEY is None: # if the appropriate environment variable for secret key 
         os.environ["SECRET_KEY"] = SECRET_KEY
 
 if DEBUG:
-    ALLOWED_HOSTS = ['127.0.0.1', '45.79.100.226', '0.0.0.0', '24.22.54.151']
+    ALLOWED_HOSTS = ['*']
 else:
     ALLOWED_HOSTS = ['outdraft.me']
 
