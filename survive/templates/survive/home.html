@@ -6,6 +6,11 @@
 {% block page_title %}Season Overview{% endblock %}
 {% block content %}
     {% load model_extras %}
+
+    {% if season.survivor_drafting and not season.is_season_closed and display_type != "tribe" %}
+        <script>createDraftWatchSocket({{season.id}})</script>
+    {% endif %}
+
     <div>
         {% if draft_out_of_order_error %}
             <p class="errorlist">{{draft_out_of_order_error}}</p>

@@ -128,7 +128,7 @@ def home(request):
 
                 channel_layer = get_channel_layer()
                 async_to_sync(channel_layer.group_send)(
-                    "draft_1", # "draft_" + str(context["season"].id), 
+                    "draft_" + str(context["season"].id), 
                     {"type": "draft.message", "message": str(num_drafted + 1)}
                 ) # tell everyone in the season channel that the draft_marker has changed
             return redirect("/")  

@@ -97,42 +97,24 @@ function linked_seasons_visibility_on_load() {// function to show or hide teams 
 window.addEventListener("DOMContentLoaded", themeSelectorInitialize);
 window.addEventListener("DOMContentLoaded", linked_seasons_visibility_on_load);
 
-const chatSocket = new WebSocket(
-    'ws://'
-    + window.location.host
-    + '/ws/live_draft/'
-    + '1'
-    + '/'
-);
-
-chatSocket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-    console.log("data: " + data.message);
-    //document.querySelector('#chat-log').value += (data.message + '\n');
-};
-
-chatSocket.onclose = function(e) {
-    if (e.code !== 1000) {
-        console.error('Chat socket closed unexpectedly. Code, reason, wasClean: ' + e.code + ', ' + e.reason + ', ' + e.wasClean)
-        //console.error('Chat socket closed unexpectedly');
-    }
-};
-
-function draft_submit_message(e) {
-    // chatSocket.send(JSON.stringify({
-    //     'message': 'test message'
-    // }));
-    Function.prototype();
+// function called to create a web socket listening on the season ID group for draft_marker updates
+function createDraftWatchSocket(season_id) {
+    const chatSocket = new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/live_draft/'
+        + season_id
+        + '/'
+    );
+    
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        console.log("data: " + data.message);
+    };
+    
+    chatSocket.onclose = function(e) {
+        if (e.code !== 1000) {
+            console.error('Chat socket closed unexpectedly. Code, reason, wasClean: ' + e.code + ', ' + e.reason + ', ' + e.wasClean)
+        }
+    };
 }
-
-// draft_message_submits = document.querySelector('.draft_message_submit');
-// if (draft_message_submits) {
-//     draft_message_submits.onclick = function(e) {
-//         //const messageInputDom = document.querySelector('#chat-message-input');
-//         //const message = messageInputDom.value;
-//         chatSocket.send(JSON.stringify({
-//             'message': message
-//         }));
-//         //messageInputDom.value = '';
-//     };
-// }
