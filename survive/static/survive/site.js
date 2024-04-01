@@ -100,7 +100,7 @@ window.addEventListener("DOMContentLoaded", linked_seasons_visibility_on_load);
 // function called to create a web socket listening on the season ID group for draft_marker updates
 function createDraftWatchSocket(season_id) {
     const chatSocket = new WebSocket(
-        'ws://'
+        'wss://'
         + window.location.host
         + '/ws/live_draft/'
         + season_id
