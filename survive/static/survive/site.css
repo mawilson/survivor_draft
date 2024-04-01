@@ -200,7 +200,7 @@ input[type=submit] {
 
 button:disabled,
 input[type=submit]:disabled {
-    @apply bg-gray-400 text-gray-600 p-0.5 my-0.5 rounded-md drop-shadow !important; /* important necessary to overwrite Tailwind Preflight transparenting the background */
+    @apply bg-gray-400 text-gray-600 p-0.5 my-0.5 rounded-md drop-shadow survivor_elim_cursor !important; /* important necessary to overwrite Tailwind Preflight transparenting the background */
 }
 
 select {

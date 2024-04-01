@@ -5,6 +5,8 @@ from django.contrib.auth import authenticate, login
 from survive.models import Team, Survivor, Season
 from django.views.generic import ListView
 from django.shortcuts import get_object_or_404
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 class HomeListView(ListView):
     """Renders the home page, with a list of all teams."""
@@ -121,15 +123,37 @@ def home(request):
                 num_drafted = len(context["season"].survivor_set.filter( # number of survivors in this season that have a team from this season
                     team__season__id=context["season"].id
                 ))
-                context["season"].draft_marker = num_drafted + 1
-                context["season"].save()
+                draft_marker = context["season"].draft_marker
+                if draft_marker >= 0: # negative values indicate draft order isn't being kept track of at all, leave it as such
+                    new_draft_marker = num_drafted + 1
+                    context["season"].draft_marker = new_draft_marker
+                    context["season"].save()
+                else:
+                    new_draft_marker = draft_marker # negative value stays put
+
+                channel_layer = get_channel_layer()
+                async_to_sync(channel_layer.group_send)(
+                    "draft_" + str(context["season"].id), 
+                    {"type": "draft.message", "message": str(new_draft_marker)}
+                ) # tell everyone in the season channel that the draft_marker has changed
             return redirect("/")  
         elif survivor_id_undraft is not None: # survivor undrafting requires the survivor_id_undraft field present
             team = get_object_or_404(Team, pk = user_team_id) # still need to get to ensure only the owning Team can unclaim a Survivor
             survivor = get_object_or_404(Survivor, pk = survivor_id_undraft)
             survivor.team.remove(team) # if Survivor Teams do not include team, this will fail silently, which is fine
-            context["season"].draft_marker = 0 # set draft_marker to 0, a special state indicating somebody went & complicated the draft ordering
-            context["season"].save()
+            draft_marker = context["season"].draft_marker
+            if draft_marker >= 0:
+                new_draft_marker = 0
+                context["season"].draft_marker = new_draft_marker # set draft_marker to 0, a special state indicating somebody went & complicated the draft ordering
+                context["season"].save()
+            else:
+                new_draft_marker = draft_marker
+
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                "draft_" + str(context["season"].id), 
+                {"type": "draft.message", "message": str(new_draft_marker)} # draft_marker after an undraft is set to 0
+            ) # tell everyone in the season channel that the draft_marker has changed
             return redirect("/")
         else: # if POST did not include any POST variables, it is a POST to create a team
             if team_creation_form.is_valid():

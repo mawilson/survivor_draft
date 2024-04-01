@@ -972,6 +972,7 @@ input[type=submit]:disabled {
   color: rgb(75 85 99 / var(--tw-text-opacity)) !important;
   --tw-drop-shadow: drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06)) !important;
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow) !important;
+  cursor: url("torch_extinguished.png") 0 0, auto !important;
   /* important necessary to overwrite Tailwind Preflight transparenting the background */
 }
 

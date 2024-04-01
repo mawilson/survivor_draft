@@ -371,6 +371,12 @@ class Season(models.Model):
         for team in teams:
             team.save() # save the new draft order for each team
 
+    def max_team_size(self):
+        """Determines max team size based on number of survivors in this draft divided by number of teams in this draft, floor"""
+        num_survivors = len(self.survivor_set.all())
+        num_teams = len(self.team_set.all())
+        return math.floor(num_survivors / num_teams) if num_teams > 0 else 0
+
 class Team(models.Model):
     season = models.ForeignKey(
         Season,
@@ -545,10 +551,12 @@ class Team(models.Model):
     def next_pick(self) -> int | None:
         """Returns next pick in the team's draft order based on survivor_set, or None if no picks left.
         A value of -1 indicates draft_order was empty, but the team still has picks left."""
-        if self.draft_order == "": # in the event a draft order is undefined, can still draft is draft_marker is 0. This distinguishes from None for a full team
+        if self.draft_order == "": # in the event a draft order is undefined, can still draft if draft_marker is <= 0. This distinguishes from None for a full team
             return -1
         num_team_members = len(self.survivor_set.all())
         picks = self.draft_order.split(",")
+        if num_team_members >= self.season.max_team_size(): # if I already have equal or more team members than the max team size based on participating teams
+            return None
         if num_team_members >= len(picks): # if I already have equal or more team members than picks, I've already made all available picks
             return None
         else: # else, return the next entry in the picks list (because of zero indexing, this is just index num_team_members)
@@ -560,12 +568,18 @@ class Team(models.Model):
         if next_pick is None: # team is full, cannot draft
             pick_text = "It's not your turn to draft. You appear to have no picks left."
             _can_pick = False
+        elif self.season.draft_marker < 0: # not maintaining draft order, so can draft
+            pick_text = "Draft is free for all. You can draft."
+            _can_pick = True
         elif self.season.draft_marker == 0: # not tracking draft marker, so can draft
             pick_text = "Draft marker tracking disabled. You can draft."
             _can_pick = True
         else: # draft_marker is tracked, team is not full
             if self.season.draft_marker == next_pick:
                 pick_text = "Draft marker matches your next pick. You can draft."
+                _can_pick = True
+            elif self.season.draft_marker > next_pick:
+                pick_text = "Draft marker is after your next pick. You're behind - draft to catch up."
                 _can_pick = True
             else:
                 pick_text = "It's not your turn to draft. Current pick is at {}, whereas your next pick is {}".format(self.season.draft_marker, next_pick)

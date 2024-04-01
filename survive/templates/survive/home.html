@@ -6,6 +6,11 @@
 {% block page_title %}Season Overview{% endblock %}
 {% block content %}
     {% load model_extras %}
+
+    {% if season.survivor_drafting and not season.is_season_closed and display_type != "tribe" %}
+        <script>createDraftWatchSocket({{season.id}})</script>
+    {% endif %}
+
     <div>
         {% if draft_out_of_order_error %}
             <p class="errorlist">{{draft_out_of_order_error}}</p>
@@ -277,17 +282,21 @@
             {% endif %}
             {% if drafters %}
                 <hr />
-                <h2 class="font-bold">Draft Ordering</h2>
-                <ul>
-                {% for drafter in drafters %}
-                    {% if drafter.0 == season.draft_marker %}
-                        <li class="font-bold">{{drafter.0}}: {{drafter.1.name}} (current)</li>
-                    {% else %}
-                        <li>{{drafter.0}}: {{drafter.1.name}}</li>
-                    {% endif %}
-                {% endfor %}
+                {% if season.draft_marker < 0 %}
+                    <h2 class="font-bold">Draft Ordering: Free for all</h2>
+                {% else %}
+                    <h2 class="font-bold">Draft Ordering</h2>
+                    <ul>
+                    {% for drafter in drafters %}
+                        {% if drafter.0 == season.draft_marker and undrafted_survivors %}
+                            <li name="draft_ordering" class="font-bold">{{drafter.0}}: {{drafter.1.name}} (current)</li>
+                        {% else %}
+                            <li name="draft_ordering">{{drafter.0}}: {{drafter.1.name}}</li>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
                 {% if not undrafted_survivors %}
-                    <li class="font-bold">Draft complete</li>
+                    <li name="draft_complete" class="font-bold">Draft complete</li>
                 {% endif %}
                 </ul>
             {% endif %}

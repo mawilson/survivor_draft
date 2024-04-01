@@ -96,3 +96,24 @@ function linked_seasons_visibility_on_load() {// function to show or hide teams 
 
 window.addEventListener("DOMContentLoaded", themeSelectorInitialize);
 window.addEventListener("DOMContentLoaded", linked_seasons_visibility_on_load);
+
+// function called to create a web socket listening on the season ID group for draft_marker updates
+function createDraftWatchSocket(season_id) {
+    const chatSocket = new WebSocket(
+        'wss://'
+        + window.location.host
+        + '/ws/live_draft/'
+        + season_id
+        + '/'
+    );
+    
+    chatSocket.onmessage = function(e) {
+        location.reload(); // simply reload the page on receiving a draft update. Simplest, easiest way to get new draft data
+    };
+    
+    chatSocket.onclose = function(e) {
+        if (e.code !== 1000) {
+            console.error('Chat socket closed unexpectedly. Code, reason, wasClean: ' + e.code + ', ' + e.reason + ', ' + e.wasClean)
+        }
+    };
+}
