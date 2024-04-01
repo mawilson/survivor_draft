@@ -85,11 +85,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'web_project.wsgi.application'
 ASGI_APPLICATION = 'web_project.asgi.application'
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer" # for dev use only!!
+
+if DEBUG:
+    channel_layers_config = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer" # for dev use only!!
+        }
     }
-}
+else:
+    channel_layers_config = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [("127.0.0.1", 6379)],
+            }
+        }
+    }
+CHANNEL_LAYERS = channel_layers_config
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
