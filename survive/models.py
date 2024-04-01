@@ -578,6 +578,9 @@ class Team(models.Model):
             if self.season.draft_marker == next_pick:
                 pick_text = "Draft marker matches your next pick. You can draft."
                 _can_pick = True
+            elif self.season.draft_marker > next_pick:
+                pick_text = "Draft marker is after your next pick. You're behind - draft to catch up."
+                _can_pick = True
             else:
                 pick_text = "It's not your turn to draft. Current pick is at {}, whereas your next pick is {}".format(self.season.draft_marker, next_pick)
                 _can_pick = False
