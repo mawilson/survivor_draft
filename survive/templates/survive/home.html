@@ -282,15 +282,19 @@
             {% endif %}
             {% if drafters %}
                 <hr />
-                <h2 class="font-bold">Draft Ordering</h2>
-                <ul>
-                {% for drafter in drafters %}
-                    {% if drafter.0 == season.draft_marker and undrafted_survivors %}
-                        <li name="draft_ordering" class="font-bold">{{drafter.0}}: {{drafter.1.name}} (current)</li>
-                    {% else %}
-                        <li name="draft_ordering">{{drafter.0}}: {{drafter.1.name}}</li>
-                    {% endif %}
-                {% endfor %}
+                {% if season.draft_marker < 0 %}
+                    <h2 class="font-bold">Draft Ordering: Free for all</h2>
+                {% else %}
+                    <h2 class="font-bold">Draft Ordering</h2>
+                    <ul>
+                    {% for drafter in drafters %}
+                        {% if drafter.0 == season.draft_marker and undrafted_survivors %}
+                            <li name="draft_ordering" class="font-bold">{{drafter.0}}: {{drafter.1.name}} (current)</li>
+                        {% else %}
+                            <li name="draft_ordering">{{drafter.0}}: {{drafter.1.name}}</li>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
                 {% if not undrafted_survivors %}
                     <li name="draft_complete" class="font-bold">Draft complete</li>
                 {% endif %}
