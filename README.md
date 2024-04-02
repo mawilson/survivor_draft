@@ -13,9 +13,12 @@ Currently being hosted at https://outdraft.me, but you can also host your own.
 1. Install Python 3.11 or higher.
 2. Create a virtual environment
   > python -m venv .venv
+  
   Then activate it
+  
   > .venv\Scripts\activate
-  The rest of the steps assuming running within this environment.
+  
+  The rest of the steps assume running within this environment.
 3. Use Pip to install the requirements
   > python -m pip install -r 'requirements.txt'
 4. Configure environment variables
@@ -27,17 +30,21 @@ Currently being hosted at https://outdraft.me, but you can also host your own.
 7. If running in prod, you will need to adjust the ALLOWED_HOSTS field in the top-level settings.py file to match the IP or domain you are hosting from.
 8. Run the migration
   > python manage.py migrate
+
 This will create the database file & then migrate it to its intended state.
 9. Collect the static files
   > python manage.py collectstatic
 10. Create a superuser
-  > python manage.py createsuperuser -- username=<username> --email=<email>
+  > python manage.py createsuperuser -- username=yourUsername --email=yourEmail
+  
   This will be useful in managing the database - creating seasons, survivors, etc. You can later access the administrative interface through the `/admin` path, logging in with these credentials. 
 11. Run the server
   > python manage.py runserver
+  
   This will be useful in running the server for development purposes, but if you're running it in prod, you should use a proper server.
 12. Run the server in prod
   > daphne -e ssl:443:privateKey=<pathToPrivateKey.pem>:certKey=<pathToCert.pem> web_project.asgi:application
+  
   This will cause the Daphne (https://github.com/django/daphne) server to run the web_project.asgi application using the private key & cert provided. Daphne is necessary to make use of the secure websockets that the live draft depends upon - before that functionality, I used to host using Gunicorn (as of writing the Gunicorn config file is still in the repo).
 
 ## Use
