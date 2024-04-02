@@ -9,31 +9,31 @@
 }
 
 .theme_jeff {
-    background-image: url("/static/images/jeff.png");
+    background-image: url("/static/images/jeff.webp");
     background-repeat: repeat;
     background-size: 250px 250px;
 }
 
 .theme_unjeff {
-    background-image: url("/static/images/unjeff.png");
+    background-image: url("/static/images/unjeff.webp");
     background-repeat: repeat;
     background-size: 250px 250px;
 }
 
 .theme_bg_blue {
-    background-image: url("/static/images/bg_logo_blue.png");
+    background-image: url("/static/images/bg_logo_blue.webp");
     background-repeat: repeat;
     background-size: 250px 250px;
 }
 
 .theme_bg_grey {
-    background-image: url("/static/images/bg_surv_logo_grey.png");
+    background-image: url("/static/images/bg_surv_logo_grey.webp");
     background-repeat: repeat;
     background-size: 250px 250px;
 }
 
 .theme_jeff_grey {
-    background-image: url("/static/images/jeff_grey.png");
+    background-image: url("/static/images/jeff_grey.webp");
     background-repeat: repeat;
     background-size: 250px 250px;
 }
