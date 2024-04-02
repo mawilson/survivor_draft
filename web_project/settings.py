@@ -26,15 +26,13 @@ DEBUG = is_prod != "true" # if the env var is undefined, debug will be set to Tr
 
 # SECURITY WARNING: keep the secret key used in production secret!
 if DEBUG:
-    SECRET_KEY = str(os.getenv('SECRET_KEY_DEV'))
+    SECRET_KEY = os.getenv('SECRET_KEY_DEV')
 else:
-    SECRET_KEY = str(os.getenv('SECRET_KEY'))
-if SECRET_KEY is None: # if the appropriate environment variable for secret key was not present, generate a new one, then set it for future uses
+    SECRET_KEY = os.getenv('SECRET_KEY')
+if SECRET_KEY is None: # if the appropriate environment variable for secret key was not present, generate a new one
     SECRET_KEY = get_random_secret_key() # if environment has not provided a secret key, generate a random one for this server runtime
-    if DEBUG:
-        os.environ["SECRET_KEY_DEV"] = SECRET_KEY
-    else:
-        os.environ["SECRET_KEY"] = SECRET_KEY
+else:
+    SECRET_KEY = str(SECRET_KEY)
 
 if DEBUG:
     ALLOWED_HOSTS = ['*']
