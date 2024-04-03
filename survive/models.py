@@ -369,6 +369,7 @@ class Season(models.Model):
                 else:
                     team.draft_order += str(new_draft_order) + ","
         for team in teams:
+            team.survivor_set.clear() # given a new draft ordering, the draft should begin anew, meaning all previously drafted Survivors get undrafted
             team.save() # save the new draft order for each team
 
     def max_team_size(self):
