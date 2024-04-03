@@ -344,33 +344,39 @@ class Season(models.Model):
         team_ordering_backwards = team_ordering
         for team in teams:
             team.draft_order = "" # empty out each team's draft order in order to create a new one
-        for round in range(0, number_of_rounds):
-            last_round = round == (number_of_rounds - 1)
-            if round == 0 and (type == "snake" or type == "snake_random_tail"):
-                team_ordering = sorted(teams, key=lambda x: random.random())
-                team_ordering_backwards = reversed(team_ordering) # not in place reversed copy of team_ordering
-            if type == "random": # if random, each round gets a randomized order
-                order = sorted(teams, key = lambda x: random.random())
-            elif type == "snake" or type == "snake_random_tail":
-                if last_round and type == "snake_random_tail": # if snake_with_random tail & it's the last round, the round gets a random order
+        if type != "free":
+            for round in range(0, number_of_rounds):
+                last_round = round == (number_of_rounds - 1)
+                if round == 0 and (type == "snake" or type == "snake_random_tail"):
+                    team_ordering = sorted(teams, key=lambda x: random.random())
+                    team_ordering_backwards = reversed(team_ordering) # not in place reversed copy of team_ordering
+                if type == "random": # if random, each round gets a randomized order
                     order = sorted(teams, key = lambda x: random.random())
-                elif round % 2 == 0: # if either type of snake, even rounds use team_ordering, odd rounds use team_ordering_backwards
-                    order = team_ordering
+                elif type == "snake" or type == "snake_random_tail":
+                    if last_round and type == "snake_random_tail": # if snake_with_random tail & it's the last round, the round gets a random order
+                        order = sorted(teams, key = lambda x: random.random())
+                    elif round % 2 == 0: # if either type of snake, even rounds use team_ordering, odd rounds use team_ordering_backwards
+                        order = team_ordering
+                    else:
+                        order = team_ordering_backwards
                 else:
-                    order = team_ordering_backwards
-            else:
-                order = teams # if no matching type was provided, just leave the team ordering in place
-            for pick, team in enumerate(order, start = 1):
-                new_draft_order = (number_of_teams * round) + pick # so for the first pick of round 0, this would make 1.
-                # for the last pick of six teams in round 0, this would make 6
-                # for the last pick of six teams in round 2, this would make 18
-                if last_round:
-                    team.draft_order += str(new_draft_order)
-                else:
-                    team.draft_order += str(new_draft_order) + ","
+                    order = teams # if no matching type was provided, just leave the team ordering in place
+                for pick, team in enumerate(order, start = 1):
+                    new_draft_order = (number_of_teams * round) + pick # so for the first pick of round 0, this would make 1.
+                    # for the last pick of six teams in round 0, this would make 6
+                    # for the last pick of six teams in round 2, this would make 18
+                    if last_round:
+                        team.draft_order += str(new_draft_order)
+                    else:
+                        team.draft_order += str(new_draft_order) + ","
         for team in teams:
             team.survivor_set.clear() # given a new draft ordering, the draft should begin anew, meaning all previously drafted Survivors get undrafted
             team.save() # save the new draft order for each team
+        if type == "free":
+            self.draft_marker = -1
+        else:
+            self.draft_marker = 1
+        self.save()
 
     def max_team_size(self):
         """Determines max team size based on number of survivors in this draft divided by number of teams in this draft, floor"""
