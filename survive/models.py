@@ -594,11 +594,11 @@ class Team(models.Model):
         return (_can_pick, pick_text)        
     
 class Tribe(models.Model):
-    season = models.ForeignKey(
+    season = models.ManyToManyField(
         Season,
-        on_delete = models.CASCADE,
-        verbose_name = "a tribe assigned at some point during a season.",
-        null = False
+        verbose_name = "The seasons associated with this tribe",
+        blank = True,
+        default = None
     )
     name = models.CharField(max_length = 100)
     color = models.CharField(max_length = 100, verbose_name = "the hex code for the color associated with this tribe")
