@@ -169,9 +169,13 @@ if not DEBUG: # Security/HTTPS settings to be set when not in development mode
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = str(os.getenv('DJANGO_SURVIVOR_EMAIL_HOST'))
+    #EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_BACKEND = 'survive.backends.email.EmailBackend'
     EMAIL_USE_TLS = True
-    EMAIL_PORT = 587
+    EMAIL_HOST = str(os.getenv('DJANGO_SURVIVOR_EMAIL_HOST'))
+    EMAIL_PORT = str(os.getenv('DJANGO_SURVIVOR_EMAIL_PORT'))
     EMAIL_HOST_USER = str(os.getenv('DJANGO_SURVIVOR_EMAIL_USER'))
     EMAIL_HOST_PASSWORD = str(os.getenv('DJANGO_SURVIVOR_EMAIL_PASSWORD'))
+    EMAIL_SSL_KEYFILE = str(os.getenv('DJANGO_SURVIVOR_EMAIL_KEYFILE'))
+    EMAIL_SSL_CERTFILE = str(os.getenv('DJANGO_SURVIVOR_EMAIL_CERTFILE'))
+    
