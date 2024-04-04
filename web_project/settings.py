@@ -172,6 +172,7 @@ else:
     #EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_BACKEND = 'survive.backends.email.EmailBackend'
     EMAIL_USE_TLS = True
+    EMAIL_TIMEOUT = 20
     EMAIL_HOST = str(os.getenv('DJANGO_SURVIVOR_EMAIL_HOST'))
     EMAIL_PORT = str(os.getenv('DJANGO_SURVIVOR_EMAIL_PORT'))
     EMAIL_HOST_USER = str(os.getenv('DJANGO_SURVIVOR_EMAIL_USER'))
