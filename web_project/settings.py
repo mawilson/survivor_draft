@@ -166,17 +166,17 @@ if not DEBUG: # Security/HTTPS settings to be set when not in development mode
     CSRF_COOKIE_SECURE = True # sessions will not work over HTTP, & POST data will not be sent over HTTP - should be fine given SECURE_SSL_REDIRECT to HTTPS
     SECURE_HSTS_SECONDS = 3600 # small value temporary, later 31536000 (one year).
 
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-else:
-    #EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_BACKEND = 'survive.backends.email.EmailBackend'
-    EMAIL_USE_TLS = True
-    EMAIL_TIMEOUT = 20
-    EMAIL_HOST = str(os.getenv('DJANGO_SURVIVOR_EMAIL_HOST'))
-    EMAIL_PORT = str(os.getenv('DJANGO_SURVIVOR_EMAIL_PORT'))
-    EMAIL_HOST_USER = str(os.getenv('DJANGO_SURVIVOR_EMAIL_USER'))
-    EMAIL_HOST_PASSWORD = str(os.getenv('DJANGO_SURVIVOR_EMAIL_PASSWORD'))
-    EMAIL_SSL_KEYFILE = str(os.getenv('DJANGO_SURVIVOR_EMAIL_KEYFILE'))
-    EMAIL_SSL_CERTFILE = str(os.getenv('DJANGO_SURVIVOR_EMAIL_CERTFILE'))
-    
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # while email does not work, just do console backend
+# if DEBUG:
+#     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# else:
+#     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#     EMAIL_BACKEND = 'survive.backends.email.EmailBackend'
+#     EMAIL_USE_TLS = True
+#     EMAIL_TIMEOUT = 10
+#     EMAIL_HOST = str(os.getenv('DJANGO_SURVIVOR_EMAIL_HOST'))
+#     EMAIL_PORT = str(os.getenv('DJANGO_SURVIVOR_EMAIL_PORT'))
+#     EMAIL_HOST_USER = str(os.getenv('DJANGO_SURVIVOR_EMAIL_USER'))
+#     EMAIL_HOST_PASSWORD = str(os.getenv('DJANGO_SURVIVOR_EMAIL_PASSWORD'))
+#     EMAIL_SSL_KEYFILE = str(os.getenv('DJANGO_SURVIVOR_EMAIL_KEYFILE'))
+#     EMAIL_SSL_CERTFILE = str(os.getenv('DJANGO_SURVIVOR_EMAIL_CERTFILE'))
