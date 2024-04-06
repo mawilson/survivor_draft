@@ -25,6 +25,15 @@ Currently being hosted at https://outdraft.me, but you can also host your own.
   * DJANGO_SURVIVOR_PROD: If present & 'true', the instance will run in production mode. This means a different secret key will be used, the allowed hosts will be different, the channel layers backend will be different, & the application will be HTTPS-only. If not present or not 'true', the server will run in debug/developer mode.
   * SECRET_KEY_DEV: The secret key that developer mode runs with
   * SECRET_KEY: The secret key that prod mode runs with
+  * Email things:
+    * DJANGO_SURVIVOR_EMAIL_ENABLED: if 'true', will use emails to send password resets. Otherwise password reset requests just go right to console. Implemented as a stop-gap while getting email working.
+      * If not configured or not 'true', all of the below email settings can be ignored.
+    * DJANGO_SURVIVOR_EMAIL_HOST: the host to use for sending emails, likely an SMTP server
+    * DJANGO_SURVIVOR_EMAIL_PORT: the port to use for sending emails
+    * DJANGO_SURVIVOR_EMAIL_USER: the user (email address) to use for sending emails
+    * DJANGO_SURVIVOR_EMAIL_PASSWORD: the password for the user used for sending emails
+    * DJANGO_SURVIVOR_EMAIL_KEYFILE: path to an SSL keyfile used for encrypting emails (only necessary if EMAIL_USE_TLS or EMAIL_USE_SSL is True)
+    * DJANGO_SURVIVOR_EMAIL_CERTFILE: path to an SSL certfile used for encrypting emails (only necessary if EMAIL_USE_TLS or EMAIL_USE_TLS is True)
 5. If running in prod, the Django Channels backend is Redis (https://redis.io/docs/install/). The default settings just point to a Redis install on the default port on the same machine, but you can configure that if preferred.
 6. If running in prod, the application is configured to always be HTTPS. You will need to get a cert & a key & point the server to those files when running it.
 7. If running in prod, you will need to adjust the ALLOWED_HOSTS field in the top-level settings.py file to match the IP or domain you are hosting from.
