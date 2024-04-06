@@ -170,7 +170,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # while email d
 # if DEBUG:
 #     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # else:
-#     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#     #EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 #     EMAIL_BACKEND = 'survive.backends.email.EmailBackend'
 #     EMAIL_USE_TLS = True
 #     EMAIL_TIMEOUT = 10
@@ -180,3 +180,4 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # while email d
 #     EMAIL_HOST_PASSWORD = str(os.getenv('DJANGO_SURVIVOR_EMAIL_PASSWORD'))
 #     EMAIL_SSL_KEYFILE = str(os.getenv('DJANGO_SURVIVOR_EMAIL_KEYFILE'))
 #     EMAIL_SSL_CERTFILE = str(os.getenv('DJANGO_SURVIVOR_EMAIL_CERTFILE'))
+DEFAULT_FROM_EMAIL = 'jeffbot@outdraft.me'
