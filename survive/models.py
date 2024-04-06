@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
+User._meta.get_field('email')._unique = True # don't wanna create our own subclass of the default Django User, just want a unique email field
+
 class Rubric(models.Model):
     # following two fields have to do with scoring for the most idols & whether to split points on ties
     idols = models.IntegerField(default = 2, null = False)
