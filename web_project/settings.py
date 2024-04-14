@@ -176,7 +176,14 @@ else:
     EMAIL_USE_TLS = True
     EMAIL_TIMEOUT = 10
     EMAIL_HOST = str(os.getenv('DJANGO_SURVIVOR_EMAIL_HOST'))
-    EMAIL_PORT = str(os.getenv('DJANGO_SURVIVOR_EMAIL_PORT'))
+    port = os.getenv('DJANGO_SURVIVOR_EMAIL_PORT')
+    try:
+        port = int(port)
+        if port < 0 or port > 65535: # valid ports are between 0 & 65535 inclusive
+            raise ValueError
+        EMAIL_PORT = port
+    except ValueError:
+        print(f"Configured email port of '{port}' was not a valid port, will use default port value.")
     EMAIL_HOST_USER = str(os.getenv('DJANGO_SURVIVOR_EMAIL_USER'))
     EMAIL_HOST_PASSWORD = str(os.getenv('DJANGO_SURVIVOR_EMAIL_PASSWORD'))
     EMAIL_SSL_KEYFILE = str(os.getenv('DJANGO_SURVIVOR_EMAIL_KEYFILE'))
