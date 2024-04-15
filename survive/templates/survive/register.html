@@ -25,15 +25,23 @@
             </div>
 
             <div>
+                {{ form.email.errors }}
+                <div>{{ form.email.label_tag }} {{ form.email }}</div>
+            </div>
+
+            <div>
                 <ul>
                     {% if form.username.help_text %}
                         <li>{{form.username.help_text}}</li>
                     {% endif %}
-                {% if form.password1.help_text %}
-                    {% for message in form.password1.help_text %}
-                        <li>{{message}}</li>
-                    {% endfor %}
-                {% endif %}
+                    {% if form.password1.help_text %}
+                        {% for message in form.password1.help_text %}
+                            <li>{{message}}</li>
+                        {% endfor %}
+                    {% endif %}
+                    {% if form.email.help_text %}
+                        <li>{{form.email.help_text}}</li>
+                    {% endif %}
                 </ul>
             </div>
 
