@@ -40,11 +40,25 @@ class SeasonForm(forms.ModelForm):
         fields = ("name",)
 
 class RegisterUserForm(UserCreationForm):
+    email = forms.EmailField(required = False)
+
     def __init__(self, *args, **kwargs):
         super(RegisterUserForm, self).__init__(*args, **kwargs)
 
         self.fields["username"].help_text = "Username must be 150 characters or fewer. Letters, digits and @/./+/-/_ only."
         self.fields["password1"].help_text = password_validation.password_validators_help_texts # had to dig this out to stop wrapping the items in <ul><li> tags
+        self.fields["email"].help_text = "Email is optional, but required for password resets. Can be added later after registration."
+
+    class Meta:
+        model = User
+        fields = ["email", "username", "password1", "password2"]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
+        if email != "" and User.objects.filter(email=email).exists(): # unique email check just in the Register form, no Models or DB checks
+            self.add_error("email", "User with this Email address already exists.")
+        return self.cleaned_data
 
 class TeamCreationForm(forms.ModelForm):
     class Meta:
