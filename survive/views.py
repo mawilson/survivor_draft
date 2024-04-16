@@ -8,6 +8,8 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 import re
 from django.urls import reverse
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -181,6 +183,7 @@ def survivor(request, **kwargs):
         context["team"] = survivor.team.filter(season_id = season.id).first() # get first matching team for this survivor, for this season
     return render(request, "survive/survivor.html", context)
 
+@login_required
 def profile(request):
     if request.user.is_authenticated: # process a POST to disassociate the profile from a team
         user_profile_form = UserProfileForm(request.POST or None, instance = request.user)
@@ -324,6 +327,7 @@ def rubric(request):
     season_selector_response(response, new_season_id)
     return response
 
+@staff_member_required # should only be navigable from an admin page & with an admin user
 def survivor_season_associate(request):
     if request.method == "GET":
         _survivors = request.GET["survivors"].split(",")
