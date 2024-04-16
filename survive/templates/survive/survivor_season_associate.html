@@ -1,0 +1,36 @@
+{% extends "survive/layout.html" %}
+{% block title %}
+    Survivor Season Associate
+{% endblock %}
+{% block season_selector %}{% endblock %}
+{% block page_title %}Survivor Season Associate{% endblock %}
+{% block content %}
+    
+    <ul class="border border-solid border-gray-300">
+        <label>Survivors to modify</label>
+        {% for survivor in survivors %}
+            <li class="font-bold">
+                {{ survivor.name }}
+            </li>
+        {% endfor %}
+    </ul>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset class="border border-solid border-gray-300">
+            <label>Seasons to associate them with</label>
+            <ul>
+                {% for s in seasons %}
+                    <li>
+                        <input type="checkbox" value="{{ s.id }}" id="seasons_selector_{{ s.id }}" name="seasons_selector_season_{{s.id}}">
+                        <label for="seasons_selector_{{ s.id }}">{{ s.name }}</label>
+                    </li>
+                {% endfor %}
+            </ul>
+            {% for survivor in survivors %}
+                <input type="hidden" name="survivor_{{survivor.id}} value={{survivor.id}}" value="{{survivor.id}}">
+            {% endfor %}
+            <button type="submit">Associate Survivors with Seasons</button>
+        </fieldset>
+    </form>
+{% endblock %}

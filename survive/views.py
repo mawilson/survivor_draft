@@ -3,18 +3,11 @@ from django.shortcuts import redirect
 from survive.forms import FanFavoriteForm, PredictionForm, UserProfileForm, RegisterUserForm, TeamCreationForm, DraftEnabledForm
 from django.contrib.auth import authenticate, login
 from survive.models import Team, Survivor, Season
-from django.views.generic import ListView
 from django.shortcuts import get_object_or_404
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-
-class HomeListView(ListView):
-    """Renders the home page, with a list of all teams."""
-    model = Team
-
-    def get_context_data(self, **kwargs):
-        context = super(HomeListView, self).get_context_data(**kwargs)
-        return context
+import re
+from django.urls import reverse
 
 # Create your views here.
 
@@ -330,3 +323,38 @@ def rubric(request):
     response = render(request, "survive/rubric.html", context)
     season_selector_response(response, new_season_id)
     return response
+
+def survivor_season_associate(request):
+    if request.method == "GET":
+        _survivors = request.GET["survivors"].split(",")
+        survivors = []
+        for survivor in _survivors:
+            survivors.append(get_object_or_404(Survivor, pk = survivor))
+        context = {"survivors": survivors, "seasons": Season.objects.all().order_by("name") }
+        return render(request, "survive/survivor_season_associate.html", context)
+    else:
+        season_ids = []
+        survivors = []
+        for key, value in request.POST.items():
+            if re.match(r'seasons_selector_season_\d+', key):
+                try:
+                    season_id = int(value)
+                except ValueError:
+                    continue
+                season_ids.append(season_id)
+            elif re.match(r'survivor_\d+', key):
+                try:
+                    survivor_id = int(value)
+                except ValueError:
+                    continue
+                survivors.append(get_object_or_404(Survivor, pk = survivor_id))
+            
+        for survivor in survivors: # for each survivor
+            for season in Season.objects.all(): # iterate through all existing seasons
+                if season.id in season_ids: # add season to a survivor if it was found in the form (checkbox was checked)
+                    survivor.season.add(season) # succeeds even if season is already associated with survivor
+                else: # else remove season from the survivor
+                    survivor.season.remove(season) # succeeds even if season is not associated with survivor
+            survivor.save()
+
+        return redirect(reverse("admin:survive_survivor_changelist")) # take us back to the Survivor admin page

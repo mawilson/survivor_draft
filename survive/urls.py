@@ -10,6 +10,9 @@ urlpatterns = [
     path("fan_favorite/", views.fan_favorite, name="fan_favorite"),
     path("predictions/", views.predictions, name="predictions"),
     path("rubric/", views.rubric, name="rubric"),
+    
+    # admin paths
+    path("admin/survivor_season_associate", views.survivor_season_associate, name="survivor_season_associate"),
 
     # account/auth paths
     path("accounts/login/", auth_views.LoginView.as_view(template_name="survive/login.html", redirect_authenticated_user=True), name="login"),
