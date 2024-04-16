@@ -8,6 +8,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 import re
 from django.urls import reverse
+from django.contrib.admin.views.decorators import staff_member_required
 
 # Create your views here.
 
@@ -324,6 +325,7 @@ def rubric(request):
     season_selector_response(response, new_season_id)
     return response
 
+@staff_member_required # should only be navigable from an admin page & with an admin user
 def survivor_season_associate(request):
     if request.method == "GET":
         _survivors = request.GET["survivors"].split(",")
