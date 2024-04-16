@@ -9,6 +9,7 @@ from asgiref.sync import async_to_sync
 import re
 from django.urls import reverse
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -182,6 +183,7 @@ def survivor(request, **kwargs):
         context["team"] = survivor.team.filter(season_id = season.id).first() # get first matching team for this survivor, for this season
     return render(request, "survive/survivor.html", context)
 
+@login_required
 def profile(request):
     if request.user.is_authenticated: # process a POST to disassociate the profile from a team
         user_profile_form = UserProfileForm(request.POST or None, instance = request.user)
