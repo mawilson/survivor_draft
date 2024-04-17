@@ -22,6 +22,8 @@ Currently being hosted at https://outdraft.me, but you can also host your own.
 3. Use Pip to install the requirements
   > python -m pip install -r 'requirements.txt'
 4. Configure environment variables
+  
+  This project uses python-dotenv to pull environment variables from a '.env' file first before system environment variables. This allows you to utilize a file to configure your environment. You can do this by copying the `web_project/.env.sample` file into a `web_project/.env` file, & then modifying the contents of the environment variables within as appropriate. Descriptions of existing environment variables are as follows:
   * DJANGO_SURVIVOR_PROD: If present & 'true', the instance will run in production mode. This means a different secret key will be used, the allowed hosts will be different, the channel layers backend will be different, & the application will be HTTPS-only. If not present or not 'true', the server will run in debug/developer mode.
   * SECRET_KEY_DEV: The secret key that developer mode runs with
   * SECRET_KEY: The secret key that prod mode runs with
