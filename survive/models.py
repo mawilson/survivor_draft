@@ -10,21 +10,34 @@ from django.contrib.auth.models import User
 
 class Rubric(models.Model):
     # following two fields have to do with scoring for the most idols & whether to split points on ties
-    idols = models.IntegerField(default = 2, null = False)
-    idols_tie_split = models.BooleanField(default = True, null = False)
+    idols = models.IntegerField(default = 2, null = False,
+        verbose_name = "The points awarded to the survivor with the most immunity idols. Does not include other miscellaneous advantages.")
+    idols_tie_split = models.BooleanField(default = True, null = False,
+        verbose_name = "Whether ties in most idols split points. True means points are split, False means each survivor is rewarded the maximum value.")
 
     # following two fields have to do with scoring for the most individual immunities & whether to split points on ties
-    immunities = models.IntegerField(default = 2, null = False)
-    immunities_tie_split = models.BooleanField(default = True, null = False)
+    immunities = models.IntegerField(default = 2, null = False,
+        verbose_name = "The points awarded to the survivor who won the most immunity challenges.")
+    immunities_tie_split = models.BooleanField(default = True, null = False,
+        verbose_name = "Whether ties in most immunities split points. True means points are split, False means each survivor is rewarded the maximum value.")
 
-    jury_number = models.IntegerField(default = 1, null = False)
+    jury_number = models.IntegerField(default = 1, null = False,
+        verbose_name="The points awarded based on when a survivor reached the jury. Survivors never eliminated will receive the highest jury number awarded in the season. \
+        The first survivor to be a member of the jury receives this many points, & subsequent survivors receive a multiple of that.")
 
-    fan_favorite = models.IntegerField(default = 2, null = False)
-    fan_favorite_self_votes = models.BooleanField(default = False, null = False)
-    fan_favorite_negative_votes = models.BooleanField(default = True, null = False)
+    fan_favorite = models.IntegerField(default = 2, null = False,
+        verbose_name = "The points awarded to the fan favorite, optionally determined by a vote on this site.")
+    fan_favorite_self_votes = models.BooleanField(default = False, null = False,
+        verbose_name = "Whether the fan favorite vote allows you to vote for survivors on your own team. True means you can self-vote, False means you cannot.")
+    fan_favorite_negative_votes = models.BooleanField(default = True, null = False,
+        verbose_name = "Whether the fan favorite vote includes a 'bad' vote. True means the bad vote is present, False means it is not.")
+    fan_favorite_share_votes = models.BooleanField(default = True, null = False,
+        verbose_name = "Whether fan favorite vote for this season includes all linked seasons' votes, or just its own")
 
-    finalist = models.IntegerField(default = 2, null = False)
-    winner = models.IntegerField(default = 5, null = False)
+    finalist = models.IntegerField(default = 2, null = False,
+        verbose_name = "The points awarded to the survivors who make it to the final jury, but don't win. The winner does not receive these points.")
+    winner = models.IntegerField(default = 5, null = False, 
+        verbose_name = "The points awarded to the sole survivor of the season. This is awarded instead of Finalist points, not in addition to.")
 
     @classmethod
     def get_default_pk(r):
@@ -157,10 +170,14 @@ class Season(models.Model):
     def fan_favorites(self, save = False):
         """Returns a two element tuple - first the list of survivors with the most fan favorite votes, with tiebreakers being most 1st or 2nd place votes,
         & second the dictionary of survivors who received votes, & what those votes were
-        Also assigns the Survivor.fan_favorite Boolean attribute for each survivor in the season
         Accepts optional save parameter which, if True, saves the fan_favorite attribute on each Survivor within this season based upon the voting"""
         vote_dict = {}
-        for t in self.team_set.all():
+        voting_teams = self.team_set.all()
+        if self.rubric.fan_favorite_share_votes: # if shared votes are enabled, include teams from linked seasons as well
+            for season in self.linked_seasons.all():
+                voting_teams = voting_teams | season.team_set.all()
+
+        for t in voting_teams:
             if t.fan_favorite_first: # if the vote is defined, add it to the dictionary for that survivor
                 if t.fan_favorite_first.id not in vote_dict:
                     vote_dict[t.fan_favorite_first.id] = [3] # instantiate the list with a first place vote
@@ -249,7 +266,7 @@ class Season(models.Model):
                 s.save()
 
         for key, value in vote_dict.items(): # add survivor names to the dict for display purposes by fan_favorite_vote results
-            value.append(self.survivor_set.filter(id=key)[0].name)
+            value.append(Survivor.objects.get(id = key).name) # look for that survivor
 
         return (favorite_survivors, vote_dict) # return only the survivors whose ID is in the fan_favorites list
     

@@ -20,3 +20,9 @@ def team_can_pick(team):
         return team.can_pick()
     else: # an unprovided team cannot pick & has no feedback to give
         return (False, "")
+    
+@register.filter
+def verbose_name(obj, field):
+    """Returns the verbose name of field for object, if it exists"""
+    v = obj._meta.get_field(field)
+    return v.name if v.verbose_name == "" else v.verbose_name
