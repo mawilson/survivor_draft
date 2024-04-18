@@ -10,21 +10,33 @@ from django.contrib.auth.models import User
 
 class Rubric(models.Model):
     # following two fields have to do with scoring for the most idols & whether to split points on ties
-    idols = models.IntegerField(default = 2, null = False)
-    idols_tie_split = models.BooleanField(default = True, null = False)
+    idols = models.IntegerField(default = 2, null = False,
+        verbose_name = "The points awarded to the survivor with the most immunity idols. Does not include other miscellaneous advantages.")
+    idols_tie_split = models.BooleanField(default = True, null = False,
+        verbose_name = "Whether ties in most idols split points. True means points are split, False means each survivor is rewarded the maximum value.")
 
     # following two fields have to do with scoring for the most individual immunities & whether to split points on ties
-    immunities = models.IntegerField(default = 2, null = False)
-    immunities_tie_split = models.BooleanField(default = True, null = False)
+    immunities = models.IntegerField(default = 2, null = False,
+        verbose_name = "The points awarded to the survivor who won the most immunity challenges.")
+    immunities_tie_split = models.BooleanField(default = True, null = False,
+        verbose_name = "Whether ties in most immunities split points. True means points are split, False means each survivor is rewarded the maximum value.")
 
-    jury_number = models.IntegerField(default = 1, null = False)
+    jury_number = models.IntegerField(default = 1, null = False,
+        verbose_name="The points awarded based on when a survivor reached the jury. Survivors never eliminated will receive the highest jury number awarded in the season. \
+        The first survivor to be a member of the jury receives this many points, & subsequent survivors receive a multiple of that.")
 
-    fan_favorite = models.IntegerField(default = 2, null = False)
-    fan_favorite_self_votes = models.BooleanField(default = False, null = False)
-    fan_favorite_negative_votes = models.BooleanField(default = True, null = False)
+    fan_favorite = models.IntegerField(default = 2, null = False,
+        verbose_name = "The points awarded to the fan favorite, optionally determined by a vote on this site.")
+    fan_favorite_self_votes = models.BooleanField(default = False, null = False,
+        verbose_name = "Whether the fan favorite vote allows you to vote for survivors on your own team. True means you can self-vote, False means you cannot.")
+    fan_favorite_negative_votes = models.BooleanField(default = True, null = False,
+        verbose_name = "Whether the fan favorite vote includes a 'bad' vote. True means the bad vote is present, False means it is not.")
+    #share_fan_favorites = models.BooleanField(default = True, null = False)
 
-    finalist = models.IntegerField(default = 2, null = False)
-    winner = models.IntegerField(default = 5, null = False)
+    finalist = models.IntegerField(default = 2, null = False,
+        verbose_name = "The points awarded to the survivors who make it to the final jury, but don't win. The winner does not receive these points.")
+    winner = models.IntegerField(default = 5, null = False, 
+        verbose_name = "The points awarded to the sole survivor of the season. This is awarded instead of Finalist points, not in addition to.")
 
     @classmethod
     def get_default_pk(r):
