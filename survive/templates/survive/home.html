@@ -188,7 +188,7 @@
                                                     Confessionals
                                                 </th>
                                                 <th>Points</th>
-                                                {% if user.is_authenticated and not team_associable and season.is_season_active and season.survivor_drafting %}
+                                                {% if user.is_authenticated and not team_associable and season.survivor_drafting %}
                                                     <th>Undraft</th>
                                                 {% endif %}
                                             </tr>
@@ -237,7 +237,7 @@
                                                             </tr>
                                                         </table>
                                                     </td>
-                                                    {% if user.is_authenticated and not team_associable and season.is_season_active and season.survivor_drafting and user_team_id == team.id %}
+                                                    {% if user.is_authenticated and not team_associable and season.survivor_drafting and user_team_id == team.id %}
                                                         <td>
                                                             <form method="POST" class="margin_top">
                                                                 {% csrf_token %}
@@ -322,7 +322,7 @@
                             Confessionals
                         </th>
                         <th>Points</th>
-                        {% if user.is_authenticated and not team_associable and season.is_season_active and season.survivor_drafting and display_type != "tribe" %}
+                        {% if user.is_authenticated and not team_associable and season.survivor_drafting and display_type != "tribe" %}
                             <th>Draft</th>
                         {% endif %}
                     </thead>
@@ -370,7 +370,7 @@
                                         </tr>
                                     </table>
                                 </td>
-                                {% if user.is_authenticated and not team_associable and season.is_season_active and season.survivor_drafting and display_type != "tribe" %}
+                                {% if user.is_authenticated and not team_associable and season.survivor_drafting and display_type != "tribe" %}
                                 <td>
                                     <form method="POST" class="margin_top">
                                         {% csrf_token %}
