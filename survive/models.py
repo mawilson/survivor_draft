@@ -31,7 +31,8 @@ class Rubric(models.Model):
         verbose_name = "Whether the fan favorite vote allows you to vote for survivors on your own team. True means you can self-vote, False means you cannot.")
     fan_favorite_negative_votes = models.BooleanField(default = True, null = False,
         verbose_name = "Whether the fan favorite vote includes a 'bad' vote. True means the bad vote is present, False means it is not.")
-    #share_fan_favorites = models.BooleanField(default = True, null = False)
+    fan_favorite_share_votes = models.BooleanField(default = True, null = False,
+        verbose_name = "Whether fan favorite vote for this season includes all linked seasons' votes, or just its own")
 
     finalist = models.IntegerField(default = 2, null = False,
         verbose_name = "The points awarded to the survivors who make it to the final jury, but don't win. The winner does not receive these points.")
@@ -169,10 +170,14 @@ class Season(models.Model):
     def fan_favorites(self, save = False):
         """Returns a two element tuple - first the list of survivors with the most fan favorite votes, with tiebreakers being most 1st or 2nd place votes,
         & second the dictionary of survivors who received votes, & what those votes were
-        Also assigns the Survivor.fan_favorite Boolean attribute for each survivor in the season
         Accepts optional save parameter which, if True, saves the fan_favorite attribute on each Survivor within this season based upon the voting"""
         vote_dict = {}
-        for t in self.team_set.all():
+        voting_teams = self.team_set.all()
+        if self.rubric.fan_favorite_share_votes: # if shared votes are enabled, include teams from linked seasons as well
+            for season in self.linked_seasons.all():
+                voting_teams = voting_teams | season.team_set.all()
+
+        for t in voting_teams:
             if t.fan_favorite_first: # if the vote is defined, add it to the dictionary for that survivor
                 if t.fan_favorite_first.id not in vote_dict:
                     vote_dict[t.fan_favorite_first.id] = [3] # instantiate the list with a first place vote
@@ -261,7 +266,7 @@ class Season(models.Model):
                 s.save()
 
         for key, value in vote_dict.items(): # add survivor names to the dict for display purposes by fan_favorite_vote results
-            value.append(self.survivor_set.filter(id=key)[0].name)
+            value.append(Survivor.objects.get(id = key).name) # look for that survivor
 
         return (favorite_survivors, vote_dict) # return only the survivors whose ID is in the fan_favorites list
     

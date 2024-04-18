@@ -90,6 +90,17 @@
                 </td>
             </tr>
             <tr>
+                <td>Fan Favorite Share Votes</td>
+                <td>{{rubric|verbose_name:"fan_favorite_share_votes" }}</td>
+                <td>
+                    {% if rubric.fan_favorite_share_votes == 1 %}
+                        True
+                    {% else %}
+                        False
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
                 <td>Seasons using this Rubric</td>
                 <td>The names of the seasons that are making use of this particular rubric.</td>
                 <td>{{ seasons_using_rubric }}</td>
