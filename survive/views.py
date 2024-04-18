@@ -10,6 +10,7 @@ import re
 from django.urls import reverse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 
@@ -20,9 +21,12 @@ def season_selector_request(request):
     context = {
         "seasons": Season.objects.all().order_by("name")
     }
-    if season_id:
-        context["season"] = Season.objects.get(id=season_id)
-    else:
+    try:
+        if season_id:
+            context["season"] = Season.objects.get(id=season_id)
+        else:
+            context["season"] = Season.objects.first() # just use the first Season in the DB, if it exists
+    except ObjectDoesNotExist:
         context["season"] = Season.objects.first() # just use the first Season in the DB, if it exists
 
     new_season_id = None
