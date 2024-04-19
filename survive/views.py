@@ -239,28 +239,19 @@ def fan_favorite(request):
     if (request.user.is_authenticated): # if logged in, allow user to choose from teams that the User is associated with in that season
         teams = context["season"].team_set.filter(user_id=request.user.id)
         team = teams.first()
-    else: # if not logged in, allow user the choose from the teams that do not have Users associated with them
-        teams = context["season"].team_set.filter(user_id=None)
-        team = teams.first()
-
-    initial_data = {"fan_favorite_first": None, "fan_favorite_second": None, "fan_favorite_third": None, "fan_favorite_bad": None}
-    context["form"] = FanFavoriteForm(request.POST or None, instance = team, initial = initial_data)
-    context["teams"] = teams
+        context["form"] = FanFavoriteForm(request.POST or None, instance = team)
+        context["team"] = team
+    # if not logged in, cannot vote
 
     if request.method == "POST":     
-        selected_team = get_object_or_404(Team, pk = request.POST.get("team_id"))
-        form = FanFavoriteForm(context["form"].data, instance = selected_team) # can't change the existing form's instance, but can make a new one with identical data
+        form = context["form"]
         if form.is_valid():
             form.save(commit = True)
-            selected_team.season.fan_favorites(save = True) # will evaluate all votes & assign Survivors accordingly
-            return redirect("/") # after submitting, redirect to home page to refresh
+            team.season.fan_favorites(save = True) # will evaluate all votes & assign Survivors accordingly
+            return redirect("/") # after submitting, return to home page
         else:
             context.update({
-                "form": form,
-                "selected_team": selected_team.id,
-                "season": context["season"],
-                "seasons": context["seasons"],
-                "teams": teams
+                "form": form
             })
             return render(request, "survive/fan_favorite_vote.html", context)
     else:
@@ -274,27 +265,18 @@ def predictions(request):
     if (request.user.is_authenticated): # if logged in, allow user to choose from teams that the User is associated with in that season
         teams = context["season"].team_set.filter(user_id=request.user.id)
         team = teams.first()
-    else: # if not logged in, allow user the choose from the teams that do not have Users associated with them
-        teams = context["season"].team_set.filter(user_id=None)
-        team = teams.first()
+        context["form"] = PredictionForm(request.POST or None, instance = team)
+        context["team"] = team
+    # if not logged in, cannot predict
     
-    initial_data = {"prediction_first": None, "prediction_second": None, "prediction_third": None}
-    context["form"] = PredictionForm(request.POST or None, instance = team, initial = initial_data)
-    context["teams"] = teams
-
     if request.method == "POST":     
-        selected_team = get_object_or_404(Team, pk = request.POST.get("team_id"))
-        form = PredictionForm(context["form"].data, instance = selected_team) # can't change the existing form's instance, but can make a new one with identical data
+        form = context["form"]
         if form.is_valid():
             form.save(commit = True)
-            return redirect("/") # after submitting, redirect to home page to refresh
+            return redirect("/") # after submitting, return to home page
         else:
             context.update({
-                "form": form,
-                "selected_team": selected_team.id,
-                "season": context["season"],
-                "seasons": context["seasons"],
-                "teams": teams
+                "form": form
             })
             return render(request, "survive/predictions.html", context)
     else:
