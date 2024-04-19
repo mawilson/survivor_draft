@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='season',
             name='rubric',
-            field=models.ForeignKey(default=survive.models.Rubric.get_default_pk, on_delete=django.db.models.deletion.CASCADE, to='survive.rubric'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survive.rubric'),
         ),
     ]

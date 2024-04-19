@@ -38,26 +38,7 @@ class Rubric(models.Model):
         verbose_name = "The points awarded to the survivors who make it to the final jury, but don't win. The winner does not receive these points.")
     winner = models.IntegerField(default = 5, null = False, 
         verbose_name = "The points awarded to the sole survivor of the season. This is awarded instead of Finalist points, not in addition to.")
-
-    @classmethod
-    def get_default_pk(r):
-        """Used to create a default Rubric if one does not exist, for use by a Season"""
-        rubric, created = r.objects.get_or_create(
-            defaults = dict(
-                idols = 2,
-                idols_tie_split = True,
-                immunities = 2,
-                immunities_tie_split = True,
-                jury_number = 1,
-                fan_favorite = 2,
-                finalist = 2,
-                winner = 5,
-                fan_favorite_self_votes = False,
-                fan_favorite_negative_votes = True,
-            )
-        )
-        return rubric.pk
-
+    
     def __str__(self) -> str:
         """Returns a string representation of the scoring rubric."""
         return f"Most idols: {self.idols} pts; Number on jury: {self.jury_number} pts; Fan favorite: {self.fan_favorite} pts; Winner: {self.winner} pts."
@@ -67,9 +48,8 @@ class Season(models.Model):
     name = models.CharField(max_length=300)
     rubric = models.ForeignKey(
         Rubric,
-        on_delete = models.SET_DEFAULT, # If a Rubric goes, adjust season rubric to the default
-        null = False,
-        default = Rubric.get_default_pk
+        on_delete = models.SET_NULL, # If a Rubric goes, adjust season rubric to the default
+        null = True
     )
     season_close = models.DateField(null = True) # used to close the fan favorite & 'finalize' a season
     season_open = models.DateField(null = True) # used to close the predictions
