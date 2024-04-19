@@ -608,7 +608,7 @@ class Team(models.Model):
             else:
                 pick_text = "It's not your turn to draft. Current pick is at {}, whereas your next pick is {}".format(self.season.draft_marker, next_pick)
                 _can_pick = False
-        return (_can_pick, pick_text)        
+        return (_can_pick, pick_text)
     
 class Tribe(models.Model):
     season = models.ManyToManyField(
