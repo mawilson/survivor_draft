@@ -30,4 +30,9 @@ class Migration(migrations.Migration):
             name='fan_favorite_self_votes',
             field=models.BooleanField(default=False),
         ),
+        migrations.AddField(
+            model_name='rubric',
+            name='fan_favorite_share_votes',
+            field=models.BooleanField(default=True, verbose_name="Whether fan favorite vote for this season includes all linked seasons' votes, or just its own"),
+        ),
     ]
