@@ -203,12 +203,16 @@ def profile(request):
         
         if request.method == "POST":
             team_id = request.POST.get("team_id")
+            team_id_delete = request.POST.get("team_id_delete")
             if edit_team_id is not None: # edit_team_id was provided, therefore we are modifying a team                
                 if team_edit_form.is_valid():
                     edit_team.save()
                     return redirect("./")
                 else:
                     return render(request, "survive/profile.html", context)
+            elif team_id_delete is not None:
+                Team.objects.filter(pk = team_id_delete).delete()
+                return redirect("./") # after submitting, redirect to profile page to refresh
             elif team_id is None: # team_id was not provided, therefore this is a profile field modification
                 if user_profile_form.is_valid():
                     request.user.save() # if done editing the profile, save changes to the user
