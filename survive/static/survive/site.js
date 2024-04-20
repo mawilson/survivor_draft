@@ -117,3 +117,11 @@ function createDraftWatchSocket(season_id) {
         }
     };
 }
+
+function profileTeamDelete(e) {
+    if (confirm("Are you sure want to delete this team?")) {
+        e.parentElement.submit();
+    } else {
+        return false;
+    }
+}

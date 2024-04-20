@@ -67,6 +67,7 @@
                         <th>Season</th>
                         <th>Edit</th>
                         <th>Release Team</th>
+                        <th>Delete Team</th>
                     </tr>
                     {% for team in teams %}
                         {% if edit_team_id == team.id %}
@@ -101,6 +102,13 @@
                                     {% csrf_token %}
                                     <button type="submit">Release</button>
                                     <input type="hidden" name="team_id" value="{{ team.id }}" />
+                                </form>
+                            </td>
+                            <td>
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <button type="button" onclick="profileTeamDelete(this)">Delete</button>
+                                    <input type="hidden" name="team_id_delete" value="{{ team.id }}" />
                                 </form>
                             </td>
                         </tr>
