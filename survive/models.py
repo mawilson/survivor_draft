@@ -20,6 +20,11 @@ class Rubric(models.Model):
         verbose_name = "The points awarded to the survivor who won the most immunity challenges.")
     immunities_tie_split = models.BooleanField(default = True, null = False,
         verbose_name = "Whether ties in most immunities split points. True means points are split, False means each survivor is rewarded the maximum value.")
+    
+    confessionals = models.IntegerField(default = 2, null = False,
+        verbose_name = "The points awarded to the survivor who featured in the most confessionals.")
+    confessionals_tie_split = models.BooleanField(default = True, null = False,
+        verbose_name = "Whether ties in most confessionals split points. True means points are split, False means each survivor is rewarded the maximum value")
 
     jury_number = models.IntegerField(default = 1, null = False,
         verbose_name="The points awarded based on when a survivor reached the jury. Survivors never eliminated will receive the highest jury number awarded in the season. \
@@ -118,6 +123,30 @@ class Season(models.Model):
                     imm_survivors_winningest_teams.append(s)
         
         return imm_survivors_winningest_teams
+    
+    def most_confessionals(self):
+        """Returns the Survivors with the most confessionals in the season"""
+        conf_survivors = []
+        for s in self.survivor_set.all():
+            if len(conf_survivors) == 0 or s.confessionals > conf_survivors[0].confessionals:
+                conf_survivors = [s]
+            elif s.confessionals == conf_survivors[0].confessionals:
+                conf_survivors.append(s)
+            
+        conf_survivors_winningest_teams = [] # initial tiebreaker on most confessional ties is whose team had the most confessionals, filter out survivors with lesser teams here
+        most_confs = 0
+        s_team_confs = 0
+        for s in conf_survivors:
+            team = s.team.filter(season_id = self.id).first() # get first matching team for this survivor that competed in this season
+            if team:
+                s_team_confs = team.confessionals() # store in a variable so we don't get from DB repeatedly
+                if s_team_confs > most_confs:
+                    conf_survivors_winningest_teams = [s]
+                    most_confs = s_team_confs
+                elif s_team_confs == most_confs:
+                    conf_survivors_winningest_teams.append(s)
+
+        return conf_survivors_winningest_teams
     
     def jury_number(self):
         """Returns one more than the highest jury number of all eliminated Survivors. 0 if no Survivors eliminated yet."""
@@ -541,6 +570,13 @@ class Team(models.Model):
             total += s.immunities
         return total
     
+    def confessionals(self) -> int:
+        """Returns the sum of all confessionals done by Survivors within this team"""
+        total = 0
+        for s in self.survivor_set.all():
+            total += s.confessionals
+        return total
+    
     def lost(self) -> bool:
         """If season is over, returns True if this team won, else False"""
         """Returns True if all survivors on this team have been eliminated, & this team's points total (plus fan favorite value) is lower than some other team's"""
@@ -681,6 +717,17 @@ class Survivor(models.Model):
                 else: # else just give full rubric immunities points
                     total += rubric.immunities
                     description += f"Most individual immunities: {rubric.immunities} = {rubric.immunities}\n"
+
+        if self.confessionals > 0: # cannot award confessional points if they haven't even been in one
+            most_confessional_winners = season.most_confessionals()
+            most_confessionals = self in most_confessional_winners # if self is one of the Survivors with the most confessionals
+            if most_confessionals:
+                if len(most_confessional_winners) > 1 and rubric.confessionals_tie_split: # if there is a tie for most confessionals and the rubric says to split ties
+                    total += math.ceil(rubric.confessionals / len(most_confessional_winners))
+                    description += f"Most confessionals points (tie): Ceiling({rubric.confessionals} / {len(most_confessional_winners)}) = {math.ceil(rubric.confessionals / len(most_confessional_winners))}\n"
+                else: # else just give full rubric confessional points
+                    total += rubric.confessionals
+                    description += f"Most confessionals: {rubric.confessionals} = {rubric.confessionals}\n"
 
         if self.status: # if alive, jury points are dictated by highest-scoring eliminated survivor
             jury_points = season.jury_number()
