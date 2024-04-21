@@ -4,7 +4,7 @@ A web application written in Django for visualizing & interacting with survivor 
 
 Organized by season, each season has a set of teams with a team owner & name. Each team has a set of survivors as drafted by that team owner. Each survivor has data associated with them pertaining to their performance on that season of survivor.
 
-Survivor data includes overall placement, number of immunities won, idols found, confessions featured in, fan favorite winner.
+Survivor data includes overall placement, number of immunities won, idols found, confessionals featured in, fan favorite winner.
 
 Currently being hosted at https://outdraft.me, but you can also host your own.
 

@@ -41,6 +41,11 @@
                 <td>{{rubric.immunities}}</td>
             </tr>
             <tr>
+                <td>Confessionals</td>
+                <td>{{rubric|verbose_name:"confessionals" }}</td>
+                <td>{{rubric.confessionals}}</td>
+            </tr>
+            <tr>
                 <td>Jury Number</td>
                 <td>{{rubric|verbose_name:"jury_number" }}</td>
                 <td>{{rubric.jury_number}}</td>
@@ -61,6 +66,17 @@
                 <td>{{rubric|verbose_name:"immunities_tie_split" }}</td>
                 <td>
                     {% if rubric.immunities_tie_split == 1 %}
+                        True
+                    {% else %}
+                        False
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>Confessionals Split Ties</td>
+                <td>{{rubric|verbose_name:"confessionals_tie_split"}}</td>
+                <td>
+                    {% if rubric.confessionals_tie_split == 1 %}
                         True
                     {% else %}
                         False
