@@ -29,6 +29,8 @@ class Rubric(models.Model):
     jury_number = models.IntegerField(default = 1, null = False,
         verbose_name="The points awarded based on when a survivor reached the jury. Survivors never eliminated will receive the highest jury number awarded in the season. \
         The first survivor to be a member of the jury receives this many points, & subsequent survivors receive a multiple of that.")
+    pity_point = models.IntegerField(default = 0, null = False,
+        verbose_name="Points awarded to the first eliminated survivor.")
 
     fan_favorite = models.IntegerField(default = 2, null = False,
         verbose_name = "The points awarded to the fan favorite, optionally determined by a vote on this site.")
@@ -736,6 +738,12 @@ class Survivor(models.Model):
         else: # if eliminated, jury points are only dictated by own entry
             total += self.jury_number * rubric.jury_number
             description += f"Jury number: {self.jury_number} * {rubric.jury_number} = {self.jury_number * rubric.jury_number} \n"
+
+        if not self.status: # if not alive, was I eliminated first?
+            s = self.season.first()
+            if s and self.placement == len(s.survivor_set.all()):
+                total += rubric.pity_point
+                description += f"Pity point: {rubric.pity_point}\n"
 
         if self.fan_favorite:
             total += rubric.fan_favorite
