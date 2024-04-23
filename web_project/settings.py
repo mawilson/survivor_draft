@@ -98,7 +98,7 @@ else:
         "default": {
             "BACKEND": "channels_redis.core.RedisChannelLayer",
             "CONFIG": {
-                "hosts": [("127.0.0.1", 6379)],
+                "hosts": [("redis", 6379)], # this assumes a network named 'redis' will be available at port 6379, which will be true if running thru docker compose
             }
         }
     }
@@ -110,7 +110,7 @@ CHANNEL_LAYERS = channel_layers_config
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'db/db.sqlite3',
     }
 }
 
