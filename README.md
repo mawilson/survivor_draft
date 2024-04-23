@@ -7,16 +7,21 @@ Organized by season, each season has a set of teams with a team owner & name. Ea
 Survivor data includes overall placement, number of immunities won, idols found, confessionals featured in, fan favorite winner.
 
 Currently being hosted at https://outdraft.me, but you can also host your own.
+## Installation
+The project comes with a Docker compose.yaml file for running a multi-container application. Alternatively you may set it up manually. By nature, the Docker instructions should be consistent across operating systems (other than installing Docker itself), but the manual instructions may vary slightly depending on the operating system.
 
-## Installation (Docker)
+### Installation (Docker)
 1. Install Docker
-2. Run 'docker compose up'
-3. Subsequent runs after code changes should run 'docker compose up --build' to ensure a new image is built with the updated code
+2. Add an encryption key & cert file. Lots of ways to acquire one, for example, see https://letsencrypt.org/
+3. Configure .env file (see step 4 of the Non-Docker steps for an explanation of the variables)
+4. Run 'docker compose up'
+5. Subsequent runs after code changes should run 'docker compose up --build' to ensure a new image is built with the updated code
 
-## Installation (Legacy, Non-Docker)
+### Installation (Legacy, Non-Docker)
 
 1. Install Python 3.11 or higher.
-2. Create a virtual environment
+2. Add an encryption key & cert file. Lots of ways to acquire one, for example, see https://letsencrypt.org/
+3. Create a virtual environment
   > python -m venv .venv
   
   Then activate it
@@ -32,6 +37,8 @@ Currently being hosted at https://outdraft.me, but you can also host your own.
   * DJANGO_SURVIVOR_PROD: If present & 'true', the instance will run in production mode. This means a different secret key will be used, the allowed hosts will be different, the channel layers backend will be different, & the application will be HTTPS-only. If not present or not 'true', the server will run in debug/developer mode.
   * SECRET_KEY_DEV: The secret key that developer mode runs with
   * SECRET_KEY: The secret key that prod mode runs with
+  * DJANGO_SURVIVOR_CERTFILE: The path to the certfile to use for encryption
+  * DJANGO_SURVIVOR_KEYFILE: The path to the keyfile to use for encryption
   * Email things:
     * DJANGO_SURVIVOR_EMAIL_ENABLED: if 'true', will use emails to send password resets. Otherwise password reset requests just go right to console. Implemented as a stop-gap while getting email working.
       * If not configured or not 'true', all of the below email settings can be ignored.
