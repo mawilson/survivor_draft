@@ -1,0 +1,13 @@
+services:
+  web:
+    build: .
+    ports:
+      - 443:443
+    volumes:
+      - survivor:/app/db/ # persist the /app/db/ subdirectory contents outside of container lifespans - so the DB isn't wiped every fresh build
+    env_file:
+      - ./web_project/.env
+  redis:
+    image: "redis:latest"
+volumes:
+  survivor:

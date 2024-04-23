@@ -1,7 +1,7 @@
 # For more information, please refer to https://aka.ms/vscode-docker-python
 FROM python:3.10-slim
 
-EXPOSE 5000
+EXPOSE 443
 
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -21,5 +21,11 @@ COPY . /app
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
+# run any database migrations necessary
+RUN python manage.py migrate
+# collect static files
+RUN python manage.py collectstatic --no-input
+
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "web_project.wsgi"]
+#CMD ["gunicorn", "--bind", "0.0.0.0:5000", "web_project.wsgi"]
+CMD ["daphne", "-e", "ssl:443:privateKey=outdraft_key.pem:certKey=outdraft_cert.pem", "web_project.asgi:application"]
