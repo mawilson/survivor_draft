@@ -28,4 +28,4 @@ RUN python manage.py collectstatic --no-input
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
 #CMD ["gunicorn", "--bind", "0.0.0.0:5000", "web_project.wsgi"]
-CMD ["daphne", "-e", "ssl:443:privateKey=outdraft_key.pem:certKey=outdraft_cert.pem", "web_project.asgi:application"]
+CMD daphne -e ssl:443:privateKey=$DJANGO_SURVIVOR_KEYFILE:certKey=$DJANGO_SURVIVOR_CERTFILE web_project.asgi:application
