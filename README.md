@@ -8,7 +8,12 @@ Survivor data includes overall placement, number of immunities won, idols found,
 
 Currently being hosted at https://outdraft.me, but you can also host your own.
 
-## Installation
+## Installation (Docker)
+1. Install Docker
+2. Run 'docker compose up'
+3. Subsequent runs after code changes should run 'docker compose up --build' to ensure a new image is built with the updated code
+
+## Installation (Legacy, Non-Docker)
 
 1. Install Python 3.11 or higher.
 2. Create a virtual environment
