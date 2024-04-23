@@ -29,7 +29,10 @@
                     <td class="float-right">
                         {% block navbar_login %}
                             {% if request.user.is_authenticated %}
-                                <a href="{% url 'logout' %}" class="navbar_item">Logout</a>
+                                <form method="post" action="{% url 'logout' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="logout_link">Logout</button>
+                                </form>
                             {% else %}
                                 <a href="{% url 'login' %}" class="navbar_item">Login</a>
                             {% endif %}

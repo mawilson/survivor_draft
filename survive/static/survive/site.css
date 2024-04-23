@@ -91,6 +91,10 @@
     @apply uppercase text-base text-white no-underline hover:underline ml-1.5 pr-7 leading-6;
 }
 
+.logout_link {
+    @apply uppercase text-base text-white hover:underline bg-inherit hover:!bg-inherit ml-1.5 mr-0 my-0 pr-7 pl-0 py-0 p-0 leading-6 !important;
+}
+
 .link {
     @apply underline text-link-blue hover:text-blue-800 visited:text-link-purple;
 }
