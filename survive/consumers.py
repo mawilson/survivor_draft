@@ -1,6 +1,6 @@
 import json
 
-from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer # type: ignore[import-untyped]
 
 class DraftConsumer(AsyncWebsocketConsumer):
     async def connect(self):

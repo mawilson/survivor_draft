@@ -97,7 +97,7 @@ else:
     channel_layers_config = {
         "default": {
             "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {
+            "CONFIG": { # type: ignore[dict-item]
                 "hosts": [("redis", 6379)], # this assumes a network named 'redis' will be available at port 6379, which will be true if running thru docker compose
             }
         }
@@ -180,12 +180,12 @@ else:
     EMAIL_USE_TLS = True
     EMAIL_TIMEOUT = 10
     EMAIL_HOST = str(os.getenv('DJANGO_SURVIVOR_EMAIL_HOST'))
-    port = os.getenv('DJANGO_SURVIVOR_EMAIL_PORT')
+    port = os.getenv('DJANGO_SURVIVOR_EMAIL_PORT') or ""
     try:
-        port = int(port)
-        if port < 0 or port > 65535: # valid ports are between 0 & 65535 inclusive
+        port_int = int(port)
+        if port_int < 0 or port_int > 65535: # valid ports are between 0 & 65535 inclusive
             raise ValueError
-        EMAIL_PORT = port
+        EMAIL_PORT = port_int
     except ValueError:
         print(f"Configured email port of '{port}' was not a valid port, will use default port value.")
     EMAIL_HOST_USER = str(os.getenv('DJANGO_SURVIVOR_EMAIL_USER'))

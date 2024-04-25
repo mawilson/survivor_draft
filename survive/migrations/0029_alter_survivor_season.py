@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='survivor',
             name='season',
-            field=models.ManyToManyField(blank=True, default=None, null=True, to='survive.season', verbose_name='a season a Survivor belongs to'),
+            field=models.ManyToManyField(blank=True, default=None, to='survive.season', verbose_name='a season a Survivor belongs to'),
         ),
     ]

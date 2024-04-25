@@ -4,7 +4,7 @@ from survive.forms import FanFavoriteForm, PredictionForm, UserProfileForm, Regi
 from django.contrib.auth import authenticate, login
 from survive.models import Team, Survivor, Season
 from django.shortcuts import get_object_or_404
-from channels.layers import get_channel_layer
+from channels.layers import get_channel_layer # type: ignore[import-untyped]
 from asgiref.sync import async_to_sync
 import re
 from django.urls import reverse

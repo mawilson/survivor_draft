@@ -62,7 +62,7 @@ class Season(models.Model):
     season_open = models.DateField(null = True) # used to close the predictions
     survivor_drafting = models.BooleanField(default = False, null = False) # used to allow drafting of survivors
     team_creation = models.BooleanField(default = True, null = False) # used to allow creation of teams
-    linked_seasons = models.ManyToManyField(
+    linked_seasons = models.ManyToManyField( # type: ignore[var-annotated]
         "Season", # trick the compiler into letting us reference a class not yet defined
         verbose_name="The other seasons this season is associated with",
         blank = True,
@@ -582,15 +582,20 @@ class Team(models.Model):
     def lost(self) -> bool:
         """If season is over, returns True if this team won, else False"""
         """Returns True if all survivors on this team have been eliminated, & this team's points total (plus fan favorite value) is lower than some other team's"""
-        if self.season.is_season_closed():
+        if self.season and self.season.is_season_closed():
             return not self.winner
         elif all(not s.status for s in self.survivor_set.all()):
-            my_theoretical_points = self.points() + self.season.rubric.fan_favorite # fan favorite points are the only thing we could theoretically still earn
-            for t in self.season.team_set.all():
-                if t is self:
-                    continue
-                elif t.points() > my_theoretical_points: # if any other team has more points than myself, & all my survivors are out, I have officially lost, return True
-                    return True
+            if self.season and self.season.rubric:
+                fan_favorite_points = self.season.rubric.fan_favorite
+            else:
+                fan_favorite_points = 0    
+            my_theoretical_points = self.points() + fan_favorite_points # fan favorite points are the only thing we could theoretically still earn
+            if self.season:
+                for t in self.season.team_set.all():
+                    if t is self:
+                        continue
+                    elif t.points() > my_theoretical_points: # if any other team has more points than myself, & all my survivors are out, I have officially lost, return True
+                        return True
         return False
     
     def next_pick(self) -> int | None:
@@ -600,7 +605,9 @@ class Team(models.Model):
             return -1
         num_team_members = len(self.survivor_set.all())
         picks = self.draft_order.split(",")
-        if num_team_members >= self.season.max_team_size(): # if I already have equal or more team members than the max team size based on participating teams
+        if not self.season: # if season does not exist, neither does next pick
+            return None
+        elif num_team_members >= self.season.max_team_size(): # if I already have equal or more team members than the max team size based on participating teams
             return None
         if num_team_members >= len(picks): # if I already have equal or more team members than picks, I've already made all available picks
             return None
@@ -612,6 +619,9 @@ class Team(models.Model):
         next_pick = self.next_pick()
         if next_pick is None: # team is full, cannot draft
             pick_text = "It's not your turn to draft. You appear to have no picks left."
+            _can_pick = False
+        elif not self.season:
+            pick_text = "Team is not part of a season. Can't pick without a season."
             _can_pick = False
         elif self.season.draft_marker < 0: # not maintaining draft order, so can draft
             pick_text = "Draft is free for all. You can draft."

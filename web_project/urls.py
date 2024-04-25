@@ -19,6 +19,9 @@ from django.urls import path, include
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
 from django.conf import settings
+from typing import Sequence
+from django.urls import URLPattern, URLResolver
+urlpatterns: Sequence[URLPattern | URLResolver] = []
 urlpatterns = [
     path("", include("survive.urls")),
     path('admin/', admin.site.urls)

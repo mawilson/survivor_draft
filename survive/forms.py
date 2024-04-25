@@ -1,6 +1,7 @@
 from django import forms
 from survive.models import Team, Season, Survivor, User
-from django.contrib.auth.forms import UserCreationForm, password_validation
+from django.contrib.auth import password_validation
+from django.contrib.auth.forms import UserCreationForm
 
 class TeamForm(forms.ModelForm):
     class Meta:
