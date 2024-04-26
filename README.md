@@ -95,5 +95,5 @@ With all this done, now the server should have at least one proper season, compl
 I haven't properly built up a build pipeline yet, so the deployment steps that I run manually are starting to add up. For now, here's a list of things that can/should be run before making a pull request/running it:
 1. Run unittests with `python manage.py test survive`
 2. Run the server, then run Cypress tests using `npx cypress run`
-3. Run MyPy & check for typing errors
-4. Run Black to format new code
+3. Run MyPy with `mypy .` & check for typing errors
+4. Run Black with `black .` to format new code
