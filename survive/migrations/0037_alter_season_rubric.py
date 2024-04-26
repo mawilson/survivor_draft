@@ -7,13 +7,17 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('survive', '0036_rubric_fan_favorite_share_votes_and_more'),
+        ("survive", "0036_rubric_fan_favorite_share_votes_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='season',
-            name='rubric',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='survive.rubric'),
+            model_name="season",
+            name="rubric",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="survive.rubric",
+            ),
         ),
     ]

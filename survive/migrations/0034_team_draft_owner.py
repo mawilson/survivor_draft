@@ -6,13 +6,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('survive', '0033_season_draft_marker_team_draft_order'),
+        ("survive", "0033_season_draft_marker_team_draft_order"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='team',
-            name='draft_owner',
-            field=models.BooleanField(default=False, verbose_name='Whether this Team has administrative access to the draft & draft ordering'),
+            model_name="team",
+            name="draft_owner",
+            field=models.BooleanField(
+                default=False,
+                verbose_name="Whether this Team has administrative access to the draft & draft ordering",
+            ),
         ),
     ]

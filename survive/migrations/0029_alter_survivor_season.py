@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('survive', '0028_remove_survivor_season_survivor_season'),
+        ("survive", "0028_remove_survivor_season_survivor_season"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='survivor',
-            name='season',
-            field=models.ManyToManyField(blank=True, default=None, to='survive.season', verbose_name='a season a Survivor belongs to'),
+            model_name="survivor",
+            name="season",
+            field=models.ManyToManyField(
+                blank=True,
+                default=None,
+                to="survive.season",
+                verbose_name="a season a Survivor belongs to",
+            ),
         ),
     ]

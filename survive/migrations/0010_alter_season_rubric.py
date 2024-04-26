@@ -8,13 +8,15 @@ import survive.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('survive', '0009_remove_rubric_season_season_rubric'),
+        ("survive", "0009_remove_rubric_season_season_rubric"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='season',
-            name='rubric',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_DEFAULT, to='survive.rubric'),
+            model_name="season",
+            name="rubric",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.SET_DEFAULT, to="survive.rubric"
+            ),
         ),
     ]

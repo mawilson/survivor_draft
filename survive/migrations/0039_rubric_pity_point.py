@@ -6,13 +6,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('survive', '0038_rubric_confessionals_rubric_confessionals_tie_split'),
+        ("survive", "0038_rubric_confessionals_rubric_confessionals_tie_split"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='rubric',
-            name='pity_point',
-            field=models.IntegerField(default=0, verbose_name='The Pity Point - points awarded to the first eliminated survivor.'),
+            model_name="rubric",
+            name="pity_point",
+            field=models.IntegerField(
+                default=0,
+                verbose_name="The Pity Point - points awarded to the first eliminated survivor.",
+            ),
         ),
     ]

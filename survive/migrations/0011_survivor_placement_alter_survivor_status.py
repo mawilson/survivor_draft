@@ -6,18 +6,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('survive', '0010_alter_season_rubric'),
+        ("survive", "0010_alter_season_rubric"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='survivor',
-            name='placement',
+            model_name="survivor",
+            name="placement",
             field=models.IntegerField(default=0),
         ),
         migrations.AlterField(
-            model_name='survivor',
-            name='status',
-            field=models.BooleanField(default=False, verbose_name='Elimination Status - False for eliminated, True for surviving'),
+            model_name="survivor",
+            name="status",
+            field=models.BooleanField(
+                default=False,
+                verbose_name="Elimination Status - False for eliminated, True for surviving",
+            ),
         ),
     ]

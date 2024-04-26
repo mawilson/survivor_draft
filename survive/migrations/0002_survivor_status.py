@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('survive', '0001_initial'),
+        ("survive", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='survivor',
-            name='status',
-            field=models.BooleanField(default=False, verbose_name='Elimination Status'),
+            model_name="survivor",
+            name="status",
+            field=models.BooleanField(default=False, verbose_name="Elimination Status"),
         ),
     ]

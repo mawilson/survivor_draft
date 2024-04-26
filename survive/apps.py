@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class SurviveConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'survive'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "survive"

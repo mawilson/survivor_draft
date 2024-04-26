@@ -6,17 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('survive', '0026_tribe_alter_survivor_tribe'),
+        ("survive", "0026_tribe_alter_survivor_tribe"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='survivor',
-            name='team',
+            model_name="survivor",
+            name="team",
         ),
         migrations.AddField(
-            model_name='survivor',
-            name='team',
-            field=models.ManyToManyField(to='survive.team', verbose_name='a team that recruited this survivor'),
+            model_name="survivor",
+            name="team",
+            field=models.ManyToManyField(
+                to="survive.team", verbose_name="a team that recruited this survivor"
+            ),
         ),
     ]

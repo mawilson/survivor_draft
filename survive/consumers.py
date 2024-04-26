@@ -1,6 +1,7 @@
 import json
 
-from channels.generic.websocket import AsyncWebsocketConsumer # type: ignore[import-untyped]
+from channels.generic.websocket import AsyncWebsocketConsumer  # type: ignore[import-untyped]
+
 
 class DraftConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -11,7 +12,7 @@ class DraftConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.season_group_id, self.channel_name)
 
         await self.accept()
-    
+
     async def disconnect(self, close_code):
         # Leave season group
         await self.channel_layer.group_discard(self.season_group_id, self.channel_name)

@@ -6,17 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('survive', '0034_team_draft_owner'),
+        ("survive", "0034_team_draft_owner"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='tribe',
-            name='season',
+            model_name="tribe",
+            name="season",
         ),
         migrations.AddField(
-            model_name='tribe',
-            name='season',
-            field=models.ManyToManyField(blank=True, default=None, to='survive.season', verbose_name='The seasons associated with this tribe'),
+            model_name="tribe",
+            name="season",
+            field=models.ManyToManyField(
+                blank=True,
+                default=None,
+                to="survive.season",
+                verbose_name="The seasons associated with this tribe",
+            ),
         ),
     ]
