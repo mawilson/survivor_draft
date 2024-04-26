@@ -24,82 +24,90 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-is_prod = str(os.getenv('DJANGO_SURVIVOR_PROD'))
-DEBUG = is_prod != "true" # if the env var is undefined, debug will be set to True - only if the env var is present & 'true' will debug be set to False
+is_prod = str(os.getenv("DJANGO_SURVIVOR_PROD"))
+DEBUG = (
+    is_prod != "true"
+)  # if the env var is undefined, debug will be set to True - only if the env var is present & 'true' will debug be set to False
 
 # SECURITY WARNING: keep the secret key used in production secret!
 if DEBUG:
-    SECRET_KEY = os.getenv('SECRET_KEY_DEV')
+    SECRET_KEY = os.getenv("SECRET_KEY_DEV")
 else:
-    SECRET_KEY = os.getenv('SECRET_KEY')
-if SECRET_KEY is None: # if the appropriate environment variable for secret key was not present, generate a new one
-    SECRET_KEY = get_random_secret_key() # if environment has not provided a secret key, generate a random one for this server runtime
+    SECRET_KEY = os.getenv("SECRET_KEY")
+if (
+    SECRET_KEY is None
+):  # if the appropriate environment variable for secret key was not present, generate a new one
+    SECRET_KEY = (
+        get_random_secret_key()
+    )  # if environment has not provided a secret key, generate a random one for this server runtime
 else:
     SECRET_KEY = str(SECRET_KEY)
 
 if DEBUG:
-    ALLOWED_HOSTS = ['*']
+    ALLOWED_HOSTS = ["*"]
 else:
-    ALLOWED_HOSTS = ['outdraft.me']
+    ALLOWED_HOSTS = ["outdraft.me"]
 
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne',
-    'survive',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    "daphne",
+    "survive",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'web_project.urls'
+ROOT_URLCONF = "web_project.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'web_project.wsgi.application'
-ASGI_APPLICATION = 'web_project.asgi.application'
+WSGI_APPLICATION = "web_project.wsgi.application"
+ASGI_APPLICATION = "web_project.asgi.application"
 
 if DEBUG:
     channel_layers_config = {
         "default": {
-            "BACKEND": "channels.layers.InMemoryChannelLayer" # for dev use only!!
+            "BACKEND": "channels.layers.InMemoryChannelLayer"  # for dev use only!!
         }
     }
 else:
     channel_layers_config = {
         "default": {
             "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {
-                "hosts": [("redis", 6379)], # this assumes a network named 'redis' will be available at port 6379, which will be true if running thru docker compose
-            }
+            "CONFIG": {  # type: ignore[dict-item]
+                "hosts": [
+                    ("redis", 6379)
+                ],  # this assumes a network named 'redis' will be available at port 6379, which will be true if running thru docker compose
+            },
         }
     }
 CHANNEL_LAYERS = channel_layers_config
@@ -108,9 +116,9 @@ CHANNEL_LAYERS = channel_layers_config
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db/db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db/db.sqlite3",
     }
 }
 
@@ -120,16 +128,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -137,9 +145,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -149,47 +157,51 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [ BASE_DIR / 'static' ]
-STATIC_ROOT = BASE_DIR / 'static_collected'
+STATIC_URL = "static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "static_collected"
 
-MEDIA_URL = 'media/'
-MEDIA_ROOT = [ BASE_DIR / 'media' ]
+MEDIA_URL = "media/"
+MEDIA_ROOT = [BASE_DIR / "media"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = '/profile' # on login, redirect to profile page
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "/profile"  # on login, redirect to profile page
 
-if not DEBUG: # Security/HTTPS settings to be set when not in development mode
-    SECURE_SSL_REDIRECT = True # redirect all non-HTTPS requests to HTTPS
-    SESSION_COOKIE_SECURE = True # generate secure cookies
-    CSRF_COOKIE_SECURE = True # sessions will not work over HTTP, & POST data will not be sent over HTTP - should be fine given SECURE_SSL_REDIRECT to HTTPS
-    SECURE_HSTS_SECONDS = 3600 # small value temporary, later 31536000 (one year).
+if not DEBUG:  # Security/HTTPS settings to be set when not in development mode
+    SECURE_SSL_REDIRECT = True  # redirect all non-HTTPS requests to HTTPS
+    SESSION_COOKIE_SECURE = True  # generate secure cookies
+    CSRF_COOKIE_SECURE = True  # sessions will not work over HTTP, & POST data will not be sent over HTTP - should be fine given SECURE_SSL_REDIRECT to HTTPS
+    SECURE_HSTS_SECONDS = 3600  # small value temporary, later 31536000 (one year).
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # while email does not work, just do console backend
-email_enabled = os.getenv('DJANGO_SURVIVOR_EMAIL_ENABLED') == 'true'
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"  # while email does not work, just do console backend
+email_enabled = os.getenv("DJANGO_SURVIVOR_EMAIL_ENABLED") == "true"
 if DEBUG or not email_enabled:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:
-    #EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_BACKEND = 'survive.backends.email.EmailBackend'
+    # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_BACKEND = "survive.backends.email.EmailBackend"
     EMAIL_USE_TLS = True
     EMAIL_TIMEOUT = 10
-    EMAIL_HOST = str(os.getenv('DJANGO_SURVIVOR_EMAIL_HOST'))
-    port = os.getenv('DJANGO_SURVIVOR_EMAIL_PORT')
+    EMAIL_HOST = str(os.getenv("DJANGO_SURVIVOR_EMAIL_HOST"))
+    port = os.getenv("DJANGO_SURVIVOR_EMAIL_PORT") or ""
     try:
-        port = int(port)
-        if port < 0 or port > 65535: # valid ports are between 0 & 65535 inclusive
+        port_int = int(port)
+        if (
+            port_int < 0 or port_int > 65535
+        ):  # valid ports are between 0 & 65535 inclusive
             raise ValueError
-        EMAIL_PORT = port
+        EMAIL_PORT = port_int
     except ValueError:
-        print(f"Configured email port of '{port}' was not a valid port, will use default port value.")
-    EMAIL_HOST_USER = str(os.getenv('DJANGO_SURVIVOR_EMAIL_USER'))
-    EMAIL_HOST_PASSWORD = str(os.getenv('DJANGO_SURVIVOR_EMAIL_PASSWORD'))
-    EMAIL_SSL_KEYFILE = str(os.getenv('DJANGO_SURVIVOR_EMAIL_KEYFILE'))
-    EMAIL_SSL_CERTFILE = str(os.getenv('DJANGO_SURVIVOR_EMAIL_CERTFILE'))
-DEFAULT_FROM_EMAIL = 'jeffbot@outdraft.me'
+        print(
+            f"Configured email port of '{port}' was not a valid port, will use default port value."
+        )
+    EMAIL_HOST_USER = str(os.getenv("DJANGO_SURVIVOR_EMAIL_USER"))
+    EMAIL_HOST_PASSWORD = str(os.getenv("DJANGO_SURVIVOR_EMAIL_PASSWORD"))
+    EMAIL_SSL_KEYFILE = str(os.getenv("DJANGO_SURVIVOR_EMAIL_KEYFILE"))
+    EMAIL_SSL_CERTFILE = str(os.getenv("DJANGO_SURVIVOR_EMAIL_CERTFILE"))
+DEFAULT_FROM_EMAIL = "jeffbot@outdraft.me"

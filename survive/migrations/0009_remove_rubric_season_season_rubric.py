@@ -8,17 +8,19 @@ import survive.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('survive', '0008_rubric_idols_tie_split_rubric_immunities_tie_split'),
+        ("survive", "0008_rubric_idols_tie_split_rubric_immunities_tie_split"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='rubric',
-            name='season',
+            model_name="rubric",
+            name="season",
         ),
         migrations.AddField(
-            model_name='season',
-            name='rubric',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survive.rubric'),
+            model_name="season",
+            name="rubric",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="survive.rubric"
+            ),
         ),
     ]

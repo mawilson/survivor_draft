@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('survive', '0031_season_team_creation'),
+        ("survive", "0031_season_team_creation"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='season',
-            name='linked_seasons',
-            field=models.ManyToManyField(blank=True, default=None, to='survive.season', verbose_name='The other seasons this season is associated with'),
+            model_name="season",
+            name="linked_seasons",
+            field=models.ManyToManyField(
+                blank=True,
+                default=None,
+                to="survive.season",
+                verbose_name="The other seasons this season is associated with",
+            ),
         ),
     ]

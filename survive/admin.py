@@ -8,6 +8,7 @@ admin.site.register(Rubric)
 admin.site.register(Team)
 admin.site.register(Tribe)
 
+
 class SurvivorAdmin(admin.ModelAdmin):
     list_display = ["name", "status"]
     ordering = ["-id"]
@@ -20,5 +21,6 @@ class SurvivorAdmin(admin.ModelAdmin):
         return HttpResponseRedirect(
             "/admin/survivor_season_associate?survivors=%s" % survivors_querystring
         )
+
 
 admin.site.register(Survivor, SurvivorAdmin)

@@ -7,28 +7,52 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('survive', '0015_survivor_pic_full_alter_survivor_pic'),
+        ("survive", "0015_survivor_pic_full_alter_survivor_pic"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='team',
-            name='fan_favorite_bad',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='survive.survivor', verbose_name='Negative place fan favorite vote submitted by this team'),
+            model_name="team",
+            name="fan_favorite_bad",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="+",
+                to="survive.survivor",
+                verbose_name="Negative place fan favorite vote submitted by this team",
+            ),
         ),
         migrations.AddField(
-            model_name='team',
-            name='fan_favorite_first',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='survive.survivor', verbose_name='First place fan favorite vote submitted by this team'),
+            model_name="team",
+            name="fan_favorite_first",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="+",
+                to="survive.survivor",
+                verbose_name="First place fan favorite vote submitted by this team",
+            ),
         ),
         migrations.AddField(
-            model_name='team',
-            name='fan_favorite_second',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='survive.survivor', verbose_name='Second place fan favorite vote submitted by this team'),
+            model_name="team",
+            name="fan_favorite_second",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="+",
+                to="survive.survivor",
+                verbose_name="Second place fan favorite vote submitted by this team",
+            ),
         ),
         migrations.AddField(
-            model_name='team',
-            name='fan_favorite_third',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='survive.survivor', verbose_name='Third place fan favorite vote submitted by this team'),
+            model_name="team",
+            name="fan_favorite_third",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="+",
+                to="survive.survivor",
+                verbose_name="Third place fan favorite vote submitted by this team",
+            ),
         ),
     ]

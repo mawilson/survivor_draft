@@ -7,22 +7,50 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('survive', '0025_alter_survivor_pic_alter_survivor_pic_full_and_more'),
+        ("survive", "0025_alter_survivor_pic_alter_survivor_pic_full_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Tribe',
+            name="Tribe",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('color', models.CharField(max_length=100, verbose_name='the hex code for the color associated with this tribe')),
-                ('season', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='survive.season', verbose_name='a tribe assigned at some point during a season.')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                (
+                    "color",
+                    models.CharField(
+                        max_length=100,
+                        verbose_name="the hex code for the color associated with this tribe",
+                    ),
+                ),
+                (
+                    "season",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="survive.season",
+                        verbose_name="a tribe assigned at some point during a season.",
+                    ),
+                ),
             ],
         ),
         migrations.AlterField(
-            model_name='survivor',
-            name='tribe',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, to='survive.tribe', verbose_name='the tribe this survivor currently belongs to'),
+            model_name="survivor",
+            name="tribe",
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="survive.tribe",
+                verbose_name="the tribe this survivor currently belongs to",
+            ),
         ),
     ]

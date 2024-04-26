@@ -9,13 +9,18 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('survive', '0021_season_season_open_team_prediction_first_and_more'),
+        ("survive", "0021_season_season_open_team_prediction_first_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='team',
-            name='user',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='the user a team belongs to'),
+            model_name="team",
+            name="user",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="the user a team belongs to",
+            ),
         ),
     ]

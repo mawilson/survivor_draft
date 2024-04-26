@@ -6,28 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('survive', '0007_season_rubric_season_survivor_season_team_season'),
+        ("survive", "0007_season_rubric_season_survivor_season_team_season"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='rubric',
-            name='idols_tie_split',
+            model_name="rubric",
+            name="idols_tie_split",
             field=models.BooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='rubric',
-            name='immunities_tie_split',
+            model_name="rubric",
+            name="immunities_tie_split",
             field=models.BooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='rubric',
-            name='fan_favorite_negative_votes',
+            model_name="rubric",
+            name="fan_favorite_negative_votes",
             field=models.BooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='rubric',
-            name='fan_favorite_self_votes',
+            model_name="rubric",
+            name="fan_favorite_self_votes",
             field=models.BooleanField(default=False),
         ),
     ]
