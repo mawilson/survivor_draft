@@ -90,3 +90,10 @@ Once the server is running, it may not actually work - I haven't tested the home
   * The 'Pic' & 'Pic Full' fields don't quite work at this point in time, because media uploads don't quite work. Instead these are just used as string paths to the file locations on the static file server. No way to properly configure this through the admin console - I use the DB Browser for SQLite to do database manipulation when I need to.
 
 With all this done, now the server should have at least one proper season, complete with a bunch of undrafted survivors. Now you'll need users to come sign up & make teams to participate in the draft.
+
+## Steps before Deploy
+I haven't properly built up a build pipeline yet, so the deployment steps that I run manually are starting to add up. For now, here's a list of things that can/should be run before making a pull request/running it:
+1. Run unittests with `python manage.py test survive`
+2. Run the server, then run Cypress tests using `npx cypress run`
+3. Run MyPy & check for typing errors
+4. Run Black to format new code
