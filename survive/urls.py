@@ -10,6 +10,7 @@ urlpatterns = [
     path("fan_favorite/", views.fan_favorite, name="fan_favorite"),
     path("predictions/", views.predictions, name="predictions"),
     path("rubric/", views.rubric, name="rubric"),
+    path("create_season/", views.create_season, name="create_season"),
     # admin paths
     path(
         "admin/survivor_season_associate",

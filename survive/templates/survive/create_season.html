@@ -1,0 +1,32 @@
+{% extends "survive/layout.html" %}
+{% block title %}
+    Create a Season
+{% endblock %}
+{% block navbar_create_season %}<a href="{% url 'create_season' %}" class="navbar_current">Create Season</a>{% endblock %}
+{% block season_selector %}{% endblock %}
+{% block page_title %}Create a Season{% endblock %}
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset class="create_season_fieldset">
+            <label for="season_id">Season to copy</label>
+            <select id="season_id" name="season_id">
+                {% for season in seasons %}
+                    <option value="{{season.id}}">{{season.name}}</option>
+                {% endfor %}
+            </select>
+            <br />
+            <label for="season_name">Season name</label>
+            <input id="season_name" name="season_name" type="text" />
+            <br />
+            <label for="rubric_id">Rubric to use</label>
+            <select id="rubric_id" name="rubric_id">
+                {% for rubric in rubrics %}
+                    <option value="{{rubric.id}}">Rubric ID: {{rubric.id}}. {{rubric}}</option>
+                {% endfor %}
+            </select>
+        </fieldset>
+
+        <button type="submit">Create a season</button>
+    </form>
+{% endblock %}

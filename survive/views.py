@@ -9,7 +9,7 @@ from survive.forms import (
     DraftEnabledForm,
 )
 from django.contrib.auth import authenticate, login
-from survive.models import Team, Survivor, Season
+from survive.models import Team, Survivor, Season, Rubric
 from django.shortcuts import get_object_or_404
 from channels.layers import get_channel_layer  # type: ignore[import-untyped]
 from asgiref.sync import async_to_sync
@@ -480,3 +480,38 @@ def survivor_season_associate(request):
         return redirect(
             reverse("admin:survive_survivor_changelist")
         )  # take us back to the Survivor admin page
+
+@login_required # cannot create a season without being logged in
+def create_season(request):
+    context = {
+        "seasons": Season.objects.all(),
+        "rubrics": Rubric.objects.all() 
+    }
+
+    if request.method == "POST":
+        season_id = request.POST.get("season_id")
+        season_name = request.POST.get("season_name")
+        rubric_id = request.POST.get("rubric_id")
+        selected_rubric = get_object_or_404(Rubric, pk=rubric_id)
+        selected_season = get_object_or_404(Season, pk=season_id)
+        new_season = Season.objects.create(
+            name = season_name,
+            rubric = selected_rubric
+        )
+        new_season.save()
+        new_season.linked_seasons.add(selected_season)
+        for survivor in selected_season.survivor_set.all(): # add new season to all survivors of selected_season
+            survivor.season.add(new_season)
+        for tribe in selected_season.tribe_set.all():
+            tribe.season.add(new_season)
+
+        new_team = Team.objects.create(
+            season = new_season,
+            captain = request.user.get_full_name(),
+            user = request.user,
+            name = f"{request.user.get_full_name()} Team",
+            draft_owner = True # make creater of the season an admin
+        )
+        new_team.save()
+
+    return render(request, "survive/create_season.html", context)
