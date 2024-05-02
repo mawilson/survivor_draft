@@ -108,6 +108,10 @@
     background-color: #67d4e9;
 }
 
+.create_season_fieldset > * {
+    @apply my-0.5;
+}
+
 @media screen and (1150px < width) {
     .body_content {
         width: 50%;
