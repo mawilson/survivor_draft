@@ -29,6 +29,9 @@
                     <td class="float-left">
                         {% block navbar_create_season %}<a href="{% url 'create_season' %}" class="navbar_item">Create Season</a>{% endblock %}
                     </td>
+                    <td class="float-left">
+                        {% block navbar_manage_season %}<a href="{% url 'manage_season' %}" class="navbar_item">Manage Season</a>{% endblock %}
+                    </td>
                     <td class="float-right">
                         {% block navbar_login %}
                             {% if request.user.is_authenticated %}

@@ -1,0 +1,78 @@
+{% extends "survive/layout.html" %}
+{% block title %}
+    Manage Season
+{% endblock %}
+{% block navbar_manage_season %}<a href="{% url 'manage_season' %}" class="navbar_current">Manage Season</a>{% endblock %}
+{% block season_selector %}{% endblock %}
+{% block page_title %}Manage Season{% endblock %}
+{% block content %}
+    {% if errors %}
+        {% for error in errors %}
+            <p class="errorlist">{{error}}</p>
+        {% endfor %}
+    {% endif %}
+    <table class="table_center table_bordered">
+        <thead>
+            <tr>
+                <th>Season Name</th>
+                <th>Teams</th>
+                <th>Invite User</th>
+                <th>Delete Season</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for season in managed_seasons %}
+                <tr>
+                    <td>{{season.name}}</td>
+                    <td>
+                        <table class="table_center w-full">
+                            <thead>
+                                <tr>
+                                    <th>Team Owner</th>
+                                    <th>Team Captain</th>
+                                    <th>Team Name</th>
+                                    <th>Delete Team</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for team in season.team_set.all %}
+                                    <tr>
+                                        <td>{{team.user.get_full_name}}</td>
+                                        <td>{{team.captain}}</td>
+                                        <td>{{team.name}}</td>
+                                        <td>
+                                            <form method="POST">
+                                                {% csrf_token %}
+                                                <button type="button" onclick="manageSeasonTeamDelete(this)">Delete</button>
+                                                <input type="hidden" name="delete_team_team_id" value="{{team.id}}" />
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </td>
+                    <td>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <label for="id_user_invite_{{season.id}}">Username</label>
+                            <input type="text" id="id_user_invite_{{season.id}}" name="user_invite" required placeholder="{{user.username}}" />
+                            <input type="hidden" name="user_invite_season_id" value="{{season.id}}" />
+                            <br />
+                            <button type="submit">Invite User to Season</button>
+                            <br />
+                            <p>Note: Username lookup is case-sensitive.</p>
+                        </form>
+                    </td>
+                    <td>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <button type="button" onclick="manageSeasonSeasonDelete(this)">Delete</button>
+                            <input type="hidden" name="delete_season_season_id" value="{{season.id}}" />
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

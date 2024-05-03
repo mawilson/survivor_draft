@@ -9,7 +9,7 @@ from survive.forms import (
     DraftEnabledForm,
 )
 from django.contrib.auth import authenticate, login
-from survive.models import Team, Survivor, Season, Rubric
+from survive.models import Team, Survivor, Season, Rubric, User
 from django.shortcuts import get_object_or_404
 from channels.layers import get_channel_layer  # type: ignore[import-untyped]
 from asgiref.sync import async_to_sync
@@ -513,5 +513,62 @@ def create_season(request):
             draft_owner = True # make creater of the season an admin
         )
         new_team.save()
+        return redirect("manage_season")
 
     return render(request, "survive/create_season.html", context)
+
+@login_required # cannot manage a season without being logged in
+def manage_season(request):
+    draft_owner_teams = request.user.team_set.filter(draft_owner=True)
+    managed_seasons = []
+    for team in draft_owner_teams: # in order to manage a season, a user's team must first be a draft owner of it
+        if team.season.managed_season: # a managed season must also have the managed_season attribute set to True
+            managed_seasons.append(team.season)
+    
+    context = {
+        "managed_seasons": managed_seasons,
+        "errors": [] # list of errors from POSTs
+    }
+
+    if request.method == "POST":
+        invite_username = request.POST.get("user_invite")
+        user_invite_season_id = request.POST.get("user_invite_season_id")
+        delete_team_team_id = request.POST.get("delete_team_team_id")
+        delete_season_season_id = request.POST.get("delete_season_season_id")
+
+        if invite_username:
+            try:
+                user_to_invite = User.objects.get(username=invite_username)
+            except User.DoesNotExist:
+                context["errors"].append(f"Cannot invite user {invite_username}, user matching this username not found.")
+                return render(request, "survive/manage_season.html", context)
+            season = get_object_or_404(Season, pk=user_invite_season_id)
+
+            for team in season.team_set.all():
+                if team.user.username == invite_username:
+                    context["errors"].append(f"Cannot invite user {invite_username} to season {season.id}, team '{team.name}' owned by this user is already present.")
+                    return render(request, "survive/manage_season.html", context)
+                
+            user_full_name = user_to_invite.get_full_name()
+            if user_full_name == "":
+                team_prefix = user_to_invite.username
+                new_team_name = user_to_invite.username + " Team"
+            else:
+                team_prefix = user_full_name
+                new_team_name = user_full_name + " Team"
+            new_team = Team(
+                season = season,
+                name = new_team_name,
+                captain = team_prefix,
+                user = user_to_invite
+            )
+            new_team.save()
+        elif delete_team_team_id:
+            team = get_object_or_404(Team, pk=delete_team_team_id)
+            team.delete()
+        elif delete_season_season_id:
+            season = get_object_or_404(Season, pk=delete_season_season_id)
+            season.delete()
+            return redirect("./")
+
+    return render(request, "survive/manage_season.html", context)
