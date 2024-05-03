@@ -6,46 +6,48 @@
 {% block page_title %}Season Overview{% endblock %}
 {% block content %}
     {% load model_extras %}
-
-    {% if season.survivor_drafting and not season.is_season_closed and display_type != "tribe" %}
-        <script>createDraftWatchSocket({{season.id}})</script>
-    {% endif %}
-
-    <div>
-        {% if draft_out_of_order_error %}
-            <p class="errorlist">{{draft_out_of_order_error}}</p>
-        {% endif %}
-
-        <form method="GET">
-            <label>View: </label>
-            <select name="display_type" onchange="this.form.submit()">
-                <option value="default">By Team (Default)</option>
-                <option value="tribe" {% if display_type == "tribe" %}selected{% endif %}>By Tribe</option>
-            </select>
-        </form>
-
-        {% if display_type == "default" and linked_seasons %}
-            <label>Linked seasons to display</label>
-            <ul>
-            {% for s in linked_seasons %}
-                <input type="checkbox" value="{{ s.id }}" id="linked_seasons_selector_{{ s.id }}" onchange="linked_seasons_display_toggle(this)" name="linked_seasons_checkbox">
-                <label for="linked_seasons_selector_{{ s.id }}">{{ s.name }}</label>
-            {% endfor %}
-            </ul>
-        {% endif %}
-
-        {% if not season.is_season_closed and user_team and user_team.draft_owner %}
-            <form method="POST">
-                {% csrf_token %}
-                <label>Enable Draft</label>
-                {{ draft_enabled_form.survivor_drafting }}
-                <input type="hidden" name="survivor_drafting_helper">
-            </form>
-        {% endif %}
-    </div>
+    
     {% if season %}
         {% load static %}
         {% get_static_prefix as STATIC_PREFIX %}
+
+        {% if season.survivor_drafting and not season.is_season_closed and display_type != "tribe" %}
+            <script>createDraftWatchSocket({{season.id}})</script>
+        {% endif %}
+
+        <div>
+            {% if draft_out_of_order_error %}
+                <p class="errorlist">{{draft_out_of_order_error}}</p>
+            {% endif %}
+
+            <form method="GET">
+                <label>View: </label>
+                <select name="display_type" onchange="this.form.submit()">
+                    <option value="default">By Team (Default)</option>
+                    <option value="tribe" {% if display_type == "tribe" %}selected{% endif %}>By Tribe</option>
+                </select>
+            </form>
+
+            {% if display_type == "default" and linked_seasons %}
+                <label>Linked seasons to display</label>
+                <ul>
+                {% for s in linked_seasons %}
+                    <input type="checkbox" value="{{ s.id }}" id="linked_seasons_selector_{{ s.id }}" onchange="linked_seasons_display_toggle(this)" name="linked_seasons_checkbox">
+                    <label for="linked_seasons_selector_{{ s.id }}">{{ s.name }}</label>
+                {% endfor %}
+                </ul>
+            {% endif %}
+
+            {% if not season.is_season_closed and user_team and user_team.draft_owner %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <label>Enable Draft</label>
+                    {{ draft_enabled_form.survivor_drafting }}
+                    <input type="hidden" name="survivor_drafting_helper">
+                </form>
+            {% endif %}
+        </div>
+
         {% if team_associable and season.team_creation %}
             <form method="POST">   
                 <fieldset class="border border-solid border-gray-300 space-y-1.5">
@@ -165,7 +167,7 @@
                         name="linked_season_{{ team.season.id }}_team">
                             <td>
                                 {{ team.name }}
-                                {% if not team.user and team_associable %}
+                                {% if not team.user and team_associable and season.team_creation %}
                                     <form method="POST" class="margin_top">
                                         {% csrf_token %}
                                         <button type="submit">Claim this team</button>
@@ -388,5 +390,7 @@
                     </tbody>
                 </table>
             {% endif %}
+    {% else %}
+        <p>You do not have any teams in any managed seasons, & there are no unmanaged seasons to jump into. Perhaps <a class="link" href="create_season">create a season?</a></p>     
     {% endif %}
 {% endblock %}

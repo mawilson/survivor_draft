@@ -78,7 +78,8 @@ Once the server is running, it may not actually work - I haven't tested the home
   * Use the rubric you just created
   * The opening date would usually be the day the first episode is aired, & the closing date would be the day the last episode airs.
   * The 'Survivor drafting' checkbox determines whether the draft is currently live. When checked, participating teams will have the option to draft survivors. Leave unchecked when a draft is not actively happening.
-  * The 'Team creation' checkbox determines whether a user can make a team for this season if they don't currently have one.
+  * The 'Team Creation' checkbox determines whether a user can make a team for this season if they don't currently have one. Usually, only one of this or 'Managed Season' should be checked.
+  * The 'Managed Season' checkbox dictates whether a season is 'managed' by a Team within the season with the 'Draft Owner' checkbox selected. Usually, only one of this or 'Team Creation' should be checked. Season managers have access to the Manage Season page, where they can invite users & delete teams from a season - useful for allowing users to manage their seasons completely free of admin assistance.
   * Other seasons can be associated with a season - for instance, if two groups of people are running separate drafts for the same season. Associated seasons can be viewed together on the homepage.
   * The final field is the current place in the draft, if draft ordering is being enforced. Set this to '-1' for a free for all draft. Default of '1' indicates that the draft is on the first pick.
 4. Create Tribes & put 'em in the season

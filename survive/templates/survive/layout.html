@@ -29,6 +29,9 @@
                     <td class="float-left">
                         {% block navbar_create_season %}<a href="{% url 'create_season' %}" class="navbar_item">Create Season</a>{% endblock %}
                     </td>
+                    <td class="float-left">
+                        {% block navbar_manage_season %}<a href="{% url 'manage_season' %}" class="navbar_item">Manage Season</a>{% endblock %}
+                    </td>
                     <td class="float-right">
                         {% block navbar_login %}
                             {% if request.user.is_authenticated %}
@@ -60,6 +63,7 @@
             </div>
         {% endblock %}
         {% block season_selector %}
+            {% if seasons %}
             <form class="float-left survivor_blue p-1">
                 <label>Season:</label>
                 <select name="season_id" onchange="this.form.submit()">
@@ -68,6 +72,7 @@
                     {% endfor %}
                 </select>
             </form>
+            {% endif %}
         {% endblock %}
         <div class="body_content">
             {% block _page_title %}<h1>{% block page_title %}{% endblock %}</h1>{% endblock %}

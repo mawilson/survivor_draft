@@ -7,95 +7,100 @@
 {% block content %}
     {% load static %}
     {% get_static_prefix as STATIC_PREFIX %}
-    {% if not season.is_season_closed %}
-        {% if team %}
-            <form class="table_center fan_favorite_form table_bordered" method="POST">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit">Vote!</button>
-            </form>
-        {% else %}
-            {% if not season.team_set.all %}
-                <p class="table_center p-1">No teams were found in this season. Can't have a vote without a team to associate it with!</p>
-            {% elif request.user.is_authenticated %}
-                <p class="table_center p-1">No teams associated with your user were found in this season. Try claiming a team from this season first!</p>
-            {% else %}
-                <p class="table_center p-1">Logged out users cannot vote.</p>
-            {% endif %}
-        {% endif %}
-    {% else %}
-        {% with results=season.fan_favorites_display %}
-            {% if results|length > 1 %}
-                <div class="p-2">
-                    <p>This season closed on {{season.season_close}}. Here are the fan favorite voting results!</p>
 
-                    <table class="table_center table_bordered w-full">
-                        <thead>
-                            <tr>
-                                <th>Team</th>
-                                <th>First</th>
-                                <th>Second</th>
-                                <th>Third</th>
-                                {% if season.rubric.fan_favorite_negative_votes %}
-                                <th>Bad</th>
-                                {% endif %}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% load static %}
-                            {% get_static_prefix as STATIC_PREFIX %}
-                            {% for team in season.team_set.all %}
+    {% if seasons %}
+        {% if not season.is_season_closed %}
+            {% if team %}
+                <form class="table_center fan_favorite_form table_bordered" method="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit">Vote!</button>
+                </form>
+            {% else %}
+                {% if not season.team_set.all %}
+                    <p class="table_center p-1">No teams were found in this season. Can't have a vote without a team to associate it with!</p>
+                {% elif request.user.is_authenticated %}
+                    <p class="table_center p-1">No teams associated with your user were found in this season. Try claiming a team from this season first!</p>
+                {% else %}
+                    <p class="table_center p-1">Logged out users cannot vote.</p>
+                {% endif %}
+            {% endif %}
+        {% else %}
+            {% with results=season.fan_favorites_display %}
+                {% if results|length > 1 %}
+                    <div class="p-2">
+                        <p>This season closed on {{season.season_close}}. Here are the fan favorite voting results!</p>
+
+                        <table class="table_center table_bordered w-full">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        {{team.name}}
-                                        <br />
-                                        (Team Captain {{team.captain}})
-                                    </td>
-                                    <td>
-                                        {% if team.fan_favorite_first %}
-                                            <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_first.pic.name}}"
-                                            {% if team.fan_favorite_first.tribe != None %}
-                                                style="border: 2px solid {{ team.fan_favorite_first.tribe.color }};"
-                                            {% endif %} class="mx-auto" />
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if team.fan_favorite_second %}
-                                            <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_second.pic.name}}"
-                                            {% if team.fan_favorite_second.tribe != None %}
-                                                style="border: 2px solid {{ team.fan_favorite_second.tribe.color }};"
-                                            {% endif %} class="mx-auto" />
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if team.fan_favorite_third %}
-                                            <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_third.pic.name}}"
-                                            {% if team.fan_favorite_third.tribe != None %}
-                                                style="border: 2px solid {{ team.fan_favorite_third.tribe.color }};"
-                                            {% endif %} class="mx-auto" />
-                                        {% endif %}
-                                    </td>
+                                    <th>Team</th>
+                                    <th>First</th>
+                                    <th>Second</th>
+                                    <th>Third</th>
                                     {% if season.rubric.fan_favorite_negative_votes %}
-                                    <td>
-                                        {% if team.fan_favorite_bad %}
-                                            <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_bad.pic.name}}"
-                                            {% if team.fan_favorite_bad.tribe != None %}
-                                                style="border: 2px solid {{ team.fan_favorite_bad.tribe.color }};"
-                                            {% endif %} class="mx-auto" />
-                                        {% endif %}
-                                    </td>
+                                    <th>Bad</th>
                                     {% endif %}
                                 </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    {% for line in results %}
-                        <p class="py-1">{{ line }}</p>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p>No votes were cast this season. The fan favorite was {{season.fan_favorites_no_vote}}.</p>
-            {% endif %}
-        {% endwith %}
+                            </thead>
+                            <tbody>
+                                {% load static %}
+                                {% get_static_prefix as STATIC_PREFIX %}
+                                {% for team in season.team_set.all %}
+                                    <tr>
+                                        <td>
+                                            {{team.name}}
+                                            <br />
+                                            (Team Captain {{team.captain}})
+                                        </td>
+                                        <td>
+                                            {% if team.fan_favorite_first %}
+                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_first.pic.name}}"
+                                                {% if team.fan_favorite_first.tribe != None %}
+                                                    style="border: 2px solid {{ team.fan_favorite_first.tribe.color }};"
+                                                {% endif %} class="mx-auto" />
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if team.fan_favorite_second %}
+                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_second.pic.name}}"
+                                                {% if team.fan_favorite_second.tribe != None %}
+                                                    style="border: 2px solid {{ team.fan_favorite_second.tribe.color }};"
+                                                {% endif %} class="mx-auto" />
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if team.fan_favorite_third %}
+                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_third.pic.name}}"
+                                                {% if team.fan_favorite_third.tribe != None %}
+                                                    style="border: 2px solid {{ team.fan_favorite_third.tribe.color }};"
+                                                {% endif %} class="mx-auto" />
+                                            {% endif %}
+                                        </td>
+                                        {% if season.rubric.fan_favorite_negative_votes %}
+                                        <td>
+                                            {% if team.fan_favorite_bad %}
+                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_bad.pic.name}}"
+                                                {% if team.fan_favorite_bad.tribe != None %}
+                                                    style="border: 2px solid {{ team.fan_favorite_bad.tribe.color }};"
+                                                {% endif %} class="mx-auto" />
+                                            {% endif %}
+                                        </td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% for line in results %}
+                            <p class="py-1">{{ line }}</p>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>No votes were cast this season. The fan favorite was {{season.fan_favorites_no_vote}}.</p>
+                {% endif %}
+            {% endwith %}
+        {% endif %}
+    {% else %}
+        <p>You are not a part of any season to vote in. Perhaps <a class="link" href="create_season">create a season?</a></p>     
     {% endif %}
 {% endblock %}

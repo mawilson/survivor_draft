@@ -104,14 +104,16 @@ class Season(models.Model):
         null=True,
     )
     season_close = models.DateField(
-        null=True
+        null=True, verbose_name="Season Close", blank=True, default=None
     )  # used to close the fan favorite & 'finalize' a season
-    season_open = models.DateField(null=True)  # used to close the predictions
+    season_open = models.DateField(
+        null=True, verbose_name="Season Open", blank=True, default=None
+    )  # used to close the predictions
     survivor_drafting = models.BooleanField(
-        default=False, null=False
+        default=False, null=False, verbose_name="Survivor Drafting"
     )  # used to allow drafting of survivors
     team_creation = models.BooleanField(
-        default=True, null=False
+        default=True, null=False, verbose_name="Team Creation"
     )  # used to allow creation of teams
     linked_seasons = models.ManyToManyField(  # type: ignore[var-annotated]
         "Season",  # trick the compiler into letting us reference a class not yet defined
@@ -123,6 +125,11 @@ class Season(models.Model):
     draft_marker = models.IntegerField(
         default=1,
         verbose_name="Number representing the spot in the draft, with 1 being the first draft & going up from there",
+    )
+    managed_season = models.BooleanField(
+        default=True,
+        null=False,
+        verbose_name="Managed Season: true if season is managed by a draft owner Team",
     )
 
     def __str__(self) -> str:
@@ -648,7 +655,7 @@ class Team(models.Model):
 
     draft_owner = models.BooleanField(
         default=False,
-        verbose_name="Whether this Team has administrative access to the draft & draft ordering",
+        verbose_name="Draft Owner: whether this Team has administrative access to the draft & draft ordering",
         null=False,
     )
 
@@ -791,7 +798,10 @@ class Team(models.Model):
 
     def __str__(self) -> str:
         """Returns a string representation of a Survivor Team"""
-        return f"Team name: {self.name}. Captain: '{self.captain}'"
+        if self.season:
+            return f"Team name: {self.name}. Captain: {self.captain}. Season: {self.season.name}."
+        else:
+            return f"Team name: {self.name}. Captain: {self.captain}."
 
     def points(self) -> int:
         """Returns the sum of all points earned by Survivors within this team"""

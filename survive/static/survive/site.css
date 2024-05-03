@@ -112,6 +112,10 @@
     @apply my-0.5;
 }
 
+.manage_season_form > * {
+    @apply my-0.5;
+}
+
 @media screen and (1150px < width) {
     .body_content {
         width: 50%;

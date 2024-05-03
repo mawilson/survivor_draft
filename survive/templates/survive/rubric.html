@@ -6,126 +6,131 @@
 {% block page_title %}Rubric{% endblock %}
 {% block content %}
     {% load model_extras %}
-    <table class="table_center table_bordered w-full">
-        <thead>
-            <tr>
-                <th>Criteria</th>
-                <th>Description</th>
-                <th>Value</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Winner</td>
-                <td>{{rubric|verbose_name:"winner" }}</td>
-                <td>{{rubric.winner}}</td>
-            </tr>
-            <tr>
-                <td>Finalist</td>
-                <td>{{rubric|verbose_name:"finalist" }}</td>
-                <td>{{rubric.finalist}}</td>
-            </tr>
-            <tr>
-                <td>Fan Favorite</td>
-                <td>{{rubric|verbose_name:"fan_favorite" }}</td>
-                <td>{{rubric.fan_favorite}}</td>
-            </tr>
-            <tr>
-                <td>Idols</td>
-                <td>{{rubric|verbose_name:"idols" }}</td>
-                <td>{{rubric.idols}}</td>
-            </tr>
-            <tr>
-                <td>Immunities</td>
-                <td>{{rubric|verbose_name:"immunities" }}</td>
-                <td>{{rubric.immunities}}</td>
-            </tr>
-            <tr>
-                <td>Confessionals</td>
-                <td>{{rubric|verbose_name:"confessionals" }}</td>
-                <td>{{rubric.confessionals}}</td>
-            </tr>
-            <tr>
-                <td>Jury Number</td>
-                <td>{{rubric|verbose_name:"jury_number" }}</td>
-                <td>{{rubric.jury_number}}</td>
-            </tr>
-            <tr>
-                <td>Pity Point</td>
-                <td>{{rubric|verbose_name:"pity_point" }}</td>
-                <td>{{rubric.pity_point}}</td>
-            </tr>
-            <tr>
-                <td>Idols Split Ties</td>
-                <td>{{rubric|verbose_name:"idols_tie_split" }}</td>
-                <td>
-                    {% if rubric.idols_tie_split == 1 %}
-                        True
-                    {% else %}
-                        False
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <td>Immunities Split Ties</td>
-                <td>{{rubric|verbose_name:"immunities_tie_split" }}</td>
-                <td>
-                    {% if rubric.immunities_tie_split == 1 %}
-                        True
-                    {% else %}
-                        False
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <td>Confessionals Split Ties</td>
-                <td>{{rubric|verbose_name:"confessionals_tie_split"}}</td>
-                <td>
-                    {% if rubric.confessionals_tie_split == 1 %}
-                        True
-                    {% else %}
-                        False
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <td>Fan Favorite Negative Votes</td>
-                <td>{{rubric|verbose_name:"fan_favorite_negative_votes" }}</td>
-                <td>
-                    {% if rubric.fan_favorite_negative_votes == 1 %}
-                        True
-                    {% else %}
-                        False
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <td>Fan Favorite Self Votes</td>
-                <td>{{rubric|verbose_name:"fan_favorite_self_votes" }}</td>
-                <td>
-                    {% if rubric.fan_favorite_self_votes == 1 %}
-                        True
-                    {% else %}
-                        False
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <td>Fan Favorite Share Votes</td>
-                <td>{{rubric|verbose_name:"fan_favorite_share_votes" }}</td>
-                <td>
-                    {% if rubric.fan_favorite_share_votes == 1 %}
-                        True
-                    {% else %}
-                        False
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <td>Seasons using this Rubric</td>
-                <td>The names of the seasons that are making use of this particular rubric.</td>
-                <td>{{ seasons_using_rubric }}</td>
-            </tr>
-        </tbody>
-    </table>
+
+    {% if seasons %}
+        <table class="table_center table_bordered w-full">
+            <thead>
+                <tr>
+                    <th>Criteria</th>
+                    <th>Description</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Winner</td>
+                    <td>{{rubric|verbose_name:"winner" }}</td>
+                    <td>{{rubric.winner}}</td>
+                </tr>
+                <tr>
+                    <td>Finalist</td>
+                    <td>{{rubric|verbose_name:"finalist" }}</td>
+                    <td>{{rubric.finalist}}</td>
+                </tr>
+                <tr>
+                    <td>Fan Favorite</td>
+                    <td>{{rubric|verbose_name:"fan_favorite" }}</td>
+                    <td>{{rubric.fan_favorite}}</td>
+                </tr>
+                <tr>
+                    <td>Idols</td>
+                    <td>{{rubric|verbose_name:"idols" }}</td>
+                    <td>{{rubric.idols}}</td>
+                </tr>
+                <tr>
+                    <td>Immunities</td>
+                    <td>{{rubric|verbose_name:"immunities" }}</td>
+                    <td>{{rubric.immunities}}</td>
+                </tr>
+                <tr>
+                    <td>Confessionals</td>
+                    <td>{{rubric|verbose_name:"confessionals" }}</td>
+                    <td>{{rubric.confessionals}}</td>
+                </tr>
+                <tr>
+                    <td>Jury Number</td>
+                    <td>{{rubric|verbose_name:"jury_number" }}</td>
+                    <td>{{rubric.jury_number}}</td>
+                </tr>
+                <tr>
+                    <td>Pity Point</td>
+                    <td>{{rubric|verbose_name:"pity_point" }}</td>
+                    <td>{{rubric.pity_point}}</td>
+                </tr>
+                <tr>
+                    <td>Idols Split Ties</td>
+                    <td>{{rubric|verbose_name:"idols_tie_split" }}</td>
+                    <td>
+                        {% if rubric.idols_tie_split == 1 %}
+                            True
+                        {% else %}
+                            False
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Immunities Split Ties</td>
+                    <td>{{rubric|verbose_name:"immunities_tie_split" }}</td>
+                    <td>
+                        {% if rubric.immunities_tie_split == 1 %}
+                            True
+                        {% else %}
+                            False
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Confessionals Split Ties</td>
+                    <td>{{rubric|verbose_name:"confessionals_tie_split"}}</td>
+                    <td>
+                        {% if rubric.confessionals_tie_split == 1 %}
+                            True
+                        {% else %}
+                            False
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Fan Favorite Negative Votes</td>
+                    <td>{{rubric|verbose_name:"fan_favorite_negative_votes" }}</td>
+                    <td>
+                        {% if rubric.fan_favorite_negative_votes == 1 %}
+                            True
+                        {% else %}
+                            False
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Fan Favorite Self Votes</td>
+                    <td>{{rubric|verbose_name:"fan_favorite_self_votes" }}</td>
+                    <td>
+                        {% if rubric.fan_favorite_self_votes == 1 %}
+                            True
+                        {% else %}
+                            False
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Fan Favorite Share Votes</td>
+                    <td>{{rubric|verbose_name:"fan_favorite_share_votes" }}</td>
+                    <td>
+                        {% if rubric.fan_favorite_share_votes == 1 %}
+                            True
+                        {% else %}
+                            False
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Seasons using this Rubric</td>
+                    <td>The names of the seasons that are making use of this particular rubric.</td>
+                    <td>{{ seasons_using_rubric }}</td>
+                </tr>
+            </tbody>
+        </table>
+    {% else %}
+        <p>You do not access to any seasons, & thus no seasons' rubrics. Perhaps <a class="link" href="create_season">create a season?</a></p>     
+    {% endif %}
 {% endblock %}

@@ -125,3 +125,19 @@ function profileTeamDelete(e) {
         return false;
     }
 }
+
+function manageSeasonTeamDelete(e) {
+    if (confirm("Are you sure you want to delete this team?")) {
+        e.parentElement.submit();
+    } else {
+        return false;
+    }
+}
+
+function manageSeasonSeasonDelete(e) {
+    if (confirm("Are you sure you want to delete this season?")) {
+        e.parentElement.submit();
+    } else {
+        return false;
+    }
+}
