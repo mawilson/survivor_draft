@@ -104,14 +104,16 @@ class Season(models.Model):
         null=True,
     )
     season_close = models.DateField(
-        null=True
+        null=True, verbose_name="Season Close", blank=True, default=None
     )  # used to close the fan favorite & 'finalize' a season
-    season_open = models.DateField(null=True)  # used to close the predictions
+    season_open = models.DateField(
+        null=True, verbose_name="Season Open", blank=True, default=None
+    )  # used to close the predictions
     survivor_drafting = models.BooleanField(
-        default=False, null=False
+        default=False, null=False, verbose_name="Survivor Drafting"
     )  # used to allow drafting of survivors
     team_creation = models.BooleanField(
-        default=True, null=False
+        default=True, null=False, verbose_name="Team Creation"
     )  # used to allow creation of teams
     linked_seasons = models.ManyToManyField(  # type: ignore[var-annotated]
         "Season",  # trick the compiler into letting us reference a class not yet defined
@@ -125,7 +127,9 @@ class Season(models.Model):
         verbose_name="Number representing the spot in the draft, with 1 being the first draft & going up from there",
     )
     managed_season = models.BooleanField(
-        default=True, null=False, verbose_name="Managed Season: true if season is managed by a draft owner Team"
+        default=True,
+        null=False,
+        verbose_name="Managed Season: true if season is managed by a draft owner Team",
     )
 
     def __str__(self) -> str:

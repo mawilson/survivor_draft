@@ -7,6 +7,7 @@ from survive.forms import (
     RegisterUserForm,
     TeamCreationForm,
     DraftEnabledForm,
+    SeasonManageForm,
 )
 from django.contrib.auth import authenticate, login
 from survive.models import Team, Survivor, Season, Rubric, User
@@ -21,6 +22,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 
+
 def season_selector_request(request):
     """Helper method to interact with cookies to get season ID & set seasons & season context"""
     """Returns a two element tuple: first the context dictionary with season & seasons set within it, second a new_season_id (None if not provided)"""
@@ -29,30 +31,40 @@ def season_selector_request(request):
     )  # if season id has been set before, get it & use it for context
     _seasons = Season.objects.all().order_by("name")
     seasons = []
-    if request.user.is_authenticated: # logged in users get their season list pared down to just what they have teams with, plus unmanaged seasons
+    if (
+        request.user.is_authenticated
+    ):  # logged in users get their season list pared down to just what they have teams with, plus unmanaged seasons
         for _season in _seasons:
             if not _season.managed_season:
                 seasons.append(_season)
             elif _season.team_set.filter(user__id=request.user.id):
                 seasons.append(_season)
-    else: # logged out users have no criteria to filter seasons off of, so just show them the whole list
+    else:  # logged out users have no criteria to filter seasons off of, so just show them the whole list
         seasons = _seasons
 
     context = {"seasons": seasons}
-    
+
     new_season_id = None
-    if seasons: # don't assign a season to display if the user doesn't have any seasons to begin with        
+    if (
+        seasons
+    ):  # don't assign a season to display if the user doesn't have any seasons to begin with
         if season_id:
-            for s in seasons: # look for season from cookie in available seasons &, if it's found, set it
+            for (
+                s
+            ) in (
+                seasons
+            ):  # look for season from cookie in available seasons &, if it's found, set it
                 if s.id == int(season_id):
                     context["season"] = s
                     break
-        
-        if "season" not in context: # if season_id cookie not present, or that season isn't available to this user, just use the first in the seasons array
-            context["season"] = (
-                seasons[0]
-            )
-            new_season_id = seasons[0].id # also set a new cookie now that the old one is invalid
+
+        if (
+            "season" not in context
+        ):  # if season_id cookie not present, or that season isn't available to this user, just use the first in the seasons array
+            context["season"] = seasons[0]
+            new_season_id = seasons[
+                0
+            ].id  # also set a new cookie now that the old one is invalid
 
         if request.method == "GET":
             new_season_id = request.GET.get("season_id")
@@ -75,7 +87,9 @@ def season_selector_response(response, new_season_id):
 
 def home(request):
     context, new_season_id = season_selector_request(request)
-    if not context["season"]: # if no season is present in context, none of the below means anything, early exit
+    if not context[
+        "season"
+    ]:  # if no season is present in context, none of the below means anything, early exit
         return render(request, "survive/home.html", context)
     team_creation_form = TeamCreationForm(
         request.POST or None, instance=Team(season=context["season"])
@@ -389,6 +403,7 @@ def fan_favorite(request):
             return response
     return render(request, "survive/fan_favorite_vote.html", context)
 
+
 def predictions(request):
     context, new_season_id = season_selector_request(request)
 
@@ -415,6 +430,7 @@ def predictions(request):
             season_selector_response(response, new_season_id)
             return response
     return render(request, "survive/predictions.html", context)
+
 
 def register(request):
     form = RegisterUserForm(request.POST or None)
@@ -452,6 +468,7 @@ def rubric(request):
         season_selector_response(response, new_season_id)
         return response
     return render(request, "survive/rubric.html", context)
+
 
 @staff_member_required  # should only be navigable from an admin page & with an admin user
 def survivor_season_associate(request):
@@ -500,12 +517,10 @@ def survivor_season_associate(request):
             reverse("admin:survive_survivor_changelist")
         )  # take us back to the Survivor admin page
 
-@login_required # cannot create a season without being logged in
+
+@login_required  # cannot create a season without being logged in
 def create_season(request):
-    context = {
-        "seasons": Season.objects.all(),
-        "rubrics": Rubric.objects.all() 
-    }
+    context = {"seasons": Season.objects.all(), "rubrics": Rubric.objects.all()}
 
     if request.method == "POST":
         season_id = request.POST.get("season_id")
@@ -514,13 +529,15 @@ def create_season(request):
         selected_rubric = get_object_or_404(Rubric, pk=rubric_id)
         selected_season = get_object_or_404(Season, pk=season_id)
         new_season = Season.objects.create(
-            name = season_name,
-            rubric = selected_rubric,
-            team_creation = False
+            name=season_name, rubric=selected_rubric, team_creation=False
         )
         new_season.save()
         new_season.linked_seasons.add(selected_season)
-        for survivor in selected_season.survivor_set.all(): # add new season to all survivors of selected_season
+        for (
+            survivor
+        ) in (
+            selected_season.survivor_set.all()
+        ):  # add new season to all survivors of selected_season
             survivor.season.add(new_season)
         for tribe in selected_season.tribe_set.all():
             tribe.season.add(new_season)
@@ -534,29 +551,53 @@ def create_season(request):
             new_team_name = user_full_name + " Team"
 
         new_team = Team.objects.create(
-            season = new_season,
-            captain = team_prefix,
-            user = request.user,
-            name = new_team_name,
-            draft_owner = True # make creater of the season an admin
+            season=new_season,
+            captain=team_prefix,
+            user=request.user,
+            name=new_team_name,
+            draft_owner=True,  # make creater of the season an admin
         )
         new_team.save()
         return redirect("manage_season")
 
     return render(request, "survive/create_season.html", context)
 
-@login_required # cannot manage a season without being logged in
+
+@login_required  # cannot manage a season without being logged in
 def manage_season(request):
     draft_owner_teams = request.user.team_set.filter(draft_owner=True)
     managed_seasons = []
-    for team in draft_owner_teams: # in order to manage a season, a user's team must first be a draft owner of it
-        if team.season.managed_season: # a managed season must also have the managed_season attribute set to True
+    for (
+        team
+    ) in (
+        draft_owner_teams
+    ):  # in order to manage a season, a user's team must first be a draft owner of it
+        if (
+            team.season.managed_season
+        ):  # a managed season must also have the managed_season attribute set to True
             managed_seasons.append(team.season)
-    
+
     context = {
         "managed_seasons": managed_seasons,
-        "errors": [] # list of errors from POSTs
+        "errors": [],  # list of errors from POSTs
     }
+
+    season_manage_id = None
+    if request.method == "GET":
+        _season_manage_id = request.GET.get("edit_season_id")
+        if _season_manage_id:
+            season_manage_id = int(_season_manage_id)
+    else:
+        _season_manage_id = request.POST.get("edit_season_id")
+        if _season_manage_id:
+            season_manage_id = int(_season_manage_id)
+    if season_manage_id:
+        season_manage_form = SeasonManageForm(
+            request.POST or None,
+            instance=get_object_or_404(Season, pk=season_manage_id),
+        )
+        context["season_manage_form"] = season_manage_form
+        context["season_manage_id"] = season_manage_id
 
     if request.method == "POST":
         invite_username = request.POST.get("user_invite")
@@ -564,23 +605,37 @@ def manage_season(request):
         delete_team_team_id = request.POST.get("delete_team_team_id")
         delete_season_season_id = request.POST.get("delete_season_season_id")
 
-        if invite_username:
+        if (
+            season_manage_id and season_manage_form
+        ):  # season manage ID was provided, therefore we're editing a season
+            if season_manage_form.is_valid():
+                season_manage_form.save()
+                return redirect("./")
+            else:
+                return render(request, "survive/manage_season.html", context)
+        elif invite_username:
             try:
                 user_to_invite = User.objects.get(username=invite_username)
             except User.DoesNotExist:
-                context["errors"].append(f"Cannot invite user {invite_username}, user matching this username not found.")
+                context["errors"].append(
+                    f"Cannot invite user {invite_username}, user matching this username not found."
+                )
                 return render(request, "survive/manage_season.html", context)
             season = get_object_or_404(Season, pk=user_invite_season_id)
 
             for team in season.team_set.all():
                 if team.user.username == invite_username:
-                    context["errors"].append(f"Cannot invite user {invite_username} to season {season.name}, team '{team.name}' owned by this user is already present.")
+                    context["errors"].append(
+                        f"Cannot invite user {invite_username} to season {season.name}, team '{team.name}' owned by this user is already present."
+                    )
                     return render(request, "survive/manage_season.html", context)
-                
+
             if season not in managed_seasons:
-                context["errors"].append(f"Cannot invite user {invite_username} to season {season.name}, your team is not a draft owner of this season, or this season is unmanaged.")
+                context["errors"].append(
+                    f"Cannot invite user {invite_username} to season {season.name}, your team is not a draft owner of this season, or this season is unmanaged."
+                )
                 return render(request, "survive/manage_season.html", context)
-                
+
             user_full_name = user_to_invite.get_full_name()
             if user_full_name == "":
                 team_prefix = user_to_invite.username
@@ -589,20 +644,27 @@ def manage_season(request):
                 team_prefix = user_full_name
                 new_team_name = user_full_name + " Team"
             new_team = Team(
-                season = season,
-                name = new_team_name,
-                captain = team_prefix,
-                user = user_to_invite
+                season=season,
+                name=new_team_name,
+                captain=team_prefix,
+                user=user_to_invite,
             )
             new_team.save()
         elif delete_team_team_id:
             team = get_object_or_404(Team, pk=delete_team_team_id)
             if team.season not in managed_seasons:
-                context["errors"].append(f"Cannot delete team from season {team.season.name}, your team is not a draft owner of this season, or this season is unmanaged.")
+                context["errors"].append(
+                    f"Cannot delete team from season {team.season.name}, your team is not a draft owner of this season, or this season is unmanaged."
+                )
                 return render(request, "survive/manage_season.html", context)
 
-            if team.user.id == request.user.id and len(team.season.team_set.filter(draft_owner=True)) <= 1:
-                context["errors"].append(f"Cannot delete team {team.name} from season {team.season.name}, season manager can't remove their own team from a season without at least one other team that is a draft manager present.")
+            if (
+                team.user.id == request.user.id
+                and len(team.season.team_set.filter(draft_owner=True)) <= 1
+            ):
+                context["errors"].append(
+                    f"Cannot delete team {team.name} from season {team.season.name}, season manager can't remove their own team from a season without at least one other team that is a draft manager present."
+                )
                 return render(request, "survive/manage_season.html", context)
 
             team.delete()
@@ -610,10 +672,16 @@ def manage_season(request):
         elif delete_season_season_id:
             season = get_object_or_404(Season, pk=delete_season_season_id)
             if season not in managed_seasons:
-                context["errors"].append(f"Cannot delete season {season.name}, your team is not a draft owner of this season, or this season is unmanaged.")
+                context["errors"].append(
+                    f"Cannot delete season {season.name}, your team is not a draft owner of this season, or this season is unmanaged."
+                )
                 return render(request, "survive/manage_season.html", context)
 
             season.delete()
             return redirect("./")
+    else:  # GET, check if we're editing a season
+        if season_manage_id:
+            context["season_manage_id"] = season_manage_id
+            context["season_manage_form"] = season_manage_form
 
     return render(request, "survive/manage_season.html", context)

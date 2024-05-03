@@ -876,6 +876,11 @@ h1 {
   margin-bottom: 0.125rem;
 }
 
+.manage_season_form > * {
+  margin-top: 0.125rem;
+  margin-bottom: 0.125rem;
+}
+
 @media screen and (1150px < width) {
   .body_content {
     width: 50%;

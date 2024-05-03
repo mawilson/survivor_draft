@@ -127,3 +127,13 @@ class DraftEnabledForm(forms.ModelForm):
                 attrs={"onchange": "this.form.submit();", "name": "survivor_drafting"}
             )
         }
+
+
+class SeasonManageForm(forms.ModelForm):
+    class Meta:
+        model = Season
+        fields = ("season_close", "season_open", "survivor_drafting", "team_creation")
+        widgets = {
+            "season_open": forms.TextInput(attrs={"placeholder": "2023-12-25"}),
+            "season_close": forms.TextInput(attrs={"placeholder": "2023-12-26"}),
+        }
