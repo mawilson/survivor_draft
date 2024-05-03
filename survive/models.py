@@ -125,7 +125,7 @@ class Season(models.Model):
         verbose_name="Number representing the spot in the draft, with 1 being the first draft & going up from there",
     )
     managed_season = models.BooleanField(
-        default=True, null=False, verbose_name="True if season is managed by a draft owner Team"
+        default=True, null=False, verbose_name="Managed Season: true if season is managed by a draft owner Team"
     )
 
     def __str__(self) -> str:
@@ -651,7 +651,7 @@ class Team(models.Model):
 
     draft_owner = models.BooleanField(
         default=False,
-        verbose_name="Whether this Team has administrative access to the draft & draft ordering",
+        verbose_name="Draft Owner: whether this Team has administrative access to the draft & draft ordering",
         null=False,
     )
 

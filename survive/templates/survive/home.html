@@ -165,7 +165,7 @@
                         name="linked_season_{{ team.season.id }}_team">
                             <td>
                                 {{ team.name }}
-                                {% if not team.user and team_associable %}
+                                {% if not team.user and team_associable and season.team_creation %}
                                     <form method="POST" class="margin_top">
                                         {% csrf_token %}
                                         <button type="submit">Claim this team</button>

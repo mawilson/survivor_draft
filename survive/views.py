@@ -496,7 +496,8 @@ def create_season(request):
         selected_season = get_object_or_404(Season, pk=season_id)
         new_season = Season.objects.create(
             name = season_name,
-            rubric = selected_rubric
+            rubric = selected_rubric,
+            team_creation = False
         )
         new_season.save()
         new_season.linked_seasons.add(selected_season)
@@ -546,8 +547,12 @@ def manage_season(request):
 
             for team in season.team_set.all():
                 if team.user.username == invite_username:
-                    context["errors"].append(f"Cannot invite user {invite_username} to season {season.id}, team '{team.name}' owned by this user is already present.")
+                    context["errors"].append(f"Cannot invite user {invite_username} to season {season.name}, team '{team.name}' owned by this user is already present.")
                     return render(request, "survive/manage_season.html", context)
+                
+            if season not in managed_seasons:
+                context["errors"].append(f"Cannot invite user {invite_username} to season {season.name}, your team is not a draft owner of this season, or this season is unmanaged.")
+                return render(request, "survive/manage_season.html", context)
                 
             user_full_name = user_to_invite.get_full_name()
             if user_full_name == "":
@@ -565,9 +570,21 @@ def manage_season(request):
             new_team.save()
         elif delete_team_team_id:
             team = get_object_or_404(Team, pk=delete_team_team_id)
+            if team.season not in managed_seasons:
+                context["errors"].append(f"Cannot delete team from season {team.season.name}, your team is not a draft owner of this season, or this season is unmanaged.")
+                return render(request, "survive/manage_season.html", context)
+
+            if team.season.team_set.filter(user__id=request.user.id) and len(team.season.team_set.filter(draft_owner=True)) <= 1:
+                context["errors"].append(f"Cannot delete team {team.name} from season {team.season.name}, season manager can't remove their own team from a season without at least one other team that is a draft manager present.")
+                return render(request, "survive/manage_season.html", context)
+
             team.delete()
         elif delete_season_season_id:
             season = get_object_or_404(Season, pk=delete_season_season_id)
+            if season not in managed_seasons:
+                context["errors"].append(f"Cannot delete season {season.name}, your team is not a draft owner of this season, or this season is unmanaged.")
+                return render(request, "survive/manage_season.html", context)
+
             season.delete()
             return redirect("./")
 
