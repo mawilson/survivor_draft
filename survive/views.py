@@ -21,33 +21,47 @@ from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 
-
 def season_selector_request(request):
     """Helper method to interact with cookies to get season ID & set seasons & season context"""
     """Returns a two element tuple: first the context dictionary with season & seasons set within it, second a new_season_id (None if not provided)"""
     season_id = request.COOKIES.get(
         "season_id"
     )  # if season id has been set before, get it & use it for context
-    context = {"seasons": Season.objects.all().order_by("name")}
-    try:
-        if season_id:
-            context["season"] = Season.objects.get(id=season_id)
-        else:
-            context["season"] = (
-                Season.objects.first()
-            )  # just use the first Season in the DB, if it exists
-    except ObjectDoesNotExist:
-        context["season"] = (
-            Season.objects.first()
-        )  # just use the first Season in the DB, if it exists
+    _seasons = Season.objects.all().order_by("name")
+    seasons = []
+    if request.user.is_authenticated: # logged in users get their season list pared down to just what they have teams with, plus unmanaged seasons
+        for _season in _seasons:
+            if not _season.managed_season:
+                seasons.append(_season)
+            elif _season.team_set.filter(user__id=request.user.id):
+                seasons.append(_season)
+    else: # logged out users have no criteria to filter seasons off of, so just show them the whole list
+        seasons = _seasons
 
+    context = {"seasons": seasons}
+    
     new_season_id = None
-    if request.method == "GET":
-        new_season_id = request.GET.get("season_id")
-        if (
-            new_season_id
-        ):  # if new_season_id is present, it was provided via the Season selector, update cookie for it & the context
-            context["season"] = Season.objects.get(id=new_season_id)
+    if seasons: # don't assign a season to display if the user doesn't have any seasons to begin with        
+        if season_id:
+            for s in seasons: # look for season from cookie in available seasons &, if it's found, set it
+                if s.id == int(season_id):
+                    context["season"] = s
+                    break
+        
+        if "season" not in context: # if season_id cookie not present, or that season isn't available to this user, just use the first in the seasons array
+            context["season"] = (
+                seasons[0]
+            )
+            new_season_id = seasons[0].id # also set a new cookie now that the old one is invalid
+
+        if request.method == "GET":
+            new_season_id = request.GET.get("season_id")
+            if (
+                new_season_id
+            ):  # if new_season_id is present, it was provided via the Season selector, update cookie for it & the context
+                context["season"] = Season.objects.get(id=new_season_id)
+    else:
+        context["season"] = None
 
     return context, new_season_id
 
@@ -61,6 +75,8 @@ def season_selector_response(response, new_season_id):
 
 def home(request):
     context, new_season_id = season_selector_request(request)
+    if not context["season"]: # if no season is present in context, none of the below means anything, early exit
+        return render(request, "survive/home.html", context)
     team_creation_form = TeamCreationForm(
         request.POST or None, instance=Team(season=context["season"])
     )
@@ -346,57 +362,59 @@ def profile(request):
 def fan_favorite(request):
     context, new_season_id = season_selector_request(request)
 
-    if (
-        request.user.is_authenticated
-    ):  # if logged in, allow user to choose from teams that the User is associated with in that season
-        teams = context["season"].team_set.filter(user_id=request.user.id)
-        team = teams.first()
-        context["form"] = FanFavoriteForm(request.POST or None, instance=team)
-        context["team"] = team
-    # if not logged in, cannot vote
+    if context["season"]:
+        if (
+            request.user.is_authenticated
+        ):  # if logged in, allow user to choose from teams that the User is associated with in that season
+            teams = context["season"].team_set.filter(user_id=request.user.id)
+            team = teams.first()
+            context["form"] = FanFavoriteForm(request.POST or None, instance=team)
+            context["team"] = team
+        # if not logged in, cannot vote
 
-    if request.method == "POST":
-        form = context["form"]
-        if form.is_valid():
-            form.save(commit=True)
-            team.season.fan_favorites(
-                save=True
-            )  # will evaluate all votes & assign Survivors accordingly
-            return redirect("/")  # after submitting, return to home page
+        if request.method == "POST":
+            form = context["form"]
+            if form.is_valid():
+                form.save(commit=True)
+                team.season.fan_favorites(
+                    save=True
+                )  # will evaluate all votes & assign Survivors accordingly
+                return redirect("/")  # after submitting, return to home page
+            else:
+                context.update({"form": form})
+                return render(request, "survive/fan_favorite_vote.html", context)
         else:
-            context.update({"form": form})
-            return render(request, "survive/fan_favorite_vote.html", context)
-    else:
-        response = render(request, "survive/fan_favorite_vote.html", context)
-        season_selector_response(response, new_season_id)
-        return response
-
+            response = render(request, "survive/fan_favorite_vote.html", context)
+            season_selector_response(response, new_season_id)
+            return response
+    return render(request, "survive/fan_favorite_vote.html", context)
 
 def predictions(request):
     context, new_season_id = season_selector_request(request)
 
-    if (
-        request.user.is_authenticated
-    ):  # if logged in, allow user to choose from teams that the User is associated with in that season
-        teams = context["season"].team_set.filter(user_id=request.user.id)
-        team = teams.first()
-        context["form"] = PredictionForm(request.POST or None, instance=team)
-        context["team"] = team
-    # if not logged in, cannot predict
+    if context["season"]:
+        if (
+            request.user.is_authenticated
+        ):  # if logged in, allow user to choose from teams that the User is associated with in that season
+            teams = context["season"].team_set.filter(user_id=request.user.id)
+            team = teams.first()
+            context["form"] = PredictionForm(request.POST or None, instance=team)
+            context["team"] = team
+        # if not logged in, cannot predict
 
-    if request.method == "POST":
-        form = context["form"]
-        if form.is_valid():
-            form.save(commit=True)
-            return redirect("/")  # after submitting, return to home page
+        if request.method == "POST":
+            form = context["form"]
+            if form.is_valid():
+                form.save(commit=True)
+                return redirect("/")  # after submitting, return to home page
+            else:
+                context.update({"form": form})
+                return render(request, "survive/predictions.html", context)
         else:
-            context.update({"form": form})
-            return render(request, "survive/predictions.html", context)
-    else:
-        response = render(request, "survive/predictions.html", context)
-        season_selector_response(response, new_season_id)
-        return response
-
+            response = render(request, "survive/predictions.html", context)
+            season_selector_response(response, new_season_id)
+            return response
+    return render(request, "survive/predictions.html", context)
 
 def register(request):
     form = RegisterUserForm(request.POST or None)
@@ -422,17 +440,18 @@ def register(request):
 
 def rubric(request):
     context, new_season_id = season_selector_request(request)
-    rubric = context["season"].rubric
-    context["rubric"] = rubric
-    seasons_using_rubric = rubric.season_set.all()
-    context["seasons_using_rubric"] = ", ".join(
-        sorted(season.name for season in seasons_using_rubric)
-    )
+    if context["season"]:
+        rubric = context["season"].rubric
+        context["rubric"] = rubric
+        seasons_using_rubric = rubric.season_set.all()
+        context["seasons_using_rubric"] = ", ".join(
+            sorted(season.name for season in seasons_using_rubric)
+        )
 
-    response = render(request, "survive/rubric.html", context)
-    season_selector_response(response, new_season_id)
-    return response
-
+        response = render(request, "survive/rubric.html", context)
+        season_selector_response(response, new_season_id)
+        return response
+    return render(request, "survive/rubric.html", context)
 
 @staff_member_required  # should only be navigable from an admin page & with an admin user
 def survivor_season_associate(request):
@@ -506,11 +525,19 @@ def create_season(request):
         for tribe in selected_season.tribe_set.all():
             tribe.season.add(new_season)
 
+        user_full_name = request.user.get_full_name()
+        if user_full_name == "":
+            team_prefix = request.user.username
+            new_team_name = request.user.username + " Team"
+        else:
+            team_prefix = user_full_name
+            new_team_name = user_full_name + " Team"
+
         new_team = Team.objects.create(
             season = new_season,
-            captain = request.user.get_full_name(),
+            captain = team_prefix,
             user = request.user,
-            name = f"{request.user.get_full_name()} Team",
+            name = new_team_name,
             draft_owner = True # make creater of the season an admin
         )
         new_team.save()
@@ -574,11 +601,12 @@ def manage_season(request):
                 context["errors"].append(f"Cannot delete team from season {team.season.name}, your team is not a draft owner of this season, or this season is unmanaged.")
                 return render(request, "survive/manage_season.html", context)
 
-            if team.season.team_set.filter(user__id=request.user.id) and len(team.season.team_set.filter(draft_owner=True)) <= 1:
+            if team.user.id == request.user.id and len(team.season.team_set.filter(draft_owner=True)) <= 1:
                 context["errors"].append(f"Cannot delete team {team.name} from season {team.season.name}, season manager can't remove their own team from a season without at least one other team that is a draft manager present.")
                 return render(request, "survive/manage_season.html", context)
 
             team.delete()
+            return redirect("./")
         elif delete_season_season_id:
             season = get_object_or_404(Season, pk=delete_season_season_id)
             if season not in managed_seasons:

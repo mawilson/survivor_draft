@@ -7,82 +7,87 @@
 {% block content %}
     {% load static %}
     {% get_static_prefix as STATIC_PREFIX %}
-    {% if not season.season_open %}
-        <p class="table_center fan_favorite_form">This season does not have an opening date, so I can't tell if predictions are still valid.</p>
-    {% elif not season.is_season_open %}
-        {% if team %}
-            <form class="table_center fan_favorite_form" method="POST">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit">Vote!</button>
-            </form>
-        {% else %}
-            {% if not season.team_set.all %}
-                <p class="table_center fan_favorite_form">No teams were found in this season. Can't have a prediction without a team to associate it with!</p>
-            {% elif request.user.is_authenticated %}
-                <p class="table_center fan_favorite_form">No teams associated with your user were found in this season. Try claiming a team from this season first!</p>
+
+    {% if seasons %}
+        {% if not season.season_open %}
+            <p class="table_center fan_favorite_form">This season does not have an opening date, so I can't tell if predictions are still valid.</p>
+        {% elif not season.is_season_open %}
+            {% if team %}
+                <form class="table_center fan_favorite_form" method="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit">Vote!</button>
+                </form>
             {% else %}
-                <p class="table_center fan_favorite_form">Logged out users cannot predict.</p>
+                {% if not season.team_set.all %}
+                    <p class="table_center fan_favorite_form">No teams were found in this season. Can't have a prediction without a team to associate it with!</p>
+                {% elif request.user.is_authenticated %}
+                    <p class="table_center fan_favorite_form">No teams associated with your user were found in this season. Try claiming a team from this season first!</p>
+                {% else %}
+                    <p class="table_center fan_favorite_form">Logged out users cannot predict.</p>
+                {% endif %}
             {% endif %}
+        {% else %}
+            {% with results=season.predictions_display %}
+                {% if results|length > 0 %}
+                    <div class="fan_favorite_results">
+                        <p>This season opened on {{season.season_open}}. Here are the predictions!</p>
+
+                        <table class="table_center table_bordered w-full">
+                            <thead>
+                                <tr>
+                                    <th>Team</th>
+                                    <th>First</th>
+                                    <th>Second</th>
+                                    <th>Third</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for team in season.team_set.all %}
+                                    <tr>
+                                        <td>
+                                            {{team.name}}
+                                            <br />
+                                            (Team Captain {{team.captain}})
+                                        </td>
+                                        <td>
+                                            {% if team.prediction_first %}
+                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.prediction_first.pic.name}}"
+                                                    {% if team.prediction_first.tribe != None %}
+                                                        style="border: 2px solid {{ team.prediction_first.tribe.color }};"
+                                                    {% endif %} class="mx-auto" />
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if team.prediction_second %}
+                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.prediction_second.pic.name}}"
+                                                {% if team.prediction_second.tribe != None %}
+                                                    style="border: 2px solid {{ team.prediction_second.tribe.color }};"
+                                                {% endif %} class="mx-auto" />
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if team.prediction_third %}
+                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.prediction_third.pic.name}}"
+                                                {% if team.prediction_third.tribe != None %}
+                                                    style="border: 2px solid {{ team.prediction_third.tribe.color }};"
+                                                {% endif %} class="mx-auto" />
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% for line in results %}
+                            <p>{{ line }}</p>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>No predictions were made this season.</p>
+                {% endif %}
+            {% endwith %}
         {% endif %}
     {% else %}
-        {% with results=season.predictions_display %}
-            {% if results|length > 0 %}
-                <div class="fan_favorite_results">
-                    <p>This season opened on {{season.season_open}}. Here are the predictions!</p>
-
-                    <table class="table_center table_bordered w-full">
-                        <thead>
-                            <tr>
-                                <th>Team</th>
-                                <th>First</th>
-                                <th>Second</th>
-                                <th>Third</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for team in season.team_set.all %}
-                                <tr>
-                                    <td>
-                                        {{team.name}}
-                                        <br />
-                                        (Team Captain {{team.captain}})
-                                    </td>
-                                    <td>
-                                        {% if team.prediction_first %}
-                                            <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.prediction_first.pic.name}}"
-                                                {% if team.prediction_first.tribe != None %}
-                                                    style="border: 2px solid {{ team.prediction_first.tribe.color }};"
-                                                {% endif %} class="mx-auto" />
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if team.prediction_second %}
-                                            <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.prediction_second.pic.name}}"
-                                            {% if team.prediction_second.tribe != None %}
-                                                style="border: 2px solid {{ team.prediction_second.tribe.color }};"
-                                            {% endif %} class="mx-auto" />
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if team.prediction_third %}
-                                            <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.prediction_third.pic.name}}"
-                                            {% if team.prediction_third.tribe != None %}
-                                                style="border: 2px solid {{ team.prediction_third.tribe.color }};"
-                                            {% endif %} class="mx-auto" />
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    {% for line in results %}
-                        <p>{{ line }}</p>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p>No predictions were made this season.</p>
-            {% endif %}
-        {% endwith %}
+        <p>You are not a part of any season to make predictions for. Perhaps <a class="link" href="create_season">create a season?</a></p>     
     {% endif %}
 {% endblock %}

@@ -37,7 +37,7 @@
                             <tbody>
                                 {% for team in season.team_set.all %}
                                     <tr>
-                                        <td>{{team.user.get_full_name}}</td>
+                                        <td>{{team.user.username}}</td>
                                         <td>{{team.captain}}</td>
                                         <td>{{team.name}}</td>
                                         <td>
