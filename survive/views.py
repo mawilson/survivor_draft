@@ -308,7 +308,7 @@ def profile(request):
         request.user.is_authenticated
     ):  # process a POST to disassociate the profile from a team
         user_profile_form = UserProfileForm(request.POST or None, instance=request.user)
-        context = {"form": user_profile_form}
+        context = {"form": user_profile_form, "team_errors": []}
 
         if request.method == "GET":
             edit_team_id = request.GET.get(
@@ -335,11 +335,26 @@ def profile(request):
                     return redirect("./")
                 else:
                     return render(request, "survive/profile.html", context)
-            elif team_id_delete is not None:
-                Team.objects.filter(pk=team_id_delete).delete()
-                return redirect(
-                    "./"
-                )  # after submitting, redirect to profile page to refresh
+            elif (
+                team_id_delete is not None
+            ):  # team_id_delete was provided, therefore we are deleting a team
+                team = Team.objects.filter(pk=team_id_delete)
+
+                if (
+                    team
+                    and team.first().draft_owner
+                    and team.first().user.id == request.user.id
+                    and len(team.first().season.team_set.filter(draft_owner=True)) <= 1
+                ):
+                    context["team_errors"].append(
+                        f"Cannot delete team {team.first().name} from season {team.first().season.name}, season manager can't remove their own team from a season without at least one other team that is a draft manager present."
+                    )
+                    return render(request, "survive/profile.html", context)
+                else:
+                    team.delete()
+                    return redirect(
+                        "./"
+                    )  # after submitting, redirect to profile page to refresh
             elif (
                 team_id is None
             ):  # team_id was not provided, therefore this is a profile field modification
@@ -351,11 +366,21 @@ def profile(request):
                     return render(request, "survive/profile.html", context)
             else:  # team_id was provided, therefore this is a team disassociation action
                 team = get_object_or_404(Team, pk=team_id)
-                team.user = None
-                team.save()
-                return redirect(
-                    "./"
-                )  # after submitting, redirect to profile page to refresh
+                if (
+                    team.user.id == request.user.id
+                    and team.draft_owner
+                    and len(team.season.team_set.filter(draft_owner=True)) <= 1
+                ):
+                    context["team_errors"].append(
+                        f"Cannot release team {team.name} from season {team.season.name}, season manager can't release their own team from a season without at least one other team that is a draft manager present."
+                    )
+                    return render(request, "survive/profile.html", context)
+                else:
+                    team.user = None
+                    team.save()
+                    return redirect(
+                        "./"
+                    )  # after submitting, redirect to profile page to refresh
         else:
             if (
                 request.GET.get("edit") == "True"

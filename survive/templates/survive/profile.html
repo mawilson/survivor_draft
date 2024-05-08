@@ -58,6 +58,11 @@
             </button>
         {% endif %}
         {% with teams=request.user.team_set.all %}
+            {% if team_errors %}
+                {% for error in team_errors %}
+                    <p class="errorlist">{{error}}</p>
+                {% endfor %}
+            {% endif %}
             {% if teams %}
                 <h2>Associated Teams</h2>
                 <table class="table_center table_bordered">
