@@ -25,14 +25,30 @@ from django.core.exceptions import ObjectDoesNotExist
 
 def season_selector_request(request):
     """Helper method to interact with cookies to get season ID & set seasons & season context"""
-    """Returns a two element tuple: first the context dictionary with season & seasons set within it, second a new_season_id (None if not provided)"""
+    """Returns a three element tuple: first the context dictionary with season & seasons set within it, second a new_season_id (None if not provided), third a new season_filter if provided"""
     season_id = request.COOKIES.get(
         "season_id"
     )  # if season id has been set before, get it & use it for context
     _seasons = Season.objects.all().order_by("name")
+    season_filter_cookie = (
+        False if request.COOKIES.get("season_filter") == "False" else True
+    )
+
+    if (
+        "season_id" in request.GET
+    ):  # if season_id was provided, the season selector form was submitted. Can't rely on season_filter being provided, because checkbox won't provide it if it's unchecked
+        season_filter_get = False if request.GET.get("season_filter") == None else True
+        season_filter = season_filter_get
+        new_season_filter = (
+            True if season_filter_get != season_filter_cookie else False
+        )  # because we used the GET value, we need to set a new cookie value only if it differs from the old one
+    else:  # if season_id was not provided, the form was not submitted. Use cookie if we have it. Will default to True if cookie not set yet.
+        season_filter = season_filter_cookie
+        new_season_filter = False  # if we used the cookie value, whether set or not, we don't need to set a new cookie value
+
     seasons = []
     if (
-        request.user.is_authenticated
+        request.user.is_authenticated and season_filter
     ):  # logged in users get their season list pared down to just what they have teams with, plus unmanaged seasons
         for _season in _seasons:
             if not _season.managed_season:
@@ -42,7 +58,7 @@ def season_selector_request(request):
     else:  # logged out users have no criteria to filter seasons off of, so just show them the whole list
         seasons = _seasons
 
-    context = {"seasons": seasons}
+    context = {"seasons": seasons, "season_filter": season_filter}
 
     new_season_id = None
     if (
@@ -75,18 +91,27 @@ def season_selector_request(request):
     else:
         context["season"] = None
 
-    return context, new_season_id
+    if new_season_filter:
+        return context, new_season_id, season_filter
+    else:
+        return context, new_season_id, None
 
 
-def season_selector_response(response, new_season_id):
+def season_selector_response(response, new_season_id, new_season_filter):
     """Helper function to interact with cookies to set season ID cookie if a new one has been provided"""
+    age = None
     if new_season_id:
         age = 30 * 60 * 24 * 365  # half of a year lifetime
         response.set_cookie("season_id", new_season_id, samesite="Lax", max_age=age)
+    if new_season_filter != None:
+        age = 30 * 60 * 24 * 365 if age == None else age  # half of a year lifetime
+        response.set_cookie(
+            "season_filter", new_season_filter, samesite="Lax", max_age=age
+        )
 
 
 def home(request):
-    context, new_season_id = season_selector_request(request)
+    context, new_season_id, new_season_filter = season_selector_request(request)
     if not context[
         "season"
     ]:  # if no season is present in context, none of the below means anything, early exit
@@ -275,7 +300,7 @@ def home(request):
                 return render(request, "survive/home.html", context)
 
     response = render(request, "survive/home.html", context)
-    season_selector_response(response, new_season_id)
+    season_selector_response(response, new_season_id, new_season_filter)
     return response
 
 
@@ -399,7 +424,7 @@ def profile(request):
 
 
 def fan_favorite(request):
-    context, new_season_id = season_selector_request(request)
+    context, new_season_id, new_season_filter = season_selector_request(request)
 
     if context["season"]:
         if (
@@ -424,13 +449,13 @@ def fan_favorite(request):
                 return render(request, "survive/fan_favorite_vote.html", context)
         else:
             response = render(request, "survive/fan_favorite_vote.html", context)
-            season_selector_response(response, new_season_id)
+            season_selector_response(response, new_season_id, new_season_filter)
             return response
     return render(request, "survive/fan_favorite_vote.html", context)
 
 
 def predictions(request):
-    context, new_season_id = season_selector_request(request)
+    context, new_season_id, new_season_filter = season_selector_request(request)
 
     if context["season"]:
         if (
@@ -452,7 +477,7 @@ def predictions(request):
                 return render(request, "survive/predictions.html", context)
         else:
             response = render(request, "survive/predictions.html", context)
-            season_selector_response(response, new_season_id)
+            season_selector_response(response, new_season_id, new_season_filter)
             return response
     return render(request, "survive/predictions.html", context)
 
@@ -480,7 +505,7 @@ def register(request):
 
 
 def rubric(request):
-    context, new_season_id = season_selector_request(request)
+    context, new_season_id, new_season_filter = season_selector_request(request)
     if context["season"]:
         rubric = context["season"].rubric
         context["rubric"] = rubric
@@ -490,7 +515,7 @@ def rubric(request):
         )
 
         response = render(request, "survive/rubric.html", context)
-        season_selector_response(response, new_season_id)
+        season_selector_response(response, new_season_id, new_season_filter)
         return response
     return render(request, "survive/rubric.html", context)
 
