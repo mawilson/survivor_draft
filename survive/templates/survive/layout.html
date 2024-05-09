@@ -71,9 +71,11 @@
                         <option value="{{ s.id }}" {% if season.id is s.id %}selected{% endif %}>{{s.name}}</option>
                     {% endfor %}
                 </select>
-                <br />
-                <input id="id_season_filter" type="checkbox" name="season_filter" onchange="this.form.submit()" {% if season_filter %}checked{% endif %} />
-                <label for="id_season_filter">List only participating seasons</label>
+                {% if user.is_authenticated %}
+                    <br />
+                    <input id="id_season_filter" type="checkbox" name="season_filter" onchange="this.form.submit()" {% if season_filter %}checked{% endif %} />
+                    <label for="id_season_filter">List only participating seasons</label>
+                {% endif %}
             </form>
             {% endif %}
         {% endblock %}
