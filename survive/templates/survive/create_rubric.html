@@ -1,0 +1,17 @@
+{% extends "survive/layout.html" %}
+{% block title %}
+    Create a Rubric
+{% endblock %}
+{% block navbar_create_rubric %}<a href="{% url 'create_rubric' %}" class="navbar_current">Create Rubric</a>{% endblock %}
+{% block season_selector %}{% endblock %}
+{% block page_title %}Create a Rubric{% endblock %}
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset>
+            {{form.as_p}}  
+        </fieldset>
+
+        <button type="submit">Create a rubric</button>
+    </form>
+{% endblock %}

@@ -8,6 +8,7 @@ from survive.forms import (
     TeamCreationForm,
     DraftEnabledForm,
     SeasonManageForm,
+    RubricCreateForm
 )
 from django.contrib.auth import authenticate, login
 from survive.models import Team, Survivor, Season, Rubric, User
@@ -735,3 +736,19 @@ def manage_season(request):
             context["season_manage_form"] = season_manage_form
 
     return render(request, "survive/manage_season.html", context)
+
+@login_required # cannot create a rubric without being logged in
+def create_rubric(request):
+    form = RubricCreateForm(request.POST or None)
+    context = {"form": form}
+
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            return redirect(
+                "/"
+            )  # after submitting, redirect to home page to refresh
+        else:
+            return render(request, "survive/create_rubric.html", context)
+
+    return render(request, "survive/create_rubric.html", context)

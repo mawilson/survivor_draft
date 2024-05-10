@@ -12,6 +12,7 @@ urlpatterns = [
     path("rubric/", views.rubric, name="rubric"),
     path("create_season/", views.create_season, name="create_season"),
     path("manage_season/", views.manage_season, name="manage_season"),
+    path("create_rubric/", views.create_rubric, name="create_rubric"),
     # admin paths
     path(
         "admin/survivor_season_associate",
