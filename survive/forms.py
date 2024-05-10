@@ -128,14 +128,30 @@ class DraftEnabledForm(forms.ModelForm):
             )
         }
 
+class RubricSelect(forms.Select):
+    def create_option(
+            self, name, value, label, selected, index, subindex=None, attrs=None
+    ):
+        
+        if isinstance(value, str):
+            option = super().create_option(
+                name, value, label, selected, index, subindex, attrs
+            )
+        else:
+            option = super().create_option(
+                name, value, value.instance.name, selected, index, subindex, attrs
+            ) 
+
+        return option
 
 class SeasonManageForm(forms.ModelForm):
     class Meta:
         model = Season
-        fields = ("season_close", "season_open", "survivor_drafting", "team_creation")
+        fields = ("rubric", "season_close", "season_open", "survivor_drafting", "team_creation")
         widgets = {
             "season_open": forms.TextInput(attrs={"placeholder": "2023-12-25"}),
             "season_close": forms.TextInput(attrs={"placeholder": "2023-12-26"}),
+            "rubric": RubricSelect
         }
 
 class RubricCreateForm(forms.ModelForm):

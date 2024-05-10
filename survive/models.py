@@ -109,6 +109,7 @@ class Season(models.Model):
         Rubric,
         on_delete=models.SET_NULL,  # If a Rubric goes, adjust season rubric to the default
         null=True,
+        verbose_name = "Rubric"
     )
     season_close = models.DateField(
         null=True, verbose_name="Season Close", blank=True, default=None

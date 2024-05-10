@@ -77,6 +77,9 @@
                         {% if season_manage_form and season_manage_id == season.id %}
                             <form method="POST" class="manage_season_form">
                                 {% csrf_token %}
+                                {{season_manage_form.rubric.label_tag}}
+                                {{season_manage_form.rubric}}
+                                <br />
                                 {{season_manage_form.season_open.errors}}
                                 {{season_manage_form.season_open.label_tag}}
                                 {{season_manage_form.season_open}}
@@ -94,6 +97,8 @@
                                 <input type="hidden" name="edit_season_id" value="{{season.id}}" />
                             </form>
                         {% else %}
+                            <p>{{season|verbose_name:"rubric" }}: 
+                                {{season.rubric.name}}</p>
                             <p>{{season|verbose_name:"season_open" }}: 
                                 {{season.season_open}}</p>
                             <p>{{season|verbose_name:"season_close" }}:
