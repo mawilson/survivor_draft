@@ -21,8 +21,6 @@ COPY . /app
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
-# run any database migrations necessary
-RUN python manage.py migrate
 # collect static files
 RUN python manage.py collectstatic --no-input
 
