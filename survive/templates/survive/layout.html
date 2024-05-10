@@ -26,6 +26,7 @@
                     <td class="float-left">
                         {% block navbar_rubric %}<a href="{% url 'rubric' %}" class="navbar_item">Rubrics</a>{% endblock %}
                     </td>
+                    {% if user.is_authenticated %}
                     <td class="float-left">
                         {% block navbar_create_season %}<a href="{% url 'create_season' %}" class="navbar_item">Create Season</a>{% endblock %}
                     </td>
@@ -35,6 +36,7 @@
                     <td class="float-left">
                         {% block navbar_create_rubric %}<a href="{% url 'create_rubric' %}" class="navbar_item">Create Rubric</a>{% endblock %}
                     </td>
+                    {% endif %}
                     <td class="float-right">
                         {% block navbar_login %}
                             {% if request.user.is_authenticated %}
@@ -47,11 +49,13 @@
                             {% endif %}
                         {% endblock %}
                     </td>
+                    {% if user.is_authenticated %}
                     <td class="float-right">
                         {% block navbar_profile %}<a href="{% url 'profile' %}" class="navbar_item">
                             {% if request.user.is_authenticated %}{{ user.username }}{% else %}Profile{% endif %}
                         </a>{% endblock %}
                     </td>
+                    {% endif %}
                 </tr>
             </table>
             <div class="float-right survivor_blue p-1">
