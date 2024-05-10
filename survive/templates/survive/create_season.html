@@ -24,7 +24,7 @@
             <label for="rubric_id">Rubric to use</label>
             <select id="rubric_id" name="rubric_id">
                 {% for rubric in rubrics %}
-                    <option value="{{rubric.id}}">Rubric ID: {{rubric.id}}. {{rubric}}</option>
+                    <option value="{{rubric.id}}">{{rubric}}</option>
                 {% endfor %}
             </select>   
         </fieldset>

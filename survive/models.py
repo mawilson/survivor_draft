@@ -10,6 +10,13 @@ from django.contrib.auth.models import User
 
 
 class Rubric(models.Model):
+    name = models.CharField(
+        blank=False,
+        null=False,
+        default="Rubric",
+        verbose_name="A name to identify this rubric by.",
+        max_length=100
+    )
     # following two fields have to do with scoring for the most idols & whether to split points on ties
     idols = models.IntegerField(
         default=2,
@@ -42,7 +49,7 @@ class Rubric(models.Model):
     confessionals_tie_split = models.BooleanField(
         default=True,
         null=False,
-        verbose_name="Whether ties in most confessionals split points. True means points are split, False means each survivor is rewarded the maximum value",
+        verbose_name="Whether ties in most confessionals split points. True means points are split, False means each survivor is rewarded the maximum value.",
     )
 
     jury_number = models.IntegerField(
@@ -75,7 +82,7 @@ class Rubric(models.Model):
     fan_favorite_share_votes = models.BooleanField(
         default=True,
         null=False,
-        verbose_name="Whether fan favorite vote for this season includes all linked seasons' votes, or just its own",
+        verbose_name="Whether fan favorite vote for this season includes all linked seasons' votes, or just its own. True includes linked season votes, False does not.",
     )
 
     finalist = models.IntegerField(
@@ -91,7 +98,7 @@ class Rubric(models.Model):
 
     def __str__(self) -> str:
         """Returns a string representation of the scoring rubric."""
-        return f"Most idols: {self.idols} pts; Number on jury: {self.jury_number} pts; Fan favorite: {self.fan_favorite} pts; Winner: {self.winner} pts."
+        return f"Name: {self.name}; Most idols: {self.idols}; Number on jury: {self.jury_number}; Fan favorite: {self.fan_favorite}; Winner: {self.winner}..."
 
 
 class Season(models.Model):

@@ -1,5 +1,5 @@
 from django import forms
-from survive.models import Team, Season, Survivor, User
+from survive.models import Team, Season, Survivor, User, Rubric
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import UserCreationForm
 
@@ -137,3 +137,8 @@ class SeasonManageForm(forms.ModelForm):
             "season_open": forms.TextInput(attrs={"placeholder": "2023-12-25"}),
             "season_close": forms.TextInput(attrs={"placeholder": "2023-12-26"}),
         }
+
+class RubricCreateForm(forms.ModelForm):
+    class Meta:
+        model = Rubric
+        fields = ("name", "idols", "idols_tie_split", "immunities", "immunities_tie_split", "confessionals", "confessionals_tie_split", "jury_number", "pity_point", "fan_favorite", "fan_favorite_self_votes", "fan_favorite_negative_votes", "fan_favorite_share_votes", "finalist", "winner")
