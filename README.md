@@ -16,6 +16,9 @@ The project comes with a Docker compose.yaml file for running a multi-container 
 3. Configure .env file (see step 4 of the Non-Docker steps for an explanation of the variables)
 4. Run 'docker compose up'
 5. Subsequent runs after code changes should run 'docker compose up --build' to ensure a new image is built with the updated code
+6. The database migration step was removed from the Dockerfile, as it wasn't running on the DB living in the volume, & it apparently isn't best practice to automatically run database migrations anyway. So, if necessary, run the database migration (you'll know you need to if your server spits out ugly 500 response codes when trying to get to it):
+  * open a shell within the Docker container. `docker container list` should show you the running containers, then `docker exec -it containername bash` will open a shell within it
+  * run `python manage.py migrate`
 
 ### Installation (Legacy, Non-Docker)
 
