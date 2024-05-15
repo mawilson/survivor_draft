@@ -523,6 +523,8 @@ def rubric(request):
 
 @staff_member_required  # should only be navigable from an admin page & with an admin user
 def survivor_season_associate(request):
+    seasons = Season.objects.all().order_by("name")
+    
     if request.method == "GET":
         _survivors = request.GET["survivors"].split(",")
         survivors = []
@@ -530,7 +532,7 @@ def survivor_season_associate(request):
             survivors.append(get_object_or_404(Survivor, pk=survivor))
         context = {
             "survivors": survivors,
-            "seasons": Season.objects.all().order_by("name"),
+            "seasons": seasons
         }
         return render(request, "survive/survivor_season_associate.html", context)
     else:
@@ -551,7 +553,7 @@ def survivor_season_associate(request):
                 survivors.append(get_object_or_404(Survivor, pk=survivor_id))
 
         for survivor in survivors:  # for each survivor
-            for season in Season.objects.all():  # iterate through all existing seasons
+            for season in seasons:  # iterate through all existing seasons
                 if (
                     season.id in season_ids
                 ):  # add season to a survivor if it was found in the form (checkbox was checked)
