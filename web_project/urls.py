@@ -24,7 +24,7 @@ from typing import Sequence
 from django.urls import URLPattern, URLResolver
 
 urlpatterns: Sequence[URLPattern | URLResolver] = []
-urlpatterns = [path("", include("survive.urls")), path("admin/", admin.site.urls)]
+urlpatterns = [path("", include("survive.urls")), path("admin/", admin.site.urls), path("__debug__/", include("debug_toolbar.urls"))]
 
 # urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
 urlpatterns += staticfiles_urlpatterns()
