@@ -117,6 +117,8 @@ def home(request):
         "season"
     ]:  # if no season is present in context, none of the below means anything, early exit
         return render(request, "survive/home.html", context)
+    else:
+        context["season"] = Season.objects.prefetch_related("survivor_set", "team_set").get(pk=context["season"].id)
     team_creation_form = TeamCreationForm(
         request.POST or None, instance=Team(season=context["season"])
     )
@@ -155,7 +157,7 @@ def home(request):
 
         teams = context[
             "season"
-        ].team_set.all()  # always show teams in the selected season
+        ].team_set.prefetch_related("survivor_set")  # always show teams in the selected season
         context["undrafted_survivors"] = (
             context["season"]
             .survivor_set.exclude(
