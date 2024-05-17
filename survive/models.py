@@ -854,7 +854,7 @@ class Team(models.Model):
             )  # fan favorite points are the only thing we could theoretically still earn
             if self.season:
                 for t in self.season.team_set.all():
-                    if t is self:
+                    if t == self:
                         continue
                     elif (
                         t.points() > my_theoretical_points
