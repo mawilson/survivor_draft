@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 from datetime import date
 from django.contrib.auth.models import User
+from django.utils.functional import cached_property
 
 # Create your models here.
 
@@ -811,6 +812,7 @@ class Team(models.Model):
         else:
             return f"Team name: {self.name}. Captain: {self.captain}."
 
+    @cached_property
     def points(self) -> int:
         """Returns the sum of all points earned by Survivors within this team"""
         total = 0
@@ -850,14 +852,14 @@ class Team(models.Model):
             else:
                 fan_favorite_points = 0
             my_theoretical_points = (
-                self.points() + fan_favorite_points
+                self.points + fan_favorite_points
             )  # fan favorite points are the only thing we could theoretically still earn
             if self.season:
                 for t in self.season.team_set.all():
                     if t == self:
                         continue
                     elif (
-                        t.points() > my_theoretical_points
+                        t.points > my_theoretical_points
                     ):  # if any other team has more points than myself, & all my survivors are out, I have officially lost, return True
                         return True
         return False

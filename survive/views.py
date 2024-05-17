@@ -176,7 +176,7 @@ def home(request):
             teams = teams | linked_season.team_set.all()
         teams = sorted(teams, key=lambda t: t.name)  # first sort by name
         context["teams"] = sorted(
-            teams, key=lambda t: t.points(), reverse=True
+            teams, key=lambda t: t.points, reverse=True
         )  # then sort by points, descending
     else:
         context["undrafted_survivors"] = (
