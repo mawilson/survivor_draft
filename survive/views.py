@@ -157,7 +157,7 @@ def home(request):
 
         teams = context[
             "season"
-        ].team_set.prefetch_related("survivor_set")  # always show teams in the selected season
+        ].team_set.prefetch_related("survivor_set", "user")  # always show teams in the selected season
         context["undrafted_survivors"] = (
             context["season"]
             .survivor_set.exclude(
