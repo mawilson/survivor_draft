@@ -172,7 +172,7 @@ def home(request):
         for linked_season in context[
             "linked_seasons"
         ]:  # always collect teams in linked seasons, though template may not display them
-            teams = teams | linked_season.team_set.pretch_related("survivor_set__tribe", "user")
+            teams = teams | linked_season.team_set.prefetch_related("survivor_set__tribe", "user")
         teams = sorted(teams, key=lambda t: t.name)  # first sort by name
         context["teams"] = sorted(
             teams, key=lambda t: t.points, reverse=True
@@ -249,6 +249,11 @@ def home(request):
                 else:
                     new_draft_marker = draft_marker  # negative value stays put
 
+                try:
+                    del team.points # force team points to update now that its team composition has changed
+                except AttributeError:
+                    pass
+
                 channel_layer = get_channel_layer()
                 async_to_sync(channel_layer.group_send)(
                     "draft_" + str(context["season"].id),
@@ -274,6 +279,11 @@ def home(request):
                 context["season"].save()
             else:
                 new_draft_marker = draft_marker
+
+            try:
+                del team.points # force team points to update now that its team composition has changed
+            except AttributeError:
+                pass
 
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(

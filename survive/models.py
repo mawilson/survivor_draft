@@ -6,6 +6,7 @@ from django.utils.translation import gettext as _
 from datetime import date
 from django.contrib.auth.models import User
 from django.utils.functional import cached_property
+from functools import cache
 
 # Create your models here.
 
@@ -145,6 +146,7 @@ class Season(models.Model):
         """Returns a string representation of a Season"""
         return f"Season name: {self.name}."
 
+    @cached_property
     def most_idols(self):
         """Returns the list of Survivors with the most idols in this season"""
         idol_survivors = []
@@ -165,7 +167,7 @@ class Season(models.Model):
             ).first()  # get first matching team for this survivor that competed in this season
             if team:
                 s_team_idols = (
-                    team.idols()
+                    team.idols
                 )  # store in a variable so we don't get from DB repeatedly
                 if s_team_idols > most_team_idols:
                     idol_survivors_winningest_teams = [s]
@@ -175,6 +177,7 @@ class Season(models.Model):
 
         return idol_survivors_winningest_teams
 
+    @cached_property
     def most_immunities(self):
         """Returns the Survivors with the most immunities in the season"""
         imm_survivors = []
@@ -195,7 +198,7 @@ class Season(models.Model):
             ).first()  # get first matching team for this survivor that competed in this season
             if team:
                 s_team_imms = (
-                    team.immunities()
+                    team.immunities
                 )  # store in a variable so we don't get from DB repeatedly
                 if s_team_imms > most_imms:
                     imm_survivors_winningest_teams = [s]
@@ -205,6 +208,7 @@ class Season(models.Model):
 
         return imm_survivors_winningest_teams
 
+    @cached_property
     def most_confessionals(self):
         """Returns the Survivors with the most confessionals in the season"""
         conf_survivors = []
@@ -228,7 +232,7 @@ class Season(models.Model):
             ).first()  # get first matching team for this survivor that competed in this season
             if team:
                 s_team_confs = (
-                    team.confessionals()
+                    team.confessionals
                 )  # store in a variable so we don't get from DB repeatedly
                 if s_team_confs > most_confs:
                     conf_survivors_winningest_teams = [s]
@@ -238,6 +242,7 @@ class Season(models.Model):
 
         return conf_survivors_winningest_teams
 
+    @cached_property
     def jury_number(self):
         """Returns one more than the highest jury number of all eliminated Survivors. 0 if no Survivors eliminated yet."""
         highest_jury_number = 0
@@ -259,6 +264,7 @@ class Season(models.Model):
                 highest_jury_number + 1
             )  # for use by other Survivors, jury number is always one better than the last eliminated survivor
 
+    @cached_property
     def placement(self):
         """Returns one less than the lowest placement of all eliminated Survivors"""
         lowest_placement = len(self.survivor_set.all())
@@ -408,6 +414,7 @@ class Season(models.Model):
             vote_dict,
         )  # return only the survivors whose ID is in the fan_favorites list
 
+    @cached_property
     def fan_favorites_display(self):
         """ "Helper function for displaying the results of the fan_favorites function. Returns a list of formatted strings describing the votes each survivor received."""
         description = ["Points totals:"]
@@ -465,11 +472,11 @@ class Season(models.Model):
         for key, value in survivor_dict.items():
             if value.status:  # survivor is still alive
                 results.append(
-                    f"{value.name} still alive, currently placed {value.placement_calq()}."
+                    f"{value.name} still alive, currently placed {value.placement_calq}."
                 )
             else:
                 results.append(
-                    f"{value.name} ended up placing {value.placement_calq()}."
+                    f"{value.name} ended up placing {value.placement_calq}."
                 )
 
         return results
@@ -575,6 +582,14 @@ class Season(models.Model):
         num_survivors = len(self.survivor_set.all())
         num_teams = len(self.team_set.all())
         return math.floor(num_survivors / num_teams) if num_teams > 0 else 0
+
+    def save(self, *args, **kwargs):
+        # without knowing specifically what's changed, just blindly invalidate all old cached properties
+        for key, value in self.__class__.__dict__.items():
+            if isinstance(value, cached_property):
+                self.__dict__.pop(key, None)
+        super().save(*args, **kwargs)
+
 
 
 class Team(models.Model):
@@ -820,6 +835,7 @@ class Team(models.Model):
             total += s.points(self.season)[0]
         return total
 
+    @cached_property
     def idols(self) -> int:
         """Returns the sum of all idols earned by Survivors within this team"""
         total = 0
@@ -827,6 +843,7 @@ class Team(models.Model):
             total += s.idols
         return total
 
+    @cached_property
     def immunities(self) -> int:
         """Returns the sum of all individual immunities won by Survivors within this team"""
         total = 0
@@ -834,6 +851,7 @@ class Team(models.Model):
             total += s.immunities
         return total
 
+    @cached_property
     def confessionals(self) -> int:
         """Returns the sum of all confessionals done by Survivors within this team"""
         total = 0
@@ -915,6 +933,13 @@ class Team(models.Model):
                 )
                 _can_pick = False
         return (_can_pick, pick_text)
+    
+    def save(self, *args, **kwargs):
+        # invalidate all old cached properties
+        for key, value in self.__class__.__dict__.items():
+            if isinstance(value, cached_property):
+                self.__dict__.pop(key, None)
+        super().save(*args, **kwargs)
 
 
 class Tribe(models.Model):
@@ -930,12 +955,16 @@ class Tribe(models.Model):
         verbose_name="the hex code for the color associated with this tribe",
     )
 
+    @cache # need functools cache due to extra parameter
     def points(self, season) -> int:
         """Returns an integer representing the sum of Survivor points of Survivors within this tribe for the given season"""
         total = 0
         for survivor in self.survivor_set.all():
             total += survivor.points(season)[0]
         return total
+    
+    def __str__(self):
+        return f"{self.name} tribe, ID {self.id}"
 
 
 class Survivor(models.Model):
@@ -990,6 +1019,7 @@ class Survivor(models.Model):
         # return f"Contestant name: {self.name}. Team: {self.team}. Status: {_status}"
         return self.name
 
+    @cache # need functools cache due to extra parameter
     def points(
         self, season
     ) -> tuple[
@@ -1006,7 +1036,7 @@ class Survivor(models.Model):
         if (
             self.idols > 0
         ):  # cannot award idol points if at least one idol hasn't been earned
-            most_idol_winners = season.most_idols()
+            most_idol_winners = season.most_idols
             most_idols = (
                 self in most_idol_winners
             )  # if self is one of the Survivors with the most idols
@@ -1025,7 +1055,7 @@ class Survivor(models.Model):
         if (
             self.immunities > 0
         ):  # cannot award immunity points if at least one immunity hasn't been earned
-            most_immunities_winners = season.most_immunities()
+            most_immunities_winners = season.most_immunities
             most_immunities = (
                 self in most_immunities_winners
             )  # if self is one of the Survivors with the most immunities
@@ -1042,7 +1072,7 @@ class Survivor(models.Model):
         if (
             self.confessionals > 0
         ):  # cannot award confessional points if they haven't even been in one
-            most_confessional_winners = season.most_confessionals()
+            most_confessional_winners = season.most_confessionals
             most_confessionals = (
                 self in most_confessional_winners
             )  # if self is one of the Survivors with the most confessionals
@@ -1062,7 +1092,7 @@ class Survivor(models.Model):
         if (
             self.status
         ):  # if alive, jury points are dictated by highest-scoring eliminated survivor
-            jury_points = season.jury_number()
+            jury_points = season.jury_number
             total += jury_points * rubric.jury_number
             description += f"Jury number: {jury_points} * {rubric.jury_number} = {jury_points * rubric.jury_number}\n"
         else:  # if eliminated, jury points are only dictated by own entry
@@ -1089,6 +1119,7 @@ class Survivor(models.Model):
                 description += f"Finalist: {self.finalist} * {rubric.finalist} = {self.finalist * rubric.finalist}"
         return total, description.strip()  # remove trailing newline if present
 
+    @cached_property
     def placement_calq(self):
         """Returns an integer representing either the place eliminated or, if not yet eliminated, one better than the last person eliminated
         Finalists can come in second if they did not win, but did receive more votes then the other loser
@@ -1096,6 +1127,17 @@ class Survivor(models.Model):
         if (
             self.placement == 0
         ):  # a value of 0 indicates the survivor did not explictly 'place', meaning they're still alive & receive one better than the last eliminated survivor
-            return self.season.all().first().placement()
+            return self.season.all().first().placement
         else:  # any nonzero value is a valid placement & is returned as such
             return self.placement
+        
+    def save(self, *args, **kwargs):
+        self.points.cache_clear() # without knowing whether points actually changed, clear out cache data & force to calq again
+        for season in self.season.all():
+            season.save() # will force season to recalq things now that this survivor changed, & clear old caches
+            for survivor in season.survivor_set.all():
+                survivor.points.cache_clear() # force that survivor to clear its points cache & recalq it
+        # invalidate all old cached properties
+        for key, value in self.__class__.__dict__.items():
+            if isinstance(value, cached_property):
+                self.__dict__.pop(key, None)
