@@ -7,6 +7,8 @@ from datetime import date
 from django.contrib.auth.models import User
 from django.utils.functional import cached_property
 from functools import cache
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 # Create your models here.
 
@@ -1141,3 +1143,14 @@ class Survivor(models.Model):
         for key, value in self.__class__.__dict__.items():
             if isinstance(value, cached_property):
                 self.__dict__.pop(key, None)
+        super().save(*args, **kwargs)
+
+# use pre_save signal to smartly clear tribe points cache only when a survivor's tribe changes
+@receiver(pre_save, sender=Survivor)
+def tribe_cache_clearing(sender, instance, **kwargs):
+    prior_state = sender.objects.get(pk=instance.id)
+    prior_tribe = prior_state.tribe
+    new_tribe = instance.tribe
+    if prior_tribe != new_tribe:
+        prior_tribe.points.cache_clear()
+        new_tribe.points.cache_clear()
