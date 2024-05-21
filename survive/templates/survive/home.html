@@ -73,7 +73,7 @@
                     {% for tribe in season.tribe_set.all %}
                         <tr>
                             <td style="color: {{tribe.color}}">{{tribe.name}}</td>
-                            {% if tribe.survivor_set.all %}
+                            {% if tribe.survivor_set %}
                             <td>
                                 <table class="survivor_list table_bordered">
                                     <thead>
