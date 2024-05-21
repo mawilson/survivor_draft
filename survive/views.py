@@ -87,7 +87,7 @@ def season_selector_request(request):
             if (
                 new_season_id
             ):  # if new_season_id is present, it was provided via the Season selector, update cookie for it & the context
-                context["season"] = Season.objects.prefetch_related("survivor_set", "team_set").get(id=new_season_id)
+                context["season"] = Season.objects.prefetch_related("survivor_set", "team_set", "rubric").get(id=new_season_id)
     else:
         context["season"] = None
 
