@@ -87,9 +87,15 @@ def season_selector_request(request):
             if (
                 new_season_id
             ):  # if new_season_id is present, it was provided via the Season selector, update cookie for it & the context
-                context["season"] = Season.objects.prefetch_related("survivor_set", "team_set", "rubric").get(id=new_season_id)
+                for s in seasons:
+                    if s.id == int(new_season_id):
+                        context["season"] = s
+                        break
     else:
         context["season"] = None
+
+    if context["season"]:
+        context["season"] = _seasons.prefetch_related("survivor_set__tribe", "team_set", "rubric", "tribe_set__survivor_set").get(pk=context["season"].id)
 
     if new_season_filter:
         return context, new_season_id, season_filter
@@ -157,7 +163,7 @@ def home(request):
         ].team_set.prefetch_related("survivor_set__tribe", "user", "season__team_set")  # always show teams in the selected season
         context["undrafted_survivors"] = (
             context["season"]
-            .survivor_set.exclude(
+            .survivor_set.prefetch_related("tribe").exclude(
                 team__season__in=[
                     context["season"].id
                 ]  # show all survivors who don't have a team for this season
@@ -177,7 +183,7 @@ def home(request):
         )  # then sort by points, descending
     else:
         context["undrafted_survivors"] = (
-            context["season"].survivor_set.filter(tribe=None).order_by("name")
+            context["season"].survivor_set.prefetch_related("tribe").filter(tribe=None).order_by("name")
         )
 
     if (

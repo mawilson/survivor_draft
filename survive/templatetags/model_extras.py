@@ -22,7 +22,7 @@ def tribe_points(tribe, season):
 def team_can_pick(team):
     """Returns a two element tuple containing a Boolean indicating whether a team can draft &, if not, a string for why"""
     if isinstance(team, Team):
-        return team.can_pick()
+        return team.can_pick
     else:  # an unprovided team cannot pick & has no feedback to give
         return (False, "")
 

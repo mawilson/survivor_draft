@@ -585,13 +585,6 @@ class Season(models.Model):
         num_teams = len(self.team_set.all())
         return math.floor(num_survivors / num_teams) if num_teams > 0 else 0
 
-    def save(self, *args, **kwargs):
-        # without knowing specifically what's changed, just blindly invalidate all old cached properties
-        for key, value in self.__class__.__dict__.items():
-            if isinstance(value, cached_property):
-                self.__dict__.pop(key, None)
-        super().save(*args, **kwargs)
-
 
 
 class Team(models.Model):
@@ -885,6 +878,7 @@ class Team(models.Model):
                         return True
         return False
 
+    @cached_property
     def next_pick(self) -> int | None:
         """Returns next pick in the team's draft order based on survivor_set, or None if no picks left.
         A value of -1 indicates draft_order was empty, but the team still has picks left.
@@ -908,9 +902,10 @@ class Team(models.Model):
         else:  # else, return the next entry in the picks list (because of zero indexing, this is just index num_team_members)
             return int(picks[num_team_members])
 
+    @cached_property
     def can_pick(self) -> tuple[bool, str]:
         """Returns a boolean indicating whether I can currently pick, & a string containing what to say if I can't"""
-        next_pick = self.next_pick()
+        next_pick = self.next_pick
         if next_pick is None:  # team is full, cannot draft
             pick_text = "It's not your turn to draft. You appear to have no picks left."
             _can_pick = False
@@ -936,13 +931,6 @@ class Team(models.Model):
                 )
                 _can_pick = False
         return (_can_pick, pick_text)
-    
-    def save(self, *args, **kwargs):
-        # invalidate all old cached properties
-        for key, value in self.__class__.__dict__.items():
-            if isinstance(value, cached_property):
-                self.__dict__.pop(key, None)
-        super().save(*args, **kwargs)
 
 
 class Tribe(models.Model):
@@ -1140,10 +1128,6 @@ class Survivor(models.Model):
             season.save() # will force season to recalq things now that this survivor changed, & clear old caches
             for survivor in season.survivor_set.all():
                 survivor.points.cache_clear() # force that survivor to clear its points cache & recalq it
-        # invalidate all old cached properties
-        for key, value in self.__class__.__dict__.items():
-            if isinstance(value, cached_property):
-                self.__dict__.pop(key, None)
         super().save(*args, **kwargs)
 
 # use pre_save signal to smartly clear tribe points cache only when a survivor's tribe changes
@@ -1155,8 +1139,3 @@ def tribe_cache_clearing(sender, instance, **kwargs):
     if prior_tribe != new_tribe:
         prior_tribe.points.cache_clear()
         new_tribe.points.cache_clear()
-
-    for team in instance.team.all():
-        for key, value in team.__class__.__dict__.items():
-            if isinstance(value, cached_property):
-                team.__dict__.pop(key, None)
