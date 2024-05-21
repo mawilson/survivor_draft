@@ -861,6 +861,7 @@ class Team(models.Model):
             total += s.confessionals
         return total
 
+    @cached_property
     def lost(self) -> bool:
         """If season is over, returns True if this team won, else False"""
         """Returns True if all survivors on this team have been eliminated, & this team's points total (plus fan favorite value) is lower than some other team's"""
@@ -1154,3 +1155,8 @@ def tribe_cache_clearing(sender, instance, **kwargs):
     if prior_tribe != new_tribe:
         prior_tribe.points.cache_clear()
         new_tribe.points.cache_clear()
+
+    for team in instance.team.all():
+        for key, value in team.__class__.__dict__.items():
+            if isinstance(value, cached_property):
+                team.__dict__.pop(key, None)
