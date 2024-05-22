@@ -60,16 +60,19 @@ class SurvivorTestCase(TestCase):
         self.assertEqual(survivor.points(season)[0], 0)
 
         survivor.finalist = True
+        survivor.save()
 
         self.assertEqual(survivor.points(season)[0], 2)
 
         survivor.winner = True
+        survivor.save()
 
         self.assertEqual(
             survivor.points(season)[0], 5
         )  # winner should be worth 5, not (Finalist + Winner) = 7
 
         survivor.fan_favorite = True
+        survivor.save()
 
         self.assertEqual(survivor.points(season)[0], 7)
 
@@ -95,6 +98,7 @@ class SurvivorTestCase(TestCase):
 
         survivor.season.add(season)
         survivor.team.add(team)
+        survivor.save()
 
         self.assertEqual(survivor.points(season)[0], 0)
 
@@ -113,6 +117,7 @@ class SurvivorTestCase(TestCase):
 
         survivor2.season.add(season)
         survivor2.team.add(team)
+        survivor2.save()
 
         self.assertEqual(survivor.points(season)[0], 0)
 
@@ -131,6 +136,7 @@ class SurvivorTestCase(TestCase):
 
         survivor3.season.add(season)
         survivor3.team.add(team)
+        survivor3.save()
 
         self.assertEqual(
             survivor.points(season)[0], 0
@@ -151,6 +157,11 @@ class SurvivorTestCase(TestCase):
 
         survivor4.season.add(season)
         survivor4.team.add(team)
+        survivor4.save()
+        try:
+            del season.jury_number
+        except AttributeError:
+            pass
 
         self.assertEqual(
             survivor.points(season)[0], 2
@@ -249,6 +260,9 @@ class SurvivorTestCase(TestCase):
 
         other_survivor.idols = 1
         other_survivor.save()
+        del (
+            season.most_idols
+        )  # clear cached_property on season most idols so it can recalq
 
         self.assertEqual(
             survivor.points(season)[0], 1
@@ -256,11 +270,19 @@ class SurvivorTestCase(TestCase):
 
         survivor.immunities = 1
         survivor.save()
+        try:
+            del season.most_immunities
+        except AttributeError:
+            pass
 
         self.assertEqual(survivor.points(season)[0], 3)
 
         other_survivor.immunities = 1
         other_survivor.save()
+        try:
+            del season.most_immunities
+        except AttributeError:
+            pass
 
         self.assertEqual(survivor.points(season)[0], 2)
 
@@ -330,7 +352,7 @@ class SurvivorTestCase(TestCase):
         survivor10.season.add(season)
         survivor11.season.add(season)
 
-        self.assertEqual(7, season.jury_number())
+        self.assertEqual(7, season.jury_number)
 
     def test_season_placement(self):
         """Season placement returns the lowest placement amongst eliminated Survivors, minus one"""
@@ -383,7 +405,7 @@ class SurvivorTestCase(TestCase):
         survivor3.season.add(season)
         survivor3.team.add(team)
 
-        self.assertEqual(1, season.placement())
+        self.assertEqual(1, season.placement)
 
     def test_season_fan_favorites(self):
         """Fan favorites are correctly deduced based on votes cast by teams"""

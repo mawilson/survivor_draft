@@ -73,7 +73,7 @@
                     {% for tribe in season.tribe_set.all %}
                         <tr>
                             <td style="color: {{tribe.color}}">{{tribe.name}}</td>
-                            {% if tribe.survivor_set.all %}
+                            {% if tribe.survivor_set %}
                             <td>
                                 <table class="survivor_list table_bordered">
                                     <thead>
@@ -102,8 +102,8 @@
                                                     {% else %}
                                                         <img src="{{ STATIC_PREFIX }}survive/silhouette_small.webp"
                                                     {% endif %}
-                                                    {% if survivor.tribe != None %}
-                                                        style="border: 2px solid {{ survivor.tribe.color }};"
+                                                    {% if tribe != None %}
+                                                        style="border: 2px solid {{ tribe.color }};"
                                                     {% endif %} />
                                                 </td>
                                                 <td>

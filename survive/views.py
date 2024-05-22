@@ -8,7 +8,7 @@ from survive.forms import (
     TeamCreationForm,
     DraftEnabledForm,
     SeasonManageForm,
-    RubricCreateForm
+    RubricCreateForm,
 )
 from django.contrib.auth import authenticate, login
 from survive.models import Team, Survivor, Season, Rubric, User
@@ -19,7 +19,6 @@ import re
 from django.urls import reverse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 
@@ -88,9 +87,17 @@ def season_selector_request(request):
             if (
                 new_season_id
             ):  # if new_season_id is present, it was provided via the Season selector, update cookie for it & the context
-                context["season"] = Season.objects.get(id=new_season_id)
+                for s in seasons:
+                    if s.id == int(new_season_id):
+                        context["season"] = s
+                        break
     else:
         context["season"] = None
+
+    if context["season"]:
+        context["season"] = _seasons.prefetch_related(
+            "survivor_set__tribe", "team_set", "rubric", "tribe_set__survivor_set"
+        ).get(pk=context["season"].id)
 
     if new_season_filter:
         return context, new_season_id, season_filter
@@ -153,9 +160,9 @@ def home(request):
     if context["display_type"] != "tribe":
         context["linked_seasons"] = context["season"].linked_seasons.all()
 
-        teams = context[
-            "season"
-        ].team_set.all()  # always show teams in the selected season
+        teams = context["season"].team_set.prefetch_related(
+            "survivor_set__tribe", "user", "season__team_set", "season__survivor_set"
+        )  # always show teams in the selected season
         context["undrafted_survivors"] = (
             context["season"]
             .survivor_set.exclude(
@@ -171,10 +178,15 @@ def home(request):
         for linked_season in context[
             "linked_seasons"
         ]:  # always collect teams in linked seasons, though template may not display them
-            teams = teams | linked_season.team_set.all()
+            teams = teams | linked_season.team_set.prefetch_related(
+                "survivor_set__tribe",
+                "user",
+                "season__team_set",
+                "season__survivor_set",
+            )
         teams = sorted(teams, key=lambda t: t.name)  # first sort by name
         context["teams"] = sorted(
-            teams, key=lambda t: t.points(), reverse=True
+            teams, key=lambda t: t.points, reverse=True
         )  # then sort by points, descending
     else:
         context["undrafted_survivors"] = (
@@ -248,6 +260,13 @@ def home(request):
                 else:
                     new_draft_marker = draft_marker  # negative value stays put
 
+                try:
+                    del (
+                        team.points
+                    )  # force team points to update now that its team composition has changed
+                except AttributeError:
+                    pass
+
                 channel_layer = get_channel_layer()
                 async_to_sync(channel_layer.group_send)(
                     "draft_" + str(context["season"].id),
@@ -273,6 +292,13 @@ def home(request):
                 context["season"].save()
             else:
                 new_draft_marker = draft_marker
+
+            try:
+                del (
+                    team.points
+                )  # force team points to update now that its team composition has changed
+            except AttributeError:
+                pass
 
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
@@ -523,15 +549,14 @@ def rubric(request):
 
 @staff_member_required  # should only be navigable from an admin page & with an admin user
 def survivor_season_associate(request):
+    seasons = Season.objects.all().order_by("name")
+
     if request.method == "GET":
         _survivors = request.GET["survivors"].split(",")
         survivors = []
         for survivor in _survivors:
             survivors.append(get_object_or_404(Survivor, pk=survivor))
-        context = {
-            "survivors": survivors,
-            "seasons": Season.objects.all().order_by("name"),
-        }
+        context = {"survivors": survivors, "seasons": seasons}
         return render(request, "survive/survivor_season_associate.html", context)
     else:
         season_ids = []
@@ -551,7 +576,7 @@ def survivor_season_associate(request):
                 survivors.append(get_object_or_404(Survivor, pk=survivor_id))
 
         for survivor in survivors:  # for each survivor
-            for season in Season.objects.all():  # iterate through all existing seasons
+            for season in seasons:  # iterate through all existing seasons
                 if (
                     season.id in season_ids
                 ):  # add season to a survivor if it was found in the form (checkbox was checked)
@@ -737,7 +762,8 @@ def manage_season(request):
 
     return render(request, "survive/manage_season.html", context)
 
-@login_required # cannot create a rubric without being logged in
+
+@login_required  # cannot create a rubric without being logged in
 def create_rubric(request):
     form = RubricCreateForm(request.POST or None)
     context = {"form": form}
@@ -745,9 +771,7 @@ def create_rubric(request):
     if request.method == "POST":
         if form.is_valid():
             form.save()
-            return redirect(
-                "/"
-            )  # after submitting, redirect to home page to refresh
+            return redirect("/")  # after submitting, redirect to home page to refresh
         else:
             return render(request, "survive/create_rubric.html", context)
 
