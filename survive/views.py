@@ -160,7 +160,7 @@ def home(request):
 
         teams = context[
             "season"
-        ].team_set.prefetch_related("survivor_set__tribe", "user", "season__team_set")  # always show teams in the selected season
+        ].team_set.prefetch_related("survivor_set__tribe", "user", "season__team_set", "season__survivor_set")  # always show teams in the selected season
         context["undrafted_survivors"] = (
             context["season"]
             .survivor_set.prefetch_related("tribe").exclude(
@@ -176,7 +176,7 @@ def home(request):
         for linked_season in context[
             "linked_seasons"
         ]:  # always collect teams in linked seasons, though template may not display them
-            teams = teams | linked_season.team_set.prefetch_related("survivor_set__tribe", "user", "season__team_set")
+            teams = teams | linked_season.team_set.prefetch_related("survivor_set__tribe", "user", "season__team_set", "season__survivor_set")
         teams = sorted(teams, key=lambda t: t.name)  # first sort by name
         context["teams"] = sorted(
             teams, key=lambda t: t.points, reverse=True

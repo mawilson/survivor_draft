@@ -1091,8 +1091,7 @@ class Survivor(models.Model):
             description += f"Jury number: {self.jury_number} * {rubric.jury_number} = {self.jury_number * rubric.jury_number} \n"
 
         if not self.status:  # if not alive, was I eliminated first?
-            s = self.season.first()
-            if s and self.placement == len(s.survivor_set.all()):
+            if season.survivor_set and self.placement == len(season.survivor_set.all()):
                 total += rubric.pity_point
                 description += f"Pity point: {rubric.pity_point}\n"
 
