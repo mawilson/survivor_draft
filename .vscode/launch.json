@@ -35,7 +35,7 @@
             "program": "${workspaceFolder}\\manage.py",
             "args": [
                 "test",
-                "${relativeFileDirname}"
+                "survive"
             ],
             "django": true,
             "justMyCode": true

@@ -1122,19 +1122,21 @@ class Survivor(models.Model):
             return self.placement
         
     def save(self, *args, **kwargs):
-        self.points.cache_clear() # without knowing whether points actually changed, clear out cache data & force to calq again
-        for season in self.season.all():
-            season.save() # will force season to recalq things now that this survivor changed, & clear old caches
-            for survivor in season.survivor_set.all():
-                survivor.points.cache_clear() # force that survivor to clear its points cache & recalq it
+        if self.id != None: # will not run on creation, which prevents ManyToMany errors
+            self.points.cache_clear() # without knowing whether points actually changed, clear out cache data & force to calq again
+            for season in self.season.all():
+                season.save() # will force season to recalq things now that this survivor changed, & clear old caches
+                for survivor in season.survivor_set.all():
+                    survivor.points.cache_clear() # force that survivor to clear its points cache & recalq it
         super().save(*args, **kwargs)
 
 # use pre_save signal to smartly clear tribe points cache only when a survivor's tribe changes
 @receiver(pre_save, sender=Survivor)
 def tribe_cache_clearing(sender, instance, **kwargs):
-    prior_state = sender.objects.get(pk=instance.id)
-    prior_tribe = prior_state.tribe
-    new_tribe = instance.tribe
-    if prior_tribe != new_tribe:
-        prior_tribe.points.cache_clear()
-        new_tribe.points.cache_clear()
+    if instance.id != None:
+        prior_state = sender.objects.get(pk=instance.id)
+        prior_tribe = prior_state.tribe
+        new_tribe = instance.tribe
+        if prior_tribe != new_tribe:
+            prior_tribe.points.cache_clear()
+            new_tribe.points.cache_clear()
