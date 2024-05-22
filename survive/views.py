@@ -163,7 +163,7 @@ def home(request):
         ].team_set.prefetch_related("survivor_set__tribe", "user", "season__team_set", "season__survivor_set")  # always show teams in the selected season
         context["undrafted_survivors"] = (
             context["season"]
-            .survivor_set.prefetch_related("tribe").exclude(
+            .survivor_set.exclude(
                 team__season__in=[
                     context["season"].id
                 ]  # show all survivors who don't have a team for this season
@@ -183,7 +183,7 @@ def home(request):
         )  # then sort by points, descending
     else:
         context["undrafted_survivors"] = (
-            context["season"].survivor_set.prefetch_related("tribe").filter(tribe=None).order_by("name")
+            context["season"].survivor_set.filter(tribe=None).order_by("name")
         )
 
     if (
