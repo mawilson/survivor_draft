@@ -260,7 +260,9 @@ class SurvivorTestCase(TestCase):
 
         other_survivor.idols = 1
         other_survivor.save()
-        del season.most_idols # clear cached_property on season most idols so it can recalq
+        del (
+            season.most_idols
+        )  # clear cached_property on season most idols so it can recalq
 
         self.assertEqual(
             survivor.points(season)[0], 1

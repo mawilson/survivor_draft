@@ -19,7 +19,7 @@ class Rubric(models.Model):
         null=False,
         default="Rubric",
         verbose_name="A name to identify this rubric by.",
-        max_length=100
+        max_length=100,
     )
     # following two fields have to do with scoring for the most idols & whether to split points on ties
     idols = models.IntegerField(
@@ -113,7 +113,7 @@ class Season(models.Model):
         Rubric,
         on_delete=models.SET_NULL,  # If a Rubric goes, adjust season rubric to the default
         null=True,
-        verbose_name = "Rubric"
+        verbose_name="Rubric",
     )
     season_close = models.DateField(
         null=True, verbose_name="Season Close", blank=True, default=None
@@ -477,9 +477,7 @@ class Season(models.Model):
                     f"{value.name} still alive, currently placed {value.placement_calq}."
                 )
             else:
-                results.append(
-                    f"{value.name} ended up placing {value.placement_calq}."
-                )
+                results.append(f"{value.name} ended up placing {value.placement_calq}.")
 
         return results
 
@@ -584,7 +582,6 @@ class Season(models.Model):
         num_survivors = len(self.survivor_set.all())
         num_teams = len(self.team_set.all())
         return math.floor(num_survivors / num_teams) if num_teams > 0 else 0
-
 
 
 class Team(models.Model):
@@ -946,14 +943,14 @@ class Tribe(models.Model):
         verbose_name="the hex code for the color associated with this tribe",
     )
 
-    @cache # need functools cache due to extra parameter
+    @cache  # need functools cache due to extra parameter
     def points(self, season) -> int:
         """Returns an integer representing the sum of Survivor points of Survivors within this tribe for the given season"""
         total = 0
         for survivor in self.survivor_set.all():
             total += survivor.points(season)[0]
         return total
-    
+
     def __str__(self):
         return f"{self.name} tribe, ID {self.id}"
 
@@ -1010,7 +1007,7 @@ class Survivor(models.Model):
         # return f"Contestant name: {self.name}. Team: {self.team}. Status: {_status}"
         return self.name
 
-    @cache # need functools cache due to extra parameter
+    @cache  # need functools cache due to extra parameter
     def points(
         self, season
     ) -> tuple[
@@ -1120,15 +1117,18 @@ class Survivor(models.Model):
             return self.season.all().first().placement
         else:  # any nonzero value is a valid placement & is returned as such
             return self.placement
-        
+
     def save(self, *args, **kwargs):
-        if self.id != None: # will not run on creation, which prevents ManyToMany errors
-            self.points.cache_clear() # without knowing whether points actually changed, clear out cache data & force to calq again
+        if (
+            self.id != None
+        ):  # will not run on creation, which prevents ManyToMany errors
+            self.points.cache_clear()  # without knowing whether points actually changed, clear out cache data & force to calq again
             for season in self.season.all():
-                season.save() # will force season to recalq things now that this survivor changed, & clear old caches
+                season.save()  # will force season to recalq things now that this survivor changed, & clear old caches
                 for survivor in season.survivor_set.all():
-                    survivor.points.cache_clear() # force that survivor to clear its points cache & recalq it
+                    survivor.points.cache_clear()  # force that survivor to clear its points cache & recalq it
         super().save(*args, **kwargs)
+
 
 # use pre_save signal to smartly clear tribe points cache only when a survivor's tribe changes
 @receiver(pre_save, sender=Survivor)
