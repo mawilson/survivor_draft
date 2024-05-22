@@ -834,7 +834,7 @@ class Team(models.Model):
     def idols(self) -> int:
         """Returns the sum of all idols earned by Survivors within this team"""
         total = 0
-        for s in Survivor.objects.filter(team=self):
+        for s in self.survivor_set.all():
             total += s.idols
         return total
 
