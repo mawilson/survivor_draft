@@ -132,7 +132,7 @@ class Season(models.Model):
         verbose_name="The other seasons this season is associated with",
         blank=True,
         default=None,
-        symmetrical=True,  # if one season is related to another, another is related to one
+        symmetrical=False,  # prevents template season from seeing everything that's been created out of it on its home page
     )
     draft_marker = models.IntegerField(
         default=1,
