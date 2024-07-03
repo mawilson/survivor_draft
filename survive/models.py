@@ -473,9 +473,14 @@ class Season(models.Model):
         results = []
         for key, value in survivor_dict.items():
             if value.status:  # survivor is still alive
-                results.append(
-                    f"{value.name} still alive, currently placed {value.placement_calq}."
-                )
+                if self.is_season_closed():
+                    results.append(
+                        f"{value.name} placed {value.placement}."
+                    )
+                else:
+                    results.append(
+                        f"{value.name} still alive, currently placed {value.placement_calq}."
+                    )
             else:
                 results.append(f"{value.name} ended up placing {value.placement_calq}.")
 
