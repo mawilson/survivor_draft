@@ -234,7 +234,7 @@ def home(request):
         ):  # survivor drafting requires the survivor_id_draft field present
             team = get_object_or_404(Team, pk=user_team_id)
             survivor = get_object_or_404(Survivor, pk=survivor_id_draft)
-            can_pick = team.can_pick()
+            can_pick = team.can_pick
             if not can_pick[0]:
                 context["draft_out_of_order_error"] = can_pick[1]
                 return render(request, "survive/home.html", context)

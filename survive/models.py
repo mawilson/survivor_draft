@@ -473,9 +473,14 @@ class Season(models.Model):
         results = []
         for key, value in survivor_dict.items():
             if value.status:  # survivor is still alive
-                results.append(
-                    f"{value.name} still alive, currently placed {value.placement_calq}."
-                )
+                if self.is_season_closed():
+                    results.append(
+                        f"{value.name} placed {value.placement}."
+                    )
+                else:
+                    results.append(
+                        f"{value.name} still alive, currently placed {value.placement_calq}."
+                    )
             else:
                 results.append(f"{value.name} ended up placing {value.placement_calq}.")
 
@@ -737,9 +742,10 @@ class Team(models.Model):
             if (
                 not self.season.rubric.fan_favorite_self_votes
             ):  # if self votes are disallowed, validate them
+                self_survivors = self.survivor_set
                 if (
                     self.fan_favorite_first is not None
-                    and self.fan_favorite_first.team == self
+                    and self_survivors.filter(pk=self.fan_favorite_first.pk).exists()
                 ):
                     errors.append(
                         ValidationError(
@@ -749,7 +755,7 @@ class Team(models.Model):
                     )
                 if (
                     self.fan_favorite_second is not None
-                    and self.fan_favorite_second.team == self
+                    and self_survivors.filter(pk=self.fan_favorite_second.pk).exists()
                 ):
                     errors.append(
                         ValidationError(
@@ -759,7 +765,7 @@ class Team(models.Model):
                     )
                 if (
                     self.fan_favorite_third is not None
-                    and self.fan_favorite_third.team == self
+                    and self_survivors.filter(pk=self.fan_favorite_third.pk).exists()
                 ):
                     errors.append(
                         ValidationError(
@@ -769,7 +775,7 @@ class Team(models.Model):
                     )
                 if (
                     self.fan_favorite_bad is not None
-                    and self.fan_favorite_bad.team == self
+                    and self_survivors.filter(pk=self.fan_favorite_bad.pk).exists()
                 ):
                     errors.append(
                         ValidationError(
