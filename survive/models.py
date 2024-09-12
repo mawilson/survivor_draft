@@ -1143,6 +1143,7 @@ def tribe_cache_clearing(sender, instance, **kwargs):
         prior_state = sender.objects.get(pk=instance.id)
         prior_tribe = prior_state.tribe
         new_tribe = instance.tribe
-        if prior_tribe != new_tribe:
+        if prior_tribe != None and prior_tribe != new_tribe:
             prior_tribe.points.cache_clear()
+        if new_tribe != None and prior_tribe != new_tribe:
             new_tribe.points.cache_clear()
