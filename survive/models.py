@@ -683,7 +683,7 @@ class Team(models.Model):
     def clean(self):
         errors = []
 
-        if self.season is not None:
+        if self.id is not None and self.season is not None: # self.id check ensures Team exists before doing validation
             if (
                 self.fan_favorite_first is not None
                 and self.fan_favorite_first == self.fan_favorite_second
