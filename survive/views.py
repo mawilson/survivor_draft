@@ -55,6 +55,8 @@ def season_selector_request(request):
                 seasons.append(_season)
             elif _season.team_set.filter(user__id=request.user.id):
                 seasons.append(_season)
+        if not seasons and _seasons: # if season filter was True & pared the _seasons down to nothing, act like the season filter was False & just return the whole list
+            seasons = _seasons
     else:  # logged out users have no criteria to filter seasons off of, so just show them the whole list
         seasons = _seasons
 
