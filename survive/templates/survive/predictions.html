@@ -9,9 +9,7 @@
     {% get_static_prefix as STATIC_PREFIX %}
 
     {% if seasons %}
-        {% if not season.season_open %}
-            <p class="table_center fan_favorite_form">This season does not have an opening date, so I can't tell if predictions are still valid.</p>
-        {% elif not season.is_season_open %}
+        {% if not season.predictions_close %}
             {% if team %}
                 <form class="table_center fan_favorite_form" method="POST">
                     {% csrf_token %}
