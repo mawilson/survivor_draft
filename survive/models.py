@@ -143,6 +143,11 @@ class Season(models.Model):
         null=False,
         verbose_name="Managed Season: true if season is managed by a draft owner Team",
     )
+    predictions_close = models.BooleanField(
+        default=False,
+        null=False,
+        verbose_name="Predictions Close",
+    )
 
     def __str__(self) -> str:
         """Returns a string representation of a Season"""

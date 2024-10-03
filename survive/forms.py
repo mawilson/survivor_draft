@@ -55,13 +55,16 @@ class PredictionForm(forms.ModelForm):
         if self.instance:
             season_id = self.instance.season.id if self.instance.season else None
             self.fields["prediction_first"].queryset = Survivor.objects.filter(
-                season__id=season_id
+                season__id=season_id,
+                status=True
             )
             self.fields["prediction_second"].queryset = Survivor.objects.filter(
-                season__id=season_id
+                season__id=season_id,
+                status=True
             )
             self.fields["prediction_third"].queryset = Survivor.objects.filter(
-                season__id=season_id
+                season__id=season_id,
+                status=True
             )
 
 
@@ -155,6 +158,7 @@ class SeasonManageForm(forms.ModelForm):
             "season_open",
             "survivor_drafting",
             "team_creation",
+            "predictions_close",
         )
         widgets = {
             "season_open": forms.TextInput(attrs={"placeholder": "2023-12-25"}),
