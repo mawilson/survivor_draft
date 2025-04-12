@@ -673,6 +673,11 @@ class Team(models.Model):
         related_name="+",  # no need for backwards relating a prediction to the team that voted it
         blank=True,
     )
+    prediction_survivors_left = models.IntegerField(
+        default=0,
+        verbose_name="Number of active survivors in season when predictions were made",
+        null=False,
+    )
     draft_order = models.CharField(
         max_length=300,
         verbose_name="Comma-delimited list of positions this team can draft in",
