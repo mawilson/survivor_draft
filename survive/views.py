@@ -500,6 +500,8 @@ def predictions(request):
             form = context["form"]
             if form.is_valid():
                 form.save(commit=True)
+                team.prediction_survivors_left = len(context["season"].survivor_set.filter(status=True))
+                team.save()
                 return redirect("/")  # after submitting, return to home page
             else:
                 context.update({"form": form})
