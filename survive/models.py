@@ -550,9 +550,9 @@ class Season(models.Model):
                 last_round = round == (number_of_rounds - 1)
                 if round == 0 and (type == "snake" or type == "snake_random_tail"):
                     team_ordering = sorted(teams, key=lambda x: random.random())
-                    team_ordering_backwards = reversed(
+                    team_ordering_backwards = list(reversed(
                         team_ordering
-                    )  # not in place reversed copy of team_ordering
+                    ))  # not in place reversed copy of team_ordering
                 if type == "random":  # if random, each round gets a randomized order
                     order = sorted(teams, key=lambda x: random.random())
                 elif type == "snake" or type == "snake_random_tail":
