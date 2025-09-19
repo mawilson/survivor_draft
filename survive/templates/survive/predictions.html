@@ -58,7 +58,7 @@
                                         </td>
                                         <td>
                                             {% if team.prediction_first %}
-                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.prediction_first.pic.name}}"
+                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.prediction_first.pic}}"
                                                     {% if team.prediction_first.tribe != None %}
                                                         style="border: 2px solid {{ team.prediction_first.tribe.color }};"
                                                     {% endif %} class="mx-auto" />
@@ -66,7 +66,7 @@
                                         </td>
                                         <td>
                                             {% if team.prediction_second %}
-                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.prediction_second.pic.name}}"
+                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.prediction_second.pic}}"
                                                 {% if team.prediction_second.tribe != None %}
                                                     style="border: 2px solid {{ team.prediction_second.tribe.color }};"
                                                 {% endif %} class="mx-auto" />
@@ -74,7 +74,7 @@
                                         </td>
                                         <td>
                                             {% if team.prediction_third %}
-                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.prediction_third.pic.name}}"
+                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.prediction_third.pic}}"
                                                 {% if team.prediction_third.tribe != None %}
                                                     style="border: 2px solid {{ team.prediction_third.tribe.color }};"
                                                 {% endif %} class="mx-auto" />

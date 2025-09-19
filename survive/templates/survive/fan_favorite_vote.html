@@ -55,7 +55,7 @@
                                         </td>
                                         <td>
                                             {% if team.fan_favorite_first %}
-                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_first.pic.name}}"
+                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_first.pic}}"
                                                 {% if team.fan_favorite_first.tribe != None %}
                                                     style="border: 2px solid {{ team.fan_favorite_first.tribe.color }};"
                                                 {% endif %} class="mx-auto" />
@@ -63,7 +63,7 @@
                                         </td>
                                         <td>
                                             {% if team.fan_favorite_second %}
-                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_second.pic.name}}"
+                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_second.pic}}"
                                                 {% if team.fan_favorite_second.tribe != None %}
                                                     style="border: 2px solid {{ team.fan_favorite_second.tribe.color }};"
                                                 {% endif %} class="mx-auto" />
@@ -71,7 +71,7 @@
                                         </td>
                                         <td>
                                             {% if team.fan_favorite_third %}
-                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_third.pic.name}}"
+                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_third.pic}}"
                                                 {% if team.fan_favorite_third.tribe != None %}
                                                     style="border: 2px solid {{ team.fan_favorite_third.tribe.color }};"
                                                 {% endif %} class="mx-auto" />
@@ -80,7 +80,7 @@
                                         {% if season.rubric.fan_favorite_negative_votes %}
                                         <td>
                                             {% if team.fan_favorite_bad %}
-                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_bad.pic.name}}"
+                                                <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{team.fan_favorite_bad.pic}}"
                                                 {% if team.fan_favorite_bad.tribe != None %}
                                                     style="border: 2px solid {{ team.fan_favorite_bad.tribe.color }};"
                                                 {% endif %} class="mx-auto" />

@@ -97,8 +97,8 @@
                                             {% endif %} {% if survivor.status %} survivor_cursor {% else %} survivor_elim_cursor {% endif %}
                                             {% if survivor.fan_favorite %} survivor_card_fan_favorite {% endif %}">
                                                 <td>
-                                                    {% if survivor.pic.name %}
-                                                        <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{survivor.pic.name}}"
+                                                    {% if survivor.pic %}
+                                                        <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{survivor.pic}}"
                                                     {% else %}
                                                         <img src="{{ STATIC_PREFIX }}survive/silhouette_small.webp"
                                                     {% endif %}
@@ -203,8 +203,8 @@
                                                 {% endif %} {% if survivor.status %} survivor_cursor {% else %} survivor_elim_cursor {% endif %}
                                                 {% if survivor.fan_favorite %} survivor_card_fan_favorite {% endif %}">
                                                     <td>
-                                                        {% if survivor.pic.name %}
-                                                            <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{survivor.pic.name}}"
+                                                        {% if survivor.pic %}
+                                                            <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{survivor.pic}}"
                                                         {% else %}
                                                             <img src="{{ STATIC_PREFIX }}survive/silhouette_small.webp"
                                                         {% endif %}
@@ -336,8 +336,8 @@
                             {% endif %} {% if survivor.status %} survivor_cursor {% else %} survivor_elim_cursor {% endif %}
                             {% if survivor.fan_favorite %} survivor_card_fan_favorite {% endif %}">
                                 <td>
-                                    {% if survivor.pic.name %}
-                                        <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{survivor.pic.name}}"
+                                    {% if survivor.pic %}
+                                        <img src="{{ STATIC_PREFIX }}survive/portraits_small/{{survivor.pic}}"
                                     {% else %}
                                         <img src="{{ STATIC_PREFIX }}survive/silhouette_small.webp"
                                     {% endif %}

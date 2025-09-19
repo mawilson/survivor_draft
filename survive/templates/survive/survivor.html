@@ -15,8 +15,8 @@
             <table class="w-full">
                 <tr>
                     <td class="w-[312px] h-auto">
-                        {% if survivor.pic.name %}
-                            <img src="{{ STATIC_PREFIX }}survive/portraits_big/{{survivor.pic_full.name}}"
+                        {% if survivor.pic %}
+                            <img src="{{ STATIC_PREFIX }}survive/portraits_big/{{survivor.pic_full}}"
                         {% else %}
                             <img src="{{ STATIC_PREFIX }}survive/silhouette_large.webp"
                         {% endif %}

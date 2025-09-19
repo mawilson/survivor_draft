@@ -1010,11 +1010,11 @@ class Survivor(models.Model):
         default=False, null=False
     )  # Winner is an upgraded finalist
     winner = models.BooleanField(default=False, null=False)
-    pic = models.ImageField(
-        default=None, null=True, blank=True
+    pic = models.CharField(
+        default=None, null=True, blank=True, max_length=100
     )  # a null image will use a default blank image
-    pic_full = models.ImageField(
-        default=None, null=True, blank=True
+    pic_full = models.CharField(
+        default=None, null=True, blank=True, max_length=100
     )  # larger image used by Survivor page, can also be null
 
     def __str__(self) -> str:
