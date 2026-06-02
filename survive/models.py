@@ -1135,6 +1135,9 @@ class Survivor(models.Model):
         if self.fan_favorite:
             total += rubric.fan_favorite
             description += f"Fan favorite: {self.fan_favorite} * {rubric.fan_favorite} = {rubric.fan_favorite}\n"
+        if rubric.date_value:
+            total = 0 # reset score if in Love Overboard mode to invalidate Survivor specific scoring metrics, but keep winner & finalist scores
+            description = "POINTS BREAKDOWN\nPoints Earned * Rubric Value = Score\n"
         if self.finalist:
             if self.winner:
                 total += self.winner * rubric.winner
