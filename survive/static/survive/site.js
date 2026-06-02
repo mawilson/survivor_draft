@@ -19,6 +19,14 @@ function themeChange(value, setCookie) {
             cookie = "survivorTheme=jeff_grey;samesite=lax;path=/;";
             className = "theme_jeff_grey";
             break;
+        case "love_buoy":
+            cookie = "survivorTheme=love_buoy;samesite=lax;path=/;";
+            className = "theme_love_buoy";
+            break;
+        case "love_plain":
+            cookie = "survivorTheme=love_plain;samesite=lax;path=/;";
+            className = "theme_love_plain";
+            break;
         case "jeff":
         default: 
             cookie = "survivorTheme=jeff;samesite=lax;path=/;";
