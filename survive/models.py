@@ -1135,7 +1135,7 @@ class Survivor(models.Model):
         if self.fan_favorite:
             total += rubric.fan_favorite
             description += f"Fan favorite: {self.fan_favorite} * {rubric.fan_favorite} = {rubric.fan_favorite}\n"
-        if rubric.date_value:
+        if rubric.date_value != 0:
             total = 0 # reset score if in Love Overboard mode to invalidate Survivor specific scoring metrics, but keep winner & finalist scores
             description = "POINTS BREAKDOWN\nPoints Earned * Rubric Value = Score\n"
         if self.finalist:
@@ -1148,16 +1148,16 @@ class Survivor(models.Model):
                 total += self.finalist * rubric.finalist
                 description += f"Finalist: {self.finalist} * {rubric.finalist} = {self.finalist * rubric.finalist}"
 
-        if rubric.date_value:
+        if rubric.date_value != 0:
             total += self.idols * rubric.date_value
             description += f"Dates: {self.idols} * {rubric.date_value} = {self.idols * rubric.date_value}"
-        if rubric.lower_deck_to_upper_deck_value:
+        if rubric.lower_deck_to_upper_deck_value != 0:
             total += self.advantages * rubric.lower_deck_to_upper_deck_value
             description += f"Lower deck to upper deck: {self.advantages} * {rubric.lower_deck_to_upper_deck_value} = {self.advantages * rubric.lower_deck_to_upper_deck_value}"
-        if rubric.upper_deck_to_lower_deck_value:
+        if rubric.upper_deck_to_lower_deck_value != 0:
             total += self.confessionals * rubric.upper_deck_to_lower_deck_value
             description += f"Upper deck to lower deck: {self.confessionals} * {rubric.upper_deck_to_lower_deck_value} = {self.confessionals * rubric.upper_deck_to_lower_deck_value}"
-        if rubric.sex_value:
+        if rubric.sex_value != 0:
             total += self.immunities * rubric.sex_value
             description += f"Woohoos: {self.immunities} * {rubric.sex_value} = {self.immunities * rubric.sex_value}"
         return total, description.strip()  # remove trailing newline if present
