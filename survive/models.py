@@ -1142,24 +1142,24 @@ class Survivor(models.Model):
             if self.winner:
                 total += self.winner * rubric.winner
                 description += (
-                    f"Winner: {self.winner} * {rubric.winner} = {rubric.winner}"
+                    f"Winner: {self.winner} * {rubric.winner} = {rubric.winner}\n"
                 )
             else:
                 total += self.finalist * rubric.finalist
-                description += f"Finalist: {self.finalist} * {rubric.finalist} = {self.finalist * rubric.finalist}"
+                description += f"Finalist: {self.finalist} * {rubric.finalist} = {self.finalist * rubric.finalist}\n"
 
-        if rubric.date_value != 0:
+        if rubric.date_value != 0 and self.idols != 0:
             total += self.idols * rubric.date_value
-            description += f"Dates: {self.idols} * {rubric.date_value} = {self.idols * rubric.date_value}"
-        if rubric.lower_deck_to_upper_deck_value != 0:
+            description += f"Dates: {self.idols} * {rubric.date_value} = {self.idols * rubric.date_value}\n"
+        if rubric.lower_deck_to_upper_deck_value != 0 and self.advantages != 0:
             total += self.advantages * rubric.lower_deck_to_upper_deck_value
-            description += f"Lower deck to upper deck: {self.advantages} * {rubric.lower_deck_to_upper_deck_value} = {self.advantages * rubric.lower_deck_to_upper_deck_value}"
-        if rubric.upper_deck_to_lower_deck_value != 0:
+            description += f"Lower deck to upper deck: {self.advantages} * {rubric.lower_deck_to_upper_deck_value} = {self.advantages * rubric.lower_deck_to_upper_deck_value}\n"
+        if rubric.upper_deck_to_lower_deck_value != 0 and self.confessionals != 0:
             total += self.confessionals * rubric.upper_deck_to_lower_deck_value
-            description += f"Upper deck to lower deck: {self.confessionals} * {rubric.upper_deck_to_lower_deck_value} = {self.confessionals * rubric.upper_deck_to_lower_deck_value}"
-        if rubric.sex_value != 0:
+            description += f"Upper deck to lower deck: {self.confessionals} * {rubric.upper_deck_to_lower_deck_value} = {self.confessionals * rubric.upper_deck_to_lower_deck_value}\n"
+        if rubric.sex_value != 0 and self.immunities != 0:
             total += self.immunities * rubric.sex_value
-            description += f"Woohoos: {self.immunities} * {rubric.sex_value} = {self.immunities * rubric.sex_value}"
+            description += f"Woohoos: {self.immunities} * {rubric.sex_value} = {self.immunities * rubric.sex_value}\n"
         return total, description.strip()  # remove trailing newline if present
 
     @cached_property
