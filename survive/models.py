@@ -100,6 +100,30 @@ class Rubric(models.Model):
         verbose_name="The points awarded to the sole survivor of the season. This is awarded instead of Finalist points, not in addition to.",
     )
 
+    date_value = models.IntegerField(
+        default=0,
+        null=True,
+        verbose_name="The points awarded per date that a Love Overboard contestant participated in.",
+    )
+
+    lower_deck_to_upper_deck_value = models.IntegerField(
+        default=0,
+        null=True,
+        verbose_name="The points awarded per times that a contestant moved from the lower deck to the upper deck.",
+    )
+
+    upper_deck_to_lower_deck_value = models.IntegerField(
+        default=0,
+        null=True,
+        verbose_name="The points awarded per times that a contestant moved from the upper deck to a lower deck (may be negative).",
+    )
+
+    sex_value = models.IntegerField(
+        default=0,
+        null=True,
+        verbose_name="The points awarded per times that a contestant woohooed.",
+    )
+
     def __str__(self) -> str:
         """Returns a string representation of the scoring rubric."""
         return f"Name: {self.name}; Most idols: {self.idols}; Number on jury: {self.jury_number}; Fan favorite: {self.fan_favorite}; Winner: {self.winner}..."
@@ -1120,6 +1144,19 @@ class Survivor(models.Model):
             else:
                 total += self.finalist * rubric.finalist
                 description += f"Finalist: {self.finalist} * {rubric.finalist} = {self.finalist * rubric.finalist}"
+
+        if rubric.date_value:
+            total += self.idols * rubric.date_value
+            description += f"Dates: {self.idols} * {rubric.date_value} = {self.idols * rubric.date_value}"
+        if rubric.lower_deck_to_upper_deck_value:
+            total += self.advantages * rubric.lower_deck_to_upper_deck_value
+            description += f"Lower deck to upper deck: {self.advantages} * {rubric.lower_deck_to_upper_deck_value} = {self.advantages * rubric.lower_deck_to_upper_deck_value}"
+        if rubric.upper_deck_to_lower_deck_value:
+            total += self.confessionals * rubric.upper_deck_to_lower_deck_value
+            description += f"Upper deck to lower deck: {self.confessionals} * {rubric.upper_deck_to_lower_deck_value} = {self.confessionals * rubric.upper_deck_to_lower_deck_value}"
+        if rubric.sex_value:
+            total += self.immunities * rubric.sex_value
+            description += f"Woohoos: {self.immunities} * {rubric.sex_value} = {self.immunities * rubric.sex_value}"
         return total, description.strip()  # remove trailing newline if present
 
     @cached_property
