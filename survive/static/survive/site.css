@@ -38,6 +38,18 @@
     background-size: 250px 250px;
 }
 
+.theme_love_buoy {
+    background-image: url("/static/images/love_buoy_boat.webp");
+    background-repeat: repeat;
+    background-size: 250px 250px;
+}
+
+.theme_love_plain {
+    background-image: url("/static/images/love_bg.webp");
+    background-repeat: repeat;
+    background-size: 250px 250px;
+}
+
 .table_center {
     margin-left: auto;
     margin-right: auto;
