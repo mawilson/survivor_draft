@@ -73,6 +73,12 @@ function processCookies() {
                     case "bg_grey":
                         themeSelector.selectedIndex = 4;
                         break;
+                    case "love_buoy":
+                        themeSelector.selectedIndex = 5;
+                        break;
+                    case "love_plain":
+                        themeSelector.selectedIndex = 6;
+                        break;
                     case "jeff":
                     default:
                         themeSelector.selectedIndex = 0;
