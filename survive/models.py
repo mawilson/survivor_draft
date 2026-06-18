@@ -100,6 +100,12 @@ class Rubric(models.Model):
         verbose_name="The points awarded to the sole survivor of the season. This is awarded instead of Finalist points, not in addition to.",
     )
 
+    quit_value = models.IntegerField(
+        default=-1,
+        null=False,
+        verbose_name="The points awarded when a player quits the competition voluntarily."
+    )
+
     date_value = models.IntegerField(
         default=0,
         null=True,
@@ -1030,6 +1036,9 @@ class Survivor(models.Model):
     fan_favorite = models.BooleanField(
         default=False, null=False
     )  # this is calculated, but we don't want to run the calqs every time, so still saving it when Season.fan_favorites() runs
+    quit = models.BooleanField(
+        default=False, null=False
+    )
     finalist = models.BooleanField(
         default=False, null=False
     )  # Winner is an upgraded finalist
@@ -1132,12 +1141,17 @@ class Survivor(models.Model):
                 total += rubric.pity_point
                 description += f"Pity point: {rubric.pity_point}\n"
 
-        if self.fan_favorite:
-            total += rubric.fan_favorite
-            description += f"Fan favorite: {self.fan_favorite} * {rubric.fan_favorite} = {rubric.fan_favorite}\n"
         if rubric.date_value != 0:
             total = 0 # reset score if in Love Overboard mode to invalidate Survivor specific scoring metrics, but keep winner & finalist scores
             description = "POINTS BREAKDOWN\nPoints Earned * Rubric Value = Score\n"
+
+        if self.quit:
+            total += rubric.quit_value
+            description += f"Quit value: {rubric.quit_value}\n"
+        if self.fan_favorite:
+            total += rubric.fan_favorite
+            description += f"Fan favorite: {self.fan_favorite} * {rubric.fan_favorite} = {rubric.fan_favorite}\n"
+
         if self.finalist:
             if self.winner:
                 total += self.winner * rubric.winner
