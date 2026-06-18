@@ -35,7 +35,7 @@
                             {% elif survivor.status %}
                             Surviving
                             {% else %}
-                            Eliminated
+                            Eliminated{% if survivor.quit %} (quit){% endif %}
                             {% endif %}</p>
                             <p>Immunities: {{survivor.immunities}}</p>
                             <p>Idols: {{survivor.idols}}</p>
